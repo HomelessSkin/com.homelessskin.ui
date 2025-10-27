@@ -2,7 +2,7 @@ using TMPro;
 
 using UnityEngine;
 
-namespace Core.UI
+namespace UI
 {
     public class Localizable : MonoBehaviour
     {

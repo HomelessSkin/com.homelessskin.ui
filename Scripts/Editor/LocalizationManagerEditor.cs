@@ -3,7 +3,7 @@ using UnityEditor;
 
 using UnityEngine;
 
-namespace Core.UI
+namespace UI
 {
     [CustomEditor(typeof(LocalizationManager))]
     public class LocalizationManagerEditor : Editor

@@ -9,7 +9,7 @@ using System.IO;
 
 using UnityEngine;
 
-namespace Core.UI
+namespace UI
 {
     public class LocalizationManager : MonoBehaviour
     {

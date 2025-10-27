@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.UI
+namespace UI
 {
     [CreateAssetMenu(fileName = "_Style", menuName = "UI/TextStyle")]
     public class TextStyle : ScriptableObject

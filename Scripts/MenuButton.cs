@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Core.UI
+namespace UI
 {
     public class MenuButton : Selectable
     {

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Core.UI
+namespace UI
 {
     public class PlayerInfo : MonoBehaviour
     {

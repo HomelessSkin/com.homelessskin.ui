@@ -4,7 +4,7 @@ using Unity.Entities;
 
 using UnityEngine;
 
-namespace Core.UI
+namespace UI
 {
     public abstract class UIManagerBase : MonoBehaviour
     {

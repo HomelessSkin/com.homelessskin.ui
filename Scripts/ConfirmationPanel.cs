@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Core.UI
+namespace UI
 {
     public class ConfirmationPanel : MonoBehaviour
     {
