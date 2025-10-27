@@ -1,0 +1,22 @@
+{
+  "name": "com.homelessskin.ui",
+  "displayName": "UI",
+  "version": "1.0.0",
+  "description": "ui",
+  "author": {
+    "name": "RU_1n",
+    "email": "your@email.com"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/homelessskin/shared-ui.git"
+  },
+  "hideInEditor": false,
+  "dependencies": {
+    "com.unity.entities": "1.3.14",
+    "com.unity.ugui": "2.0.0"
+  }
+}
