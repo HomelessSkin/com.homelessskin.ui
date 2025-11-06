@@ -10,13 +10,19 @@
   "keywords": [
     "ui"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/homelessskin/shared-ui.git"
-  },
   "hideInEditor": false,
   "dependencies": {
     "com.unity.entities": "1.3.14",
     "com.unity.ugui": "2.0.0"
+  },
+  "samples" : [
+  {
+     "displayName" : "Prefabs",
+     "path" : "Samples/Resources/UIPrefabs"
+  },
+  {
+     "displayName" : "Fonts",
+     "path" : "Samples/Fonts"
   }
+  ]
 }
