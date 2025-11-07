@@ -1,3 +1,5 @@
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -7,6 +9,7 @@ namespace UI
 {
     public class MenuButton : Selectable
     {
+        [SerializeField] TMP_Text Label;
         [SerializeField] UnityEvent OnClick;
         [SerializeField] UnityEvent OnEnabledTargets;
         [SerializeField] GameObject[] Targets;
@@ -32,8 +35,25 @@ namespace UI
                     OnEnabledTargets.Invoke();
             }
         }
-        public void Press() => OnClick.Invoke();
-        public void AddListener(UnityAction action) => OnClick.AddListener(action);
-        public void RemoveAllListeners() => OnClick.RemoveAllListeners();
+
+        internal void SetLabel(string name)
+        {
+            if (Label)
+                Label.text = name;
+        }
+        internal void Press() => OnClick.Invoke();
+        internal void AddListener(UnityAction action) => OnClick.AddListener(action);
+        internal void RemoveAllListeners() => OnClick.RemoveAllListeners();
+        internal void InitAsDropItem(UnityAction<int> call, int index, string name)
+        {
+            SetLabel(name);
+
+            OnClick.AddListener(() => call.Invoke(index));
+        }
+
+        protected override void OnDestroy()
+        {
+            OnClick?.RemoveAllListeners();
+        }
     }
 }
