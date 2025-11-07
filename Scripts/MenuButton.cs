@@ -36,15 +36,15 @@ namespace UI
             }
         }
 
-        internal void SetLabel(string name)
+        public void SetLabel(string name)
         {
             if (Label)
                 Label.text = name;
         }
-        internal void Press() => OnClick.Invoke();
-        internal void AddListener(UnityAction action) => OnClick.AddListener(action);
-        internal void RemoveAllListeners() => OnClick.RemoveAllListeners();
-        internal void InitAsDropItem(UnityAction<int> call, int index, string name)
+        public void Press() => OnClick.Invoke();
+        public void AddListener(UnityAction action) => OnClick.AddListener(action);
+        public void RemoveAllListeners() => OnClick.RemoveAllListeners();
+        public void InitAsDropItem(UnityAction<int> call, int index, string name)
         {
             SetLabel(name);
 
