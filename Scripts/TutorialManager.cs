@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public class TutorialPanel : MonoBehaviour
+    public class TutorialManager : MonoBehaviour
     {
         [SerializeField] LocalizationManager Localizator;
         [SerializeField] TMP_Text TutorialText;

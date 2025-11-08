@@ -9,7 +9,7 @@ namespace UI
     public abstract class UIManagerBase : MonoBehaviour
     {
         [SerializeField] protected LocalizationManager Localizator;
-        [SerializeField] protected MessagePanel Messenger;
+        [SerializeField] protected MessageManager Messenger;
 
         protected EntityManager EntityManager;
 
@@ -29,6 +29,6 @@ namespace UI
             StopAllCoroutines();
         }
 
-        public void AddMessage(int index, float time = 5f, MessagePanel.AdditionType addition = MessagePanel.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
+        public void AddMessage(int index, float time = 5f, MessageManager.AdditionType addition = MessageManager.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
     }
 }

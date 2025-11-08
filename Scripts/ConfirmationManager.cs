@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace UI
 {
-    public class ConfirmationPanel : MonoBehaviour
+    public class ConfirmationManager : MonoBehaviour
     {
         [SerializeField] LocalizationManager Localizator;
         [SerializeField] TMP_Text TargetText;

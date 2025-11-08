@@ -14,9 +14,9 @@ namespace UI
     public class LocalizationManager : MonoBehaviour
     {
         [Header("Game Objects")]
-        [SerializeField] MessagePanel Messenger;
-        [SerializeField] TutorialPanel Tutorial;
-        [SerializeField] ConfirmationPanel Confirmation;
+        [SerializeField] MessageManager Messenger;
+        [SerializeField] TutorialManager Tutorial;
+        [SerializeField] ConfirmationManager Confirmation;
         [SerializeField] Localizable[] Localizables;
 
         [Header("Localizations")]

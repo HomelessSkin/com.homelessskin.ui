@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class MessagePanel : MonoBehaviour
+    public class MessageManager : MonoBehaviour
     {
 #if UNITY_EDITOR
         [SerializeField] GUIStyle Style;
