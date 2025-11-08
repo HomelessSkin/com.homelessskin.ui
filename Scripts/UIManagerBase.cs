@@ -309,13 +309,12 @@ namespace UI
                 RefreshCurrent();
             }
         }
-
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
             StopAllCoroutines();
         }
 #if UNITY_EDITOR
-        void OnValidate()
+        protected virtual void OnValidate()
         {
             _Localizator.Localizables = (Localizable[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
