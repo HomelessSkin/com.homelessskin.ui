@@ -21,6 +21,7 @@ namespace UI
     {
         protected EntityManager EntityManager;
 
+        [Space]
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
         [Serializable]
@@ -28,9 +29,11 @@ namespace UI
         {
             public Localizable[] Localizables;
 
+            [Space]
             public TextAsset DefaultLanguage;
             public TextAsset[] Localizations;
 
+            [Space]
             public TextStyle[] DefaultStyles;
             public TextStyle[] TextStyles;
 
@@ -156,6 +159,7 @@ namespace UI
 #endif
         #endregion
 
+        [Space]
         [SerializeField] protected Messenger _Messenger;
         #region MESSENGER
         [Serializable]
@@ -165,6 +169,7 @@ namespace UI
             public TMP_Text MessageText;
             public TMP_Text AdditionText;
 
+            [Space]
             public string[] Messages;
 
             public Message Current = new Message();
@@ -227,6 +232,7 @@ namespace UI
         }
         #endregion
 
+        [Space]
         [SerializeField] protected Confirm _Confirm;
         #region CONFIRMATION
         [Serializable]
@@ -238,6 +244,7 @@ namespace UI
             public MenuButton ConfirmButton;
             public MenuButton DeclineButton;
 
+            [Space]
             public string[] Keys;
         }
 
@@ -263,6 +270,7 @@ namespace UI
         }
         #endregion
 
+        [Space]
         [SerializeField] protected Tutorial _Tutorial;
         #region TUTORIAL
         [Serializable]
