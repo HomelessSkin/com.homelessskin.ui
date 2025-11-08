@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UI
 {
-    [CustomEditor(typeof(UIManagerBase))]
+    [CustomEditor(typeof(UIManagerBase), true)]
     public class UIManagerBaseEditor : Editor
     {
         public override void OnInspectorGUI()
