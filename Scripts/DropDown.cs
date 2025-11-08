@@ -46,7 +46,11 @@ namespace UI
         void Open()
         {
             if (IsOpenned)
+            {
+                Close();
+
                 return;
+            }
 
             Items = Instantiate(ContentPrefab, Selection.transform).transform;
             for (int v = 0; v < Values.Length; v++)
@@ -54,16 +58,20 @@ namespace UI
 
             IsOpenned = true;
         }
+        void Close()
+        {
+            IsOpenned = false;
+
+            Destroy(Items.gameObject);
+        }
         void CreateItem(int index) =>
             Instantiate(ItemPrefab, Items)
             .GetComponent<MenuButton>()
             .InitAsDropItem(InvChanged, index, Values[index]);
         void InvChanged(int index)
         {
-            IsOpenned = false;
-            Value = index;
-
-            Destroy(Items.gameObject);
+            Close();
+            SetValue(index);
 
             Selection.SetLabel(Values[index]);
             OnValueChanged.Invoke(index);
