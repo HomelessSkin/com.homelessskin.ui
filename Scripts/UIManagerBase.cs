@@ -29,6 +29,6 @@ namespace UI
             StopAllCoroutines();
         }
 
-        internal void AddMessage(int index, float time = 5f, MessagePanel.AdditionType addition = MessagePanel.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
+        public void AddMessage(int index, float time = 5f, MessagePanel.AdditionType addition = MessagePanel.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
     }
 }
