@@ -35,7 +35,7 @@ namespace UI
             DefaultDict = Deserialize(Default.text);
         }
 
-        internal void SetLanguage(string langKey)
+        public void SetLanguage(string langKey)
         {
             var lang = langKey.Split("-")[0].ToUpper();
 
