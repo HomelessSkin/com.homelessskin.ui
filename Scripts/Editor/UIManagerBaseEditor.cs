@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace UI
 {
-    [CustomEditor(typeof(LocalizationManager))]
-    public class LocalizationManagerEditor : Editor
+    [CustomEditor(typeof(UIManagerBase))]
+    public class UIManagerBaseEditor : Editor
     {
         public override void OnInspectorGUI()
         {
-            var manager = (LocalizationManager)target;
+            var manager = (UIManagerBase)target;
             if (target == null)
                 return;
 

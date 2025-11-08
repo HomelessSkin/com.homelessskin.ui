@@ -1,34 +1,332 @@
-using Core.Util;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using TMPro;
 
 using Unity.Entities;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace UI
 {
     public abstract class UIManagerBase : MonoBehaviour
     {
-        [SerializeField] protected LocalizationManager Localizator;
-        [SerializeField] protected MessageManager Messenger;
-
         protected EntityManager EntityManager;
+
+        [SerializeField] protected Localizator _Localizator;
+        #region LOCALIZATOR
+        protected class Localizator
+        {
+            public Localizable[] Localizables;
+
+            public TextAsset DefaultLanguage;
+            public TextAsset[] Localizations;
+
+            public TextStyle[] DefaultStyles;
+            public TextStyle[] TextStyles;
+
+            public Dictionary<string, string> DefaultDict = new Dictionary<string, string>();
+            public Dictionary<string, string> Current = new Dictionary<string, string>();
+        }
+
+        public void SetLanguage(string langKey)
+        {
+            var lang = langKey.Split("-")[0].ToUpper();
+
+            Debug.Log($"Setting Language with {lang} key");
+
+            _Localizator.Current = Deserialize(_Localizator.DefaultLanguage.text);
+            var langStyles = _Localizator.TextStyles.Where(x => x.LanguageKey == lang).ToArray();
+
+            for (int i = 0; i < _Localizator.Localizations.Length; i++)
+                if (_Localizator.Localizations[i].name == lang)
+                {
+                    _Localizator.Current = Deserialize(_Localizator.Localizations[i].text);
+
+                    break;
+                }
+
+            for (int i = 0; i < _Localizator.Localizables.Length; i++)
+            {
+                if (_Localizator.Current.ContainsKey(_Localizator.Localizables[i].GetKey()))
+                    _Localizator.Localizables[i].SetValue(_Localizator.Current[_Localizator.Localizables[i].GetKey()]);
+                else
+                    _Localizator.Localizables[i].SetValue(_Localizator.DefaultDict[_Localizator.Localizables[i].GetKey()]);
+
+                if (GetStyle(_Localizator.Localizables[i].GetElementKey(), _Localizator.TextStyles, out var style, lang))
+                    _Localizator.Localizables[i].SetStyle(style);
+                else if (GetStyle(_Localizator.Localizables[i].GetElementKey(), _Localizator.DefaultStyles, out var def))
+                    _Localizator.Localizables[i].SetStyle(def);
+            }
+        }
+        public string GetTranslation(string key)
+        {
+            if (_Localizator.Current.ContainsKey(key))
+                return _Localizator.Current[key];
+            else if (_Localizator.DefaultDict.ContainsKey(key))
+                return _Localizator.DefaultDict[key];
+
+            return $"No Value for <{key}> key!";
+        }
+
+        bool GetStyle(ElementKey element, TextStyle[] styles, out TextStyle style, string langKey = "default")
+        {
+            for (int i = 0; i < styles.Length; i++)
+                if (styles[i].LanguageKey == langKey && styles[i].Element == element)
+                {
+                    style = styles[i];
+
+                    return true;
+                }
+
+            style = null;
+
+            return false;
+        }
+        string Serialize(Dictionary<string, string> dict)
+        {
+            var keys = dict.Keys.ToArray();
+            var str = "";
+            for (int i = 0; i < keys.Length; i++)
+                str += $"{keys[i]} ; {dict[keys[i]]}\n";
+
+            return str;
+        }
+        Dictionary<string, string> Deserialize(string text)
+        {
+            var dict = new Dictionary<string, string>();
+            var array = text.Split("\n");
+            for (int i = 0; i < array.Length; i++)
+                if (array[i] != "")
+                {
+                    var str = array[i].Split(" ; ");
+                    if (!dict.ContainsKey(str[0]))
+                        dict[str[0]] = str[1];
+                }
+
+            return dict;
+        }
+
+#if UNITY_EDITOR
+        public void Reload()
+        {
+            var defDict = new Dictionary<string, string>();
+            for (int i = 0; i < _Localizator.Localizables.Length; i++)
+                defDict[_Localizator.Localizables[i].GetKey()] = _Localizator.Localizables[i].GetText();
+
+            //defDict[Tutorial.GetKey()] = Tutorial.GetDefault();
+
+            for (int i = 0; i < _Messenger.Messages.Length; i++)
+                defDict[_Messenger.Messages[i]] = _Messenger.Messages[i];
+
+            for (int i = 0; i < _Confirm.Keys.Length; i++)
+                defDict[_Confirm.Keys[i]] = _Confirm.Keys[i];
+
+            File.WriteAllText(Application.dataPath + "/Resources/UI/Localizations/_default.json", Serialize(defDict));
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            var defKeys = defDict.Keys.ToArray();
+            _Localizator.Localizations = Resources.LoadAll<TextAsset>("UI/Localizations/").Where(x => !x.name.Contains("_default")).ToArray();
+            for (int i = 0; i < _Localizator.Localizations.Length; i++)
+            {
+                var text = _Localizator.Localizations[i].text;
+                var dict = Deserialize(text);
+
+                for (int j = 0; j < defKeys.Length; j++)
+                    if (!dict.ContainsKey(defKeys[j]))
+                        text += $"{defKeys[j]} ; {defDict[defKeys[j]]}\n";
+
+                File.WriteAllText(Application.dataPath + $"/Resources/UI/Localizations/{_Localizator.Localizations[i].name}.json", text);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+#endif
+        #endregion
+
+        [SerializeField] protected Messenger _Messenger;
+        #region MESSENGER
+        protected class Messenger : WindowBase
+        {
+            public Image Back;
+            public TMP_Text MessageText;
+            public TMP_Text AdditionText;
+
+            public string[] Messages;
+
+            public Message Current = new Message();
+            public Queue<Message> Q = new Queue<Message>();
+        }
+        protected class Message
+        {
+            public int Index;
+            public float Time;
+            public float CallTime;
+            public AdditionType Addition;
+        }
+
+        public enum AdditionType : byte
+        {
+            Null = 0,
+            AdTimer = 1,
+
+        }
+
+        public void AddMessage(int index, float time = 5f, AdditionType addition = AdditionType.Null)
+        {
+            if (index >= _Messenger.Messages.Length)
+            {
+                Debug.Log($"{index} greater then range of Messages array");
+
+                return;
+            }
+
+            _Messenger.Q.Enqueue(new Message
+            {
+                Index = index,
+                Time = time,
+                Addition = addition
+            });
+        }
+
+        void RefreshCurrent()
+        {
+            if (_Messenger.Current.Time == 0f)
+            {
+                _Messenger.MessageText.text = "";
+                _Messenger.SetEnabled(false);
+            }
+            else
+            {
+                _Messenger.Current.CallTime = Time.realtimeSinceStartup;
+
+                _Messenger.MessageText.text = GetTranslation(_Messenger.Messages[_Messenger.Current.Index]);
+                _Messenger.SetEnabled(true);
+            }
+        }
+        string GetAddition(AdditionType addition)
+        {
+            //switch (addition)
+            //{
+            //}
+
+            return "";
+        }
+        #endregion
+
+        [SerializeField] protected Confirm _Confirm;
+        #region CONFIRMATION
+        protected class Confirm : WindowBase
+        {
+            public UnityAction CurrentAction;
+
+            public TMP_Text Text;
+            public MenuButton ConfirmButton;
+            public MenuButton DeclineButton;
+
+            public string[] Keys;
+        }
+
+        void InitConfirmation(int key, UnityAction action)
+        {
+            _Confirm.Text.text = GetTranslation(_Confirm.Keys[key]);
+            _Confirm.CurrentAction = action;
+
+            _Confirm.ConfirmButton.AddListener(action);
+            _Confirm.ConfirmButton.AddListener(ClearConfirmation);
+            _Confirm.DeclineButton.AddListener(ClearConfirmation);
+
+            _Confirm.SetEnabled(true);
+        }
+        void ClearConfirmation()
+        {
+            _Confirm.Text.text = "";
+            _Confirm.CurrentAction = null;
+
+            _Confirm.ConfirmButton.RemoveAllListeners();
+            _Confirm.DeclineButton.RemoveAllListeners();
+            _Confirm.SetEnabled(false);
+        }
+        #endregion
+
+        [SerializeField] protected Tutorial _Tutorial;
+        #region TUTORIAL
+        protected class Tutorial : WindowBase
+        {
+            public TMP_Text Text;
+            public string Key;
+            public string Value;
+        }
+
+        public void ShowTutorial()
+        {
+            var variant = GetTranslation(_Tutorial.Key);
+            _Tutorial.Text.text = variant;
+
+            _Tutorial.SetEnabled(true);
+        }
+        public void HideTutorial() => _Tutorial.SetEnabled(false);
+        #endregion
 
         protected virtual void Start()
         {
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
         }
-#if UNITY_EDITOR
-        void Reset()
+        protected virtual void Update()
         {
-            Tool.CreateTag("UIManager");
-            gameObject.tag = "UIManager";
+            if (_Messenger.Current.Time != 0f)
+            {
+                if (_Messenger.Current.Addition != AdditionType.Null)
+                    _Messenger.AdditionText.text = GetAddition(_Messenger.Current.Addition);
+
+                if (_Messenger.Current.Time + _Messenger.Current.CallTime < Time.realtimeSinceStartup)
+                {
+                    _Messenger.Current.Time = 0f;
+                    if (_Messenger.Q.Count > 0)
+                        _Messenger.Current = _Messenger.Q.Dequeue();
+
+                    _Messenger.AdditionText.text = "";
+
+                    RefreshCurrent();
+                }
+            }
+            else if (_Messenger.Q.Count > 0)
+            {
+                _Messenger.Current = _Messenger.Q.Dequeue();
+
+                RefreshCurrent();
+            }
         }
-#endif
+
         void OnDestroy()
         {
             StopAllCoroutines();
         }
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            _Localizator.Localizables = (Localizable[])GameObject
+                .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+        }
+#endif
+    }
 
-        public void AddMessage(int index, float time = 5f, MessageManager.AdditionType addition = MessageManager.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
+    public enum ElementKey : byte
+    {
+        Null = 0,
+        Button = 1,
+
     }
 }
