@@ -17,7 +17,6 @@ namespace UI
         {
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
-
 #if UNITY_EDITOR
         void Reset()
         {
@@ -25,10 +24,11 @@ namespace UI
             gameObject.tag = "UIManager";
         }
 #endif
-
         void OnDestroy()
         {
             StopAllCoroutines();
         }
+
+        internal void AddMessage(int index, float time = 5f, MessagePanel.AdditionType addition = MessagePanel.AdditionType.Null) => Messenger.AddMessage(index, time, addition);
     }
 }
