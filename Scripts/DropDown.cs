@@ -19,6 +19,7 @@ namespace UI
         [SerializeField] UnityEvent<int> OnValueChanged;
 
         bool IsOpenned;
+        int Value = 0;
         Transform Items;
 
         void Start()
@@ -39,6 +40,9 @@ namespace UI
         }
 #endif
 
+        public int GetValue() => Value;
+        public void SetValue(int value) => Value = value;
+
         void Open()
         {
             if (IsOpenned)
@@ -57,6 +61,7 @@ namespace UI
         void InvChanged(int index)
         {
             IsOpenned = false;
+            Value = index;
 
             Destroy(Items.gameObject);
 
