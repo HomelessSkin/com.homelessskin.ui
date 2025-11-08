@@ -6,6 +6,6 @@ namespace UI
     {
         [SerializeField] protected Transform Panel;
 
-        protected void SetEnabled(bool value) => Panel.gameObject.SetActive(value);
+        public void SetEnabled(bool value) => Panel.gameObject.SetActive(value);
     }
 }
