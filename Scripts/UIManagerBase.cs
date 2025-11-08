@@ -13,7 +13,6 @@ using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace UI
 {
@@ -126,7 +125,7 @@ namespace UI
             for (int i = 0; i < _Localizator.Localizables.Length; i++)
                 defDict[_Localizator.Localizables[i].GetKey()] = _Localizator.Localizables[i].GetText();
 
-            //defDict[Tutorial.GetKey()] = Tutorial.GetDefault();
+            defDict[_Tutorial.Key] = _Tutorial.Value;
 
             for (int i = 0; i < _Messenger.Messages.Length; i++)
                 defDict[_Messenger.Messages[i]] = _Messenger.Messages[i];
@@ -165,7 +164,6 @@ namespace UI
         [Serializable]
         protected class Messenger : WindowBase
         {
-            public Image Back;
             public TMP_Text MessageText;
             public TMP_Text AdditionText;
 
@@ -331,6 +329,17 @@ namespace UI
         {
             _Localizator.Localizables = (Localizable[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+        }
+        protected virtual void Reset()
+        {
+            Core.Util.Tool.CreateTag("UIManager");
+            gameObject.tag = "UIManager";
+
+            if (!Directory.Exists(Application.dataPath + "/Resources/UI/Localizations/"))
+                Directory.CreateDirectory(Application.dataPath + "/Resources/UI/Localizations/");
+
+            if (!File.Exists(Application.dataPath + "/Resources/UI/Localizations/_default.json"))
+                File.Create(Application.dataPath + "/Resources/UI/Localizations/_default.json");
         }
 #endif
     }
