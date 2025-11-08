@@ -8,8 +8,8 @@ namespace UI
 {
     public abstract class UIManagerBase : MonoBehaviour
     {
-        [SerializeField] LocalizationManager Localizator;
-        [SerializeField] MessagePanel Messenger;
+        [SerializeField] protected LocalizationManager Localizator;
+        [SerializeField] protected MessagePanel Messenger;
 
         protected EntityManager EntityManager;
 
