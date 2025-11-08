@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace UI
 
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
+        [Serializable]
         protected class Localizator
         {
             public Localizable[] Localizables;
@@ -156,6 +158,7 @@ namespace UI
 
         [SerializeField] protected Messenger _Messenger;
         #region MESSENGER
+        [Serializable]
         protected class Messenger : WindowBase
         {
             public Image Back;
@@ -226,6 +229,7 @@ namespace UI
 
         [SerializeField] protected Confirm _Confirm;
         #region CONFIRMATION
+        [Serializable]
         protected class Confirm : WindowBase
         {
             public UnityAction CurrentAction;
@@ -261,6 +265,7 @@ namespace UI
 
         [SerializeField] protected Tutorial _Tutorial;
         #region TUTORIAL
+        [Serializable]
         protected class Tutorial : WindowBase
         {
             public TMP_Text Text;
