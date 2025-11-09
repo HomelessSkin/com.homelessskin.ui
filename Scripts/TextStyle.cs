@@ -5,7 +5,7 @@ namespace UI
     [CreateAssetMenu(fileName = "_Style", menuName = "UI/TextStyle")]
     public class TextStyle : ScriptableObject
     {
-        public ElementKey Element;
+        public UIElement.Type Element;
         public string LanguageKey;
         public int FontSize;
         public int CharacterSpacing;

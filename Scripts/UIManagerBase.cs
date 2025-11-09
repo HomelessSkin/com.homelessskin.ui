@@ -13,6 +13,7 @@ using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.U2D;
 
 namespace UI
 {
@@ -59,14 +60,14 @@ namespace UI
 
             for (int i = 0; i < _Localizator.Localizables.Length; i++)
             {
-                if (_Localizator.Current.ContainsKey(_Localizator.Localizables[i].GetKey()))
-                    _Localizator.Localizables[i].SetValue(_Localizator.Current[_Localizator.Localizables[i].GetKey()]);
+                if (_Localizator.Current.TryGetValue(_Localizator.Localizables[i].GetKey(), out var value))
+                    _Localizator.Localizables[i].SetValue(value);
                 else
                     _Localizator.Localizables[i].SetValue(_Localizator.DefaultDict[_Localizator.Localizables[i].GetKey()]);
 
-                if (GetStyle(_Localizator.Localizables[i].GetElementKey(), _Localizator.TextStyles, out var style, lang))
+                if (GetStyle(_Localizator.Localizables[i].GetElementType(), _Localizator.TextStyles, out var style, lang))
                     _Localizator.Localizables[i].SetStyle(style);
-                else if (GetStyle(_Localizator.Localizables[i].GetElementKey(), _Localizator.DefaultStyles, out var def))
+                else if (GetStyle(_Localizator.Localizables[i].GetElementType(), _Localizator.DefaultStyles, out var def))
                     _Localizator.Localizables[i].SetStyle(def);
             }
         }
@@ -80,7 +81,7 @@ namespace UI
             return $"No Value for <{key}> key!";
         }
 
-        bool GetStyle(ElementKey element, TextStyle[] styles, out TextStyle style, string langKey = "default")
+        bool GetStyle(UIElement.Type element, TextStyle[] styles, out TextStyle style, string langKey = "default")
         {
             for (int i = 0; i < styles.Length; i++)
                 if (styles[i].LanguageKey == langKey && styles[i].Element == element)
@@ -123,7 +124,7 @@ namespace UI
         {
             var defDict = new Dictionary<string, string>();
             for (int i = 0; i < _Localizator.Localizables.Length; i++)
-                defDict[_Localizator.Localizables[i].GetKey()] = _Localizator.Localizables[i].GetText();
+                defDict[_Localizator.Localizables[i].GetKey()] = _Localizator.Localizables[i].GetValue();
 
             defDict[_Tutorial.Key] = _Tutorial.Value;
 
@@ -342,12 +343,5 @@ namespace UI
                 File.Create(Application.dataPath + "/Resources/UI/Localizations/_default.json");
         }
 #endif
-    }
-
-    public enum ElementKey : byte
-    {
-        Null = 0,
-        Button = 1,
-
     }
 }
