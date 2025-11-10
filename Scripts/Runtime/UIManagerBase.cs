@@ -246,11 +246,13 @@ namespace UI
                     _Drawer.DefaultPath, true);
         void RedrawTheme(Theme theme)
         {
+            _Drawer.Current = theme;
+
             for (int d = 0; d < _Drawer.Drawables.Length; d++)
             {
                 var drawable = _Drawer.Drawables[d];
                 var key = drawable.GetKey();
-                if (theme.Sprites.TryGetValue(key, out var sprite))
+                if (_Drawer.Current.Sprites.TryGetValue(key, out var sprite))
                     drawable.SetValue(sprite);
                 else
                     drawable.SetValue(_Drawer.Default.Sprites[key]);
