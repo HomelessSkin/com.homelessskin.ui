@@ -88,7 +88,7 @@ namespace UI
                     if (GUILayout.Button("Add Sprite"))
                         spritesList.Add(new Theme.Manifest.Sprite()
                         {
-                            key = UIElement.Type.Button.ToString(),
+                            key = UIElement.Type.Null.ToString(),
                             pixelPerUnit = 100,
                             borders = new Theme.Manifest.Sprite.Borders()
                         });
