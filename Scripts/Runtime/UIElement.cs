@@ -16,8 +16,7 @@ namespace UI
             Button = 1,
             Field_Dark = 2,
             Field_Light = 3,
-            Question = 4,
-            Twitch = 5,
+            Twitch = 4,
 
         }
     }

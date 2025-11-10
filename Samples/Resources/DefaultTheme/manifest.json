@@ -1,0 +1,27 @@
+{
+    "name": "Default",
+    "sprites": [
+        {
+            "key": "Button",
+            "fileName": "button",
+            "pixelPerUnit": 100,
+            "borders": {
+                "left": 20,
+                "right": 20,
+                "top": 20,
+                "bottom": 20
+            }
+        },
+        {
+            "key": "Field_Dark",
+            "fileName": "Field_Dark",
+            "pixelPerUnit": 100,
+            "borders": {
+                "left": 20,
+                "right": 20,
+                "top": 20,
+                "bottom": 20
+            }
+        }
+    ]
+}

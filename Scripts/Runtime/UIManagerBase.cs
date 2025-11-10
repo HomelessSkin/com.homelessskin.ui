@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Newtonsoft.Json;
+
 using TMPro;
 
 using Unity.Entities;
@@ -13,7 +15,6 @@ using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.U2D;
 
 namespace UI
 {
@@ -160,6 +161,47 @@ namespace UI
         #endregion
 
         [Space]
+        [SerializeField] protected Drawer _Drawer;
+        #region DRAWER
+        [Serializable]
+        protected class Drawer : WindowBase
+        {
+            public string DefaultPath;
+            public TextAsset DefaultManifest;
+            public Theme Default;
+            public List<Theme> Themes = new List<Theme>();
+        }
+
+        public void ReloadThemes()
+        {
+            if (!Directory.Exists(Application.persistentDataPath))
+                Directory.CreateDirectory(Application.persistentDataPath);
+
+            var manifests = Directory.GetFiles(Application.persistentDataPath, "manifest.json", SearchOption.AllDirectories);
+            for (int m = 0; m < manifests.Length; m++)
+            {
+                var path = manifests[m];
+
+                TryLoadTheme(File.ReadAllText(path), path.Replace("manifest.json", ""));
+            }
+        }
+
+        void LoadDefaultTheme() => TryLoadTheme(_Drawer.DefaultManifest.text, _Drawer.DefaultPath, true);
+        void TryLoadTheme(string data, string path, bool fromResources = false)
+        {
+            var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(data);
+            if (manifest.sprites != null)
+            {
+                var theme = new Theme(manifest, path, fromResources);
+                if (fromResources)
+                    _Drawer.Default = theme;
+                else
+                    _Drawer.Themes.Add(theme);
+            }
+        }
+        #endregion
+
+        [Space]
         [SerializeField] protected Messenger _Messenger;
         #region MESSENGER
         [Serializable]
@@ -292,9 +334,13 @@ namespace UI
 
         protected virtual void Start()
         {
-            EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            if (World.DefaultGameObjectInjectionWorld != null)
+                EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-            _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
+            if (_Localizator != null && _Localizator.DefaultLanguage)
+                _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
+
+            LoadDefaultTheme();
         }
         protected virtual void Update()
         {
