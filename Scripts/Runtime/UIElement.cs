@@ -4,11 +4,11 @@ namespace UI
 {
     public abstract class UIElement : MonoBehaviour
     {
-        [SerializeField] Type _Type;
-        [SerializeField] string Key;
+        [SerializeField] protected Type _Type;
+        [SerializeField] protected string Key;
 
         public Type GetElementType() => _Type;
-        public string GetKey() => Key;
+        public virtual string GetKey() => Key;
 
         public enum Type
         {

@@ -166,9 +166,14 @@ namespace UI
         [Serializable]
         protected class Drawer : WindowBase
         {
+            public static string ThemePref = "theme";
+
+            public Drawable[] Drawables;
+            [Space]
+            public Theme Default;
             public string DefaultPath;
             public TextAsset DefaultManifest;
-            public Theme Default;
+            [Space]
             public List<Theme> Themes = new List<Theme>();
         }
 
@@ -182,22 +187,69 @@ namespace UI
             {
                 var path = manifests[m];
 
-                TryLoadTheme(File.ReadAllText(path), path.Replace("manifest.json", ""));
+                var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
+                if (manifest.sprites != null)
+                    _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
             }
         }
 
-        void LoadDefaultTheme() => TryLoadTheme(_Drawer.DefaultManifest.text, _Drawer.DefaultPath, true);
-        void TryLoadTheme(string data, string path, bool fromResources = false)
+        void LoadTheme()
         {
-            var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(data);
-            if (manifest.sprites != null)
+            LoadDefaultTheme();
+
+            var saved = PlayerPrefs.GetString(Drawer.ThemePref);
+            switch (saved)
             {
-                var theme = new Theme(manifest, path, fromResources);
-                if (fromResources)
-                    _Drawer.Default = theme;
-                else
-                    _Drawer.Themes.Add(theme);
+                case null:
+                case "":
+                case "Default":
+                {
+                    RedrawTheme(_Drawer.Default);
+                }
+                break;
+                default:
+                {
+                    var manifests = Directory.GetFiles(Application.persistentDataPath, "manifest.json", SearchOption.AllDirectories);
+                    var found = false;
+                    for (int m = 0; m < manifests.Length; m++)
+                    {
+                        var path = manifests[m];
+
+                        var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
+                        if (manifest.sprites != null &&
+                             manifest.name == saved)
+                        {
+                            found = true;
+
+                            RedrawTheme(new Theme(manifest, path.Replace("manifest.json", "")));
+
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        goto case "Default";
+                }
+                break;
             }
+        }
+        void LoadDefaultTheme() => _Drawer.Default = new Theme(
+                    JsonConvert.DeserializeObject<Theme.Manifest>(_Drawer.DefaultManifest.text),
+                    _Drawer.DefaultPath, true);
+        void RedrawTheme(Theme theme)
+        {
+            for (int d = 0; d < _Drawer.Drawables.Length; d++)
+            {
+                var drawable = _Drawer.Drawables[d];
+                var key = drawable.GetKey();
+                if (theme.Sprites.TryGetValue(key, out var sprite))
+                    drawable.SetValue(sprite);
+                else
+                    drawable.SetValue(_Drawer.Default.Sprites[key]);
+            }
+
+            PlayerPrefs.SetString(Drawer.ThemePref, theme.Name);
+            PlayerPrefs.Save();
         }
         #endregion
 
@@ -340,7 +392,7 @@ namespace UI
             if (_Localizator != null && _Localizator.DefaultLanguage)
                 _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
 
-            LoadDefaultTheme();
+            LoadTheme();
         }
         protected virtual void Update()
         {
@@ -376,6 +428,9 @@ namespace UI
         {
             _Localizator.Localizables = (Localizable[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            _Drawer.Drawables = (Drawable[])GameObject
+                .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);
         }
         protected virtual void Reset()
         {
