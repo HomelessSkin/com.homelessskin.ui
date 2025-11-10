@@ -7,8 +7,17 @@ namespace UI
         [SerializeField] protected Type _Type;
         [SerializeField] protected string Key;
 
+        protected UIManagerBase UIManager;
+
         public Type GetElementType() => _Type;
         public virtual string GetKey() => Key;
+
+        protected virtual void OnEnable()
+        {
+            UIManager = GameObject
+                .FindGameObjectWithTag("UIManager")
+                .GetComponent<UIManagerBase>();
+        }
 
         public enum Type
         {

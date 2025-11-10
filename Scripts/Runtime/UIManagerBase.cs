@@ -174,6 +174,7 @@ namespace UI
             public string DefaultPath;
             public TextAsset DefaultManifest;
             [Space]
+            public Theme Current;
             public List<Theme> Themes = new List<Theme>();
         }
 
@@ -191,6 +192,13 @@ namespace UI
                 if (manifest.sprites != null)
                     _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
             }
+        }
+        public Sprite GetSprite(string key)
+        {
+            if (_Drawer.Current.Sprites.TryGetValue(key, out var sprite))
+                return sprite;
+
+            return _Drawer.Default.Sprites[key];
         }
 
         void LoadTheme()
