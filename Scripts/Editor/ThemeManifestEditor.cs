@@ -90,6 +90,7 @@ namespace UI
                         {
                             key = UIElement.Type.Null.ToString(),
                             pixelPerUnit = 100,
+                            filterMode = 1,
                             borders = new Theme.Manifest.Sprite.Borders()
                         });
 
@@ -113,21 +114,13 @@ namespace UI
             {
                 EditorGUILayout.LabelField($"Sprite {index + 1}", EditorStyles.boldLabel);
 
-                var currentType = UIElement.Type.Null;
-                if (!string.IsNullOrEmpty(sprite.key))
-                {
-                    try
-                    {
-                        currentType = (UIElement.Type)Enum.Parse(typeof(UIElement.Type), sprite.key);
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
+                var currentType = (UIElement.Type)Enum.Parse(typeof(UIElement.Type), sprite.key);
                 currentType = (UIElement.Type)EditorGUILayout.EnumPopup("UI Element Type", currentType);
                 sprite.key = currentType.ToString();
+
+                var currentFilter = (FilterMode)sprite.filterMode;
+                currentFilter = (FilterMode)EditorGUILayout.EnumPopup("Filter Mode", currentFilter);
+                sprite.filterMode = (int)currentFilter;
 
                 EditorGUILayout.BeginHorizontal();
                 {

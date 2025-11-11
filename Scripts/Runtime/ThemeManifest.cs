@@ -39,6 +39,7 @@ namespace UI
                     else if (!text.LoadImage(File.ReadAllBytes(filePath)))
                         continue;
 
+                    text.filterMode = (FilterMode)info.filterMode;
                     var sprite = Sprite
                         .Create(text,
                         new Rect(0f, 0f, text.width, text.height),
@@ -46,7 +47,8 @@ namespace UI
                         (info.pixelPerUnit > 0 ? info.pixelPerUnit : 1),
                         0,
                         SpriteMeshType.FullRect,
-                        new Vector4(info.borders.left, info.borders.right, info.borders.top, info.borders.bottom));
+                        new Vector4(info.borders.left, info.borders.right, info.borders.top, info.borders.bottom),
+                        false);
 
                     sprite.name = info.fileName;
 
@@ -72,6 +74,7 @@ namespace UI
                 public string key;
                 public string fileName;
                 public int pixelPerUnit;
+                public int filterMode;
                 public Borders borders;
 
                 [Serializable]

@@ -5,6 +5,7 @@
             "key": "Menu_Button",
             "fileName": "button",
             "pixelPerUnit": 100,
+            "filterMode": 0,
             "borders": {
                 "left": 20,
                 "right": 20,
@@ -16,6 +17,7 @@
             "key": "Field_Dark",
             "fileName": "Field_Dark",
             "pixelPerUnit": 100,
+            "filterMode": 0,
             "borders": {
                 "left": 20,
                 "right": 20,
