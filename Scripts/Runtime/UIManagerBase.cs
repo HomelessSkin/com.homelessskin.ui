@@ -15,6 +15,7 @@ using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -176,6 +177,8 @@ namespace UI
             [Space]
             public Theme Current;
             public List<Theme> Themes = new List<Theme>();
+            [Space]
+            public MenuScroll ThemeScroll;
         }
 
         public void ReloadThemes()
@@ -458,5 +461,14 @@ namespace UI
                 File.Create(Application.dataPath + "/Resources/UI/Localizations/_default.json");
         }
 #endif
+
+        [Serializable]
+        protected class MenuScroll
+        {
+            public ScrollRect Head;
+            public Transform View;
+            public GameObject ContentPrefab;
+            public GameObject ItemPrefab;
+        }
     }
 }
