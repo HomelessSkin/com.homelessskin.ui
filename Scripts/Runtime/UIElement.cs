@@ -12,7 +12,7 @@ namespace UI
         public Type GetElementType() => _Type;
         public virtual string GetKey() => Key;
 
-        protected virtual void OnEnable()
+        protected virtual void Start()
         {
             UIManager = GameObject
                 .FindGameObjectWithTag("UIManager")

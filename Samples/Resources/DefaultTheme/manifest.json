@@ -2,7 +2,7 @@
     "name": "Default",
     "sprites": [
         {
-            "key": "Button",
+            "key": "Menu_Button",
             "fileName": "button",
             "pixelPerUnit": 100,
             "borders": {

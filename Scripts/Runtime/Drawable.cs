@@ -12,11 +12,12 @@ namespace UI
         public Sprite GetValue() => Value.sprite;
         public void SetValue(Sprite sprite) => Value.sprite = sprite;
 
-        protected override void OnEnable()
+        protected override void Start()
         {
-            base.OnEnable();
+            base.Start();
 
-            SetValue(UIManager.GetSprite(GetKey()));
+            if (UIManager.TryGetSprite(GetKey(), out var sprite))
+                SetValue(sprite);
         }
     }
 }

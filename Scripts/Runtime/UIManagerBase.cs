@@ -193,12 +193,14 @@ namespace UI
                     _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
             }
         }
-        public Sprite GetSprite(string key)
+        public bool TryGetSprite(string key, out Sprite sprite)
         {
-            if (_Drawer.Current.Sprites.TryGetValue(key, out var sprite))
-                return sprite;
+            if (_Drawer.Current.Sprites.TryGetValue(key, out sprite))
+                return true;
+            else if (_Drawer.Default.Sprites.TryGetValue(key, out sprite))
+                return true;
 
-            return _Drawer.Default.Sprites[key];
+            return false;
         }
 
         void LoadTheme()
@@ -394,10 +396,11 @@ namespace UI
         public void HideTutorial() => _Tutorial.SetEnabled(false);
         #endregion
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
-            if (World.DefaultGameObjectInjectionWorld != null)
-                EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+#if UNITY_ENTITIES_INSTALLED
+            EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+#endif
 
             if (_Localizator != null && _Localizator.DefaultLanguage)
                 _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
