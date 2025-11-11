@@ -35,7 +35,10 @@ namespace UI
                 {
                     var text = new Texture2D(2, 2);
                     if (fromResources)
+                    {
+                        filePath = filePath.Replace(".png", "");
                         text = Resources.Load<Texture2D>(filePath);
+                    }
                     else if (!text.LoadImage(File.ReadAllBytes(filePath)))
                         continue;
 
