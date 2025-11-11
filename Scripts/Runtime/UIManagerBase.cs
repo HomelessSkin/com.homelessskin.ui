@@ -205,17 +205,14 @@ namespace UI
         {
             _Drawer.Themes.Clear();
 
-            if (Directory.Exists(Application.dataPath + _Drawer.ResourcesPath))
+            var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
+            for (int m = 0; m < resManifests.Length; m++)
             {
-                var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
-                for (int m = 0; m < resManifests.Length; m++)
-                {
-                    var file = resManifests[m];
+                var file = resManifests[m];
 
-                    var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(file.text);
-                    if (manifest.sprites != null)
-                        _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
-                }
+                var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(file.text);
+                if (manifest.sprites != null)
+                    _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
 
             if (!Directory.Exists(Application.persistentDataPath))
