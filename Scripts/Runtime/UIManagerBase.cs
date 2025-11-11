@@ -175,6 +175,7 @@ namespace UI
             public string DefaultPath;
             public TextAsset DefaultManifest;
             [Space]
+            public string ResourcesPath;
             public Theme Current;
             public List<Theme> Themes = new List<Theme>();
             [Space]
@@ -202,17 +203,34 @@ namespace UI
         }
         public void ReloadThemes()
         {
+            _Drawer.Themes.Clear();
+
+            if (Directory.Exists(Application.dataPath + "/" + _Drawer.ResourcesPath))
+            {
+                var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
+                for (int m = 0; m < resManifests.Length; m++)
+                {
+                    var file = resManifests[m];
+
+                    var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(file.text);
+                    if (manifest.sprites != null)
+                        _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
+                }
+            }
+
             if (!Directory.Exists(Application.persistentDataPath))
                 Directory.CreateDirectory(Application.persistentDataPath);
-
-            var manifests = Directory.GetFiles(Application.persistentDataPath, "manifest.json", SearchOption.AllDirectories);
-            for (int m = 0; m < manifests.Length; m++)
+            else
             {
-                var path = manifests[m];
+                var buildManifests = Directory.GetFiles(Application.persistentDataPath, "manifest.json", SearchOption.AllDirectories);
+                for (int m = 0; m < buildManifests.Length; m++)
+                {
+                    var path = buildManifests[m];
 
-                var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
-                if (manifest.sprites != null)
-                    _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
+                    var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
+                    if (manifest.sprites != null)
+                        _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
+                }
             }
         }
         public void SelectTheme(int index) => RedrawTheme(_Drawer.Themes[index]);
