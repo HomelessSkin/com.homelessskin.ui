@@ -242,19 +242,15 @@ namespace UI
                 break;
                 default:
                 {
-                    var manifests = Directory.GetFiles(Application.persistentDataPath, "manifest.json", SearchOption.AllDirectories);
                     var found = false;
-                    for (int m = 0; m < manifests.Length; m++)
+                    for (int m = 0; m < _Drawer.Themes.Count; m++)
                     {
-                        var path = manifests[m];
-
-                        var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
-                        if (manifest.sprites != null &&
-                             manifest.name == saved)
+                        var theme = _Drawer.Themes[m];
+                        if (theme.Name == saved)
                         {
                             found = true;
 
-                            RedrawTheme(new Theme(manifest, path.Replace("manifest.json", "")));
+                            RedrawTheme(theme);
 
                             break;
                         }
@@ -428,6 +424,7 @@ namespace UI
             if (_Localizator != null && _Localizator.DefaultLanguage)
                 _Localizator.DefaultDict = Deserialize(_Localizator.DefaultLanguage.text);
 
+            ReloadThemes();
             LoadTheme();
         }
         protected virtual void Update()
