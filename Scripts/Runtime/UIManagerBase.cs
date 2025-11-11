@@ -193,6 +193,7 @@ namespace UI
                     _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
             }
         }
+        public void SelectTheme(int index) => RedrawTheme(_Drawer.Themes[index]);
         public bool TryGetSprite(string key, out Sprite sprite)
         {
             if (_Drawer.Current.Sprites.TryGetValue(key, out sprite))
