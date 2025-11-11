@@ -181,6 +181,25 @@ namespace UI
             public MenuScroll ThemeScroll;
         }
 
+        public void OpenThemes()
+        {
+            _Drawer.ThemeScroll.Head.content = Instantiate(_Drawer.ThemeScroll.ContentPrefab, _Drawer.ThemeScroll.View).transform as RectTransform;
+
+            for (int l = 0; l < _Drawer.Themes.Count; l++)
+            {
+                var go = Instantiate(_Drawer.ThemeScroll.ItemPrefab, _Drawer.ThemeScroll.Head.content);
+                var lp = go.GetComponent<ListTheme>();
+                lp.Init(l, _Drawer.Themes[l], this);
+            }
+
+            _Drawer.SetEnabled(true);
+        }
+        public void CloseThemes()
+        {
+            Destroy(_Drawer.ThemeScroll.Head.content.gameObject);
+
+            _Drawer.SetEnabled(false);
+        }
         public void ReloadThemes()
         {
             if (!Directory.Exists(Application.persistentDataPath))
