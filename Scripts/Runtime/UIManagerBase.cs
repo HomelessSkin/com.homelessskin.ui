@@ -205,7 +205,7 @@ namespace UI
         {
             _Drawer.Themes.Clear();
 
-            if (Directory.Exists(Application.dataPath + "/" + _Drawer.ResourcesPath))
+            if (Directory.Exists(Application.dataPath + _Drawer.ResourcesPath))
             {
                 var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
                 for (int m = 0; m < resManifests.Length; m++)
