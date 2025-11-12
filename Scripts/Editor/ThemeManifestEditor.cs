@@ -13,10 +13,14 @@ namespace UI
     {
         string jsonFilePath = "";
         Vector2 scrollPosition;
-        Theme.Manifest manifest;
+        Theme.Manifest_V1 manifest;
         TextAsset jsonTextAsset;
 
-        List<Theme.Manifest.Sprite> spritesList;
+        List<Theme.Manifest_V1.Element> elementsList;
+
+        Dictionary<int, bool> elementFoldoutStates = new Dictionary<int, bool>();
+        Dictionary<string, bool> spriteFoldoutStates = new Dictionary<string, bool>();
+        Dictionary<string, bool> bordersFoldoutStates = new Dictionary<string, bool>();
 
         [MenuItem("Tools/Theme Manifest Editor")]
         public static void ShowWindow() => GetWindow<ThemeManifestEditor>("Theme Manifest Editor");
@@ -34,6 +38,7 @@ namespace UI
                 if (EditorGUI.EndChangeCheck() && jsonTextAsset != null)
                 {
                     jsonFilePath = AssetDatabase.GetAssetPath(jsonTextAsset);
+
                     LoadJSON();
                 }
 
@@ -63,7 +68,9 @@ namespace UI
             EditorGUILayout.BeginVertical("box");
             {
                 GUILayout.Label("Theme Settings", EditorStyles.boldLabel);
+
                 manifest.name = EditorGUILayout.TextField("Theme Name", manifest.name);
+                manifest.version = EditorGUILayout.IntField("Version", manifest.version);
             }
             EditorGUILayout.EndVertical();
 
@@ -71,53 +78,105 @@ namespace UI
 
             EditorGUILayout.BeginVertical("box");
             {
-                GUILayout.Label("Sprites", EditorStyles.boldLabel);
+                GUILayout.Label("Elements", EditorStyles.boldLabel);
 
-                if (spritesList == null)
-                    spritesList = manifest.sprites != null ? new List<Theme.Manifest.Sprite>(manifest.sprites) : new List<Theme.Manifest.Sprite>();
+                if (elementsList == null)
+                    elementsList = manifest.elements != null ? new List<Theme.Manifest_V1.Element>(manifest.elements) : new List<Theme.Manifest_V1.Element>();
 
-                scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(300));
+                EditorGUILayout.BeginVertical(GUILayout.ExpandHeight(true));
+                {
+                    scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
 
-                for (int i = 0; i < spritesList.Count; i++)
-                    DrawSpriteInfo(i);
+                    for (int i = 0; i < elementsList.Count; i++)
+                        DrawElementInfo(i);
 
-                EditorGUILayout.EndScrollView();
+                    EditorGUILayout.EndScrollView();
+                }
+                EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginHorizontal();
                 {
-                    if (GUILayout.Button("Add Sprite"))
-                        spritesList.Add(new Theme.Manifest.Sprite()
+                    if (GUILayout.Button("Add Element"))
+                        elementsList.Add(new Theme.Manifest_V1.Element()
                         {
                             key = UIElement.Type.Null.ToString(),
-                            pixelPerUnit = 100,
-                            filterMode = 1,
-                            borders = new Theme.Manifest.Sprite.Borders()
+
+                            @base = CreateDefaultSprite(),
+                            mask = CreateDefaultSprite(),
+                            overlay = CreateDefaultSprite()
                         });
 
-                    if (GUILayout.Button("Remove Last") && spritesList.Count > 0)
-                        spritesList.RemoveAt(spritesList.Count - 1);
+                    if (GUILayout.Button("Remove Last") && elementsList.Count > 0)
+                        elementsList.RemoveAt(elementsList.Count - 1);
 
                     if (GUILayout.Button("Clear All"))
-                        if (EditorUtility.DisplayDialog("Clear All", "Are you sure you want to remove all sprites?", "Yes", "No"))
-                            spritesList.Clear();
+                        if (EditorUtility.DisplayDialog("Clear All", "Are you sure you want to remove all elements?", "Yes", "No"))
+                            elementsList.Clear();
                 }
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndVertical();
         }
 
-        void DrawSpriteInfo(int index)
+        void DrawElementInfo(int index)
         {
-            var sprite = spritesList[index];
+            var element = elementsList[index];
+
+            if (!elementFoldoutStates.ContainsKey(index))
+                elementFoldoutStates[index] = false;
 
             EditorGUILayout.BeginVertical("box");
             {
-                EditorGUILayout.LabelField($"Sprite {index + 1}", EditorStyles.boldLabel);
+                EditorGUILayout.BeginHorizontal();
+                {
+                    elementFoldoutStates[index] = EditorGUILayout.Foldout(elementFoldoutStates[index], $"Element {index + 1}: {element.key}", true);
 
-                var currentType = (UIElement.Type)Enum.Parse(typeof(UIElement.Type), sprite.key);
-                currentType = (UIElement.Type)EditorGUILayout.EnumPopup("UI Element Type", currentType);
-                sprite.key = currentType.ToString();
+                    GUILayout.FlexibleSpace();
 
+                    if (GUILayout.Button("Remove", GUILayout.Width(80)))
+                        if (EditorUtility.DisplayDialog("Remove Element", $"Are you sure you want to remove element {element.key}?", "Yes", "No"))
+                            elementsList.RemoveAt(index);
+                }
+                EditorGUILayout.EndHorizontal();
+
+                if (elementFoldoutStates[index])
+                {
+                    EditorGUILayout.Space();
+                    var currentType = (UIElement.Type)Enum.Parse(typeof(UIElement.Type), element.key);
+                    currentType = (UIElement.Type)EditorGUILayout.EnumPopup("UI Element Type", currentType);
+                    element.key = currentType.ToString();
+                    EditorGUILayout.Space();
+
+                    DrawSpriteFoldout(ref element.@base, "Base", $"{index}_base");
+                    EditorGUILayout.Space();
+
+                    DrawSpriteFoldout(ref element.mask, "Mask", $"{index}_mask");
+                    EditorGUILayout.Space();
+
+                    DrawSpriteFoldout(ref element.overlay, "Overlay", $"{index}_overlay");
+                }
+            }
+            EditorGUILayout.EndVertical();
+
+            GUILayout.Space(5);
+        }
+        void DrawSpriteFoldout(ref Theme.Manifest_V1.Element.Sprite sprite, string prefix, string uniqueKey)
+        {
+            if (sprite == null)
+                sprite = CreateDefaultSprite();
+
+            if (!spriteFoldoutStates.ContainsKey(uniqueKey))
+                spriteFoldoutStates[uniqueKey] = false;
+            if (!bordersFoldoutStates.ContainsKey(uniqueKey))
+                bordersFoldoutStates[uniqueKey] = false;
+
+            spriteFoldoutStates[uniqueKey] = EditorGUILayout.Foldout(spriteFoldoutStates[uniqueKey], $"{prefix} Sprite", true);
+
+            if (spriteFoldoutStates[uniqueKey])
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.Space();
+                
                 var currentFilter = (FilterMode)sprite.filterMode;
                 currentFilter = (FilterMode)EditorGUILayout.EnumPopup("Filter Mode", currentFilter);
                 sprite.filterMode = (int)currentFilter;
@@ -129,46 +188,7 @@ namespace UI
                     var dropArea = GUILayoutUtility.GetRect(0, 20, GUILayout.Width(60));
                     GUI.Box(dropArea, "Drag");
 
-                    var evt = Event.current;
-                    if (dropArea.Contains(evt.mousePosition))
-                    {
-                        if (evt.type == EventType.DragUpdated)
-                        {
-                            DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-                            evt.Use();
-                        }
-                        else if (evt.type == EventType.DragPerform)
-                        {
-                            DragAndDrop.AcceptDrag();
-
-                            foreach (UnityEngine.Object draggedObject in DragAndDrop.objectReferences)
-                            {
-                                if (draggedObject is Texture2D)
-                                {
-                                    sprite.fileName = draggedObject.name;
-
-                                    break;
-                                }
-                                else if (draggedObject is Sprite)
-                                {
-                                    sprite.fileName = draggedObject.name;
-
-                                    var s = draggedObject as Sprite;
-                                    sprite.borders = new Theme.Manifest.Sprite.Borders
-                                    {
-                                        left = (int)s.border.x,
-                                        right = (int)s.border.y,
-                                        top = (int)s.border.z,
-                                        bottom = (int)s.border.w
-                                    };
-
-                                    break;
-                                }
-                            }
-
-                            evt.Use();
-                        }
-                    }
+                    HandleDragAndDrop(dropArea, ref sprite);
                 }
                 EditorGUILayout.EndHorizontal();
 
@@ -177,7 +197,7 @@ namespace UI
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Select File", GUILayout.Width(100)))
                     {
-                        var path = EditorUtility.OpenFilePanel("Select sprite file", Application.dataPath, "png,jpg,jpeg");
+                        var path = EditorUtility.OpenFilePanel($"Select {prefix.ToLower()} sprite file", Application.dataPath, "png,jpg,jpeg");
                         if (!string.IsNullOrEmpty(path))
                             sprite.fileName = Path.GetFileName(path);
                     }
@@ -185,33 +205,71 @@ namespace UI
                 EditorGUILayout.EndHorizontal();
 
                 sprite.pixelPerUnit = EditorGUILayout.IntField("Pixel Per Unit", sprite.pixelPerUnit);
+                
+                EditorGUILayout.Space();
 
-                EditorGUILayout.LabelField("Borders", EditorStyles.boldLabel);
-                EditorGUI.indentLevel++;
+                bordersFoldoutStates[uniqueKey] = EditorGUILayout.Foldout(bordersFoldoutStates[uniqueKey], "Borders", true);
 
-                if (sprite.borders == null)
-                    sprite.borders = new Theme.Manifest.Sprite.Borders();
+                if (bordersFoldoutStates[uniqueKey])
+                {
+                    EditorGUI.indentLevel++;
 
-                sprite.borders.left = EditorGUILayout.IntField("Left", sprite.borders.left);
-                sprite.borders.right = EditorGUILayout.IntField("Right", sprite.borders.right);
-                sprite.borders.top = EditorGUILayout.IntField("Top", sprite.borders.top);
-                sprite.borders.bottom = EditorGUILayout.IntField("Bottom", sprite.borders.bottom);
+                    if (sprite.borders == null)
+                        sprite.borders = new Theme.Manifest_V1.Borders();
+                    
+                    EditorGUILayout.Space();
+
+                    sprite.borders.left = EditorGUILayout.IntField("Left", sprite.borders.left);
+                    sprite.borders.right = EditorGUILayout.IntField("Right", sprite.borders.right);
+                    sprite.borders.top = EditorGUILayout.IntField("Top", sprite.borders.top);
+                    sprite.borders.bottom = EditorGUILayout.IntField("Bottom", sprite.borders.bottom);
+
+                    EditorGUI.indentLevel--;
+                }
 
                 EditorGUI.indentLevel--;
-
-                EditorGUILayout.BeginHorizontal();
-                {
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Remove This Sprite", GUILayout.Width(150)))
-                        if (EditorUtility.DisplayDialog("Remove Sprite",
-                            $"Are you sure you want to remove sprite {sprite.key}?", "Yes", "No"))
-                            spritesList.RemoveAt(index);
-                }
-                EditorGUILayout.EndHorizontal();
             }
-            EditorGUILayout.EndVertical();
+        }
+        void HandleDragAndDrop(Rect dropArea, ref Theme.Manifest_V1.Element.Sprite sprite)
+        {
+            var evt = Event.current;
+            if (dropArea.Contains(evt.mousePosition))
+            {
+                if (evt.type == EventType.DragUpdated)
+                {
+                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                    evt.Use();
+                }
+                else if (evt.type == EventType.DragPerform)
+                {
+                    DragAndDrop.AcceptDrag();
 
-            GUILayout.Space(5);
+                    foreach (UnityEngine.Object draggedObject in DragAndDrop.objectReferences)
+                    {
+                        if (draggedObject is Texture2D)
+                        {
+                            sprite.fileName = draggedObject.name;
+                            break;
+                        }
+                        else if (draggedObject is Sprite)
+                        {
+                            sprite.fileName = draggedObject.name;
+
+                            var s = draggedObject as Sprite;
+                            sprite.borders = new Theme.Manifest_V1.Borders
+                            {
+                                left = (int)s.border.x,
+                                right = (int)s.border.y,
+                                top = (int)s.border.z,
+                                bottom = (int)s.border.w
+                            };
+                            break;
+                        }
+                    }
+
+                    evt.Use();
+                }
+            }
         }
         void LoadJSONFromFile()
         {
@@ -227,46 +285,34 @@ namespace UI
             if (string.IsNullOrEmpty(jsonFilePath) || !File.Exists(jsonFilePath))
                 return;
 
-            try
+            var json = File.ReadAllText(jsonFilePath);
+            manifest = Theme.GetManifest_WithCast(json);
+
+            elementsList = manifest.elements != null ? new List<Theme.Manifest_V1.Element>(manifest.elements) : new List<Theme.Manifest_V1.Element>();
+
+            foreach (var element in elementsList)
             {
-                var json = File.ReadAllText(jsonFilePath);
-                manifest = JsonUtility.FromJson<Theme.Manifest>(json);
-
-                spritesList = manifest.sprites != null ? new List<Theme.Manifest.Sprite>(manifest.sprites) : new List<Theme.Manifest.Sprite>();
-
-                foreach (var sprite in spritesList)
-                    if (sprite.borders == null)
-                        sprite.borders = new Theme.Manifest.Sprite.Borders();
-
-                Repaint();
+                element.@base = EnsureSpriteBorders(element.@base);
+                element.mask = EnsureSpriteBorders(element.mask);
+                element.overlay = EnsureSpriteBorders(element.overlay);
             }
-            catch (Exception e)
-            {
-                EditorUtility.DisplayDialog("Error", $"Failed to load JSON: {e.Message}", "OK");
-            }
+
+            Repaint();
         }
         void SaveJSON()
         {
             if (string.IsNullOrEmpty(jsonFilePath))
             {
                 SaveJSONAs();
-
                 return;
             }
 
-            try
-            {
-                manifest.sprites = spritesList.ToArray();
+            manifest.elements = elementsList.ToArray();
 
-                var json = JsonUtility.ToJson(manifest, true);
-                File.WriteAllText(jsonFilePath, json);
-                AssetDatabase.Refresh();
-                EditorUtility.DisplayDialog("Success", "JSON file saved successfully!", "OK");
-            }
-            catch (Exception e)
-            {
-                EditorUtility.DisplayDialog("Error", $"Failed to save JSON: {e.Message}", "OK");
-            }
+            var json = JsonUtility.ToJson(manifest, true);
+            File.WriteAllText(jsonFilePath, json);
+            AssetDatabase.Refresh();
+            EditorUtility.DisplayDialog("Success", "JSON file saved successfully!", "OK");
         }
         void SaveJSONAs()
         {
@@ -279,14 +325,31 @@ namespace UI
         }
         void CreateNewJSON()
         {
-            manifest = new Theme.Manifest
+            manifest = new Theme.Manifest_V1
             {
+                version = 1,
                 name = "NewTheme",
-                sprites = new Theme.Manifest.Sprite[0]
+                elements = new Theme.Manifest_V1.Element[0]
             };
-            spritesList = new List<Theme.Manifest.Sprite>();
+            elementsList = new List<Theme.Manifest_V1.Element>();
             jsonFilePath = "";
             jsonTextAsset = null;
+        }
+
+        Theme.Manifest_V1.Element.Sprite CreateDefaultSprite()
+        {
+            return new Theme.Manifest_V1.Element.Sprite
+            {
+                pixelPerUnit = 100,
+                filterMode = 1,
+                borders = new Theme.Manifest_V1.Borders()
+            };
+        }
+        Theme.Manifest_V1.Element.Sprite EnsureSpriteBorders(Theme.Manifest_V1.Element.Sprite sprite)
+        {
+            if (sprite != null && sprite.borders == null)
+                sprite.borders = new Theme.Manifest_V1.Borders();
+            return sprite;
         }
     }
 }

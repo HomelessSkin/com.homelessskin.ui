@@ -210,8 +210,8 @@ namespace UI
             {
                 var file = resManifests[m];
 
-                var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(file.text);
-                if (manifest.sprites != null)
+                var manifest = Theme.GetManifest_WithCast(file.text);
+                if (manifest.elements != null)
                     _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
 
@@ -224,18 +224,18 @@ namespace UI
                 {
                     var path = buildManifests[m];
 
-                    var manifest = JsonConvert.DeserializeObject<Theme.Manifest>(File.ReadAllText(path));
-                    if (manifest.sprites != null)
+                    var manifest = Theme.GetManifest_WithCast(File.ReadAllText(path));
+                    if (manifest.elements != null)
                         _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
                 }
             }
         }
         public void SelectTheme(int index) => RedrawTheme(_Drawer.Themes[index]);
-        public bool TryGetSprite(string key, out Sprite sprite)
+        public bool TryGetSprite(string key, out Drawable.Data data)
         {
-            if (_Drawer.Current.Sprites.TryGetValue(key, out sprite))
+            if (_Drawer.Current.Sprites.TryGetValue(key, out data))
                 return true;
-            else if (_Drawer.Default.Sprites.TryGetValue(key, out sprite))
+            else if (_Drawer.Default.Sprites.TryGetValue(key, out data))
                 return true;
 
             return false;
@@ -278,7 +278,7 @@ namespace UI
             }
         }
         void LoadDefaultTheme() => _Drawer.Default = new Theme(
-                    JsonConvert.DeserializeObject<Theme.Manifest>(_Drawer.DefaultManifest.text),
+                    JsonConvert.DeserializeObject<Theme.Manifest_V1>(_Drawer.DefaultManifest.text),
                     _Drawer.DefaultPath, true);
         protected virtual void RedrawTheme(Theme theme)
         {

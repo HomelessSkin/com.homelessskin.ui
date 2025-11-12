@@ -1,28 +1,77 @@
 {
+    "version": 1,
     "name": "Default",
-    "sprites": [
+    "elements": [
         {
             "key": "Menu_Button",
-            "fileName": "button",
-            "pixelPerUnit": 100,
-            "filterMode": 0,
-            "borders": {
-                "left": 20,
-                "right": 20,
-                "top": 20,
-                "bottom": 20
+            "base": {
+                "fileName": "button",
+                "pixelPerUnit": 100,
+                "filterMode": 0,
+                "borders": {
+                    "left": 20,
+                    "right": 20,
+                    "top": 20,
+                    "bottom": 20
+                }
+            },
+            "mask": {
+                "fileName": "",
+                "pixelPerUnit": 100,
+                "filterMode": 1,
+                "borders": {
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                    "bottom": 0
+                }
+            },
+            "overlay": {
+                "fileName": "",
+                "pixelPerUnit": 100,
+                "filterMode": 1,
+                "borders": {
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                    "bottom": 0
+                }
             }
         },
         {
             "key": "Field_Dark",
-            "fileName": "Field_Dark",
-            "pixelPerUnit": 100,
-            "filterMode": 0,
-            "borders": {
-                "left": 20,
-                "right": 20,
-                "top": 20,
-                "bottom": 20
+            "base": {
+                "fileName": "Field_Dark",
+                "pixelPerUnit": 100,
+                "filterMode": 0,
+                "borders": {
+                    "left": 20,
+                    "right": 20,
+                    "top": 20,
+                    "bottom": 20
+                }
+            },
+            "mask": {
+                "fileName": "",
+                "pixelPerUnit": 0,
+                "filterMode": 0,
+                "borders": {
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                    "bottom": 0
+                }
+            },
+            "overlay": {
+                "fileName": "",
+                "pixelPerUnit": 0,
+                "filterMode": 0,
+                "borders": {
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                    "bottom": 0
+                }
             }
         }
     ]
