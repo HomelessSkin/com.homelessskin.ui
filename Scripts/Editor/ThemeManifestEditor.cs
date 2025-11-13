@@ -13,10 +13,10 @@ namespace UI
     {
         string jsonFilePath = "";
         Vector2 scrollPosition;
-        Theme.Manifest_V1 manifest;
+        Manifest_V1 manifest;
         TextAsset jsonTextAsset;
 
-        List<Theme.Manifest_V1.Element> elementsList;
+        List<Manifest_V1.Element> elementsList;
 
         Dictionary<int, bool> elementFoldoutStates = new Dictionary<int, bool>();
         Dictionary<string, bool> spriteFoldoutStates = new Dictionary<string, bool>();
@@ -81,7 +81,7 @@ namespace UI
                 GUILayout.Label("Elements", EditorStyles.boldLabel);
 
                 if (elementsList == null)
-                    elementsList = manifest.elements != null ? new List<Theme.Manifest_V1.Element>(manifest.elements) : new List<Theme.Manifest_V1.Element>();
+                    elementsList = manifest.elements != null ? new List<Manifest_V1.Element>(manifest.elements) : new List<Manifest_V1.Element>();
 
                 EditorGUILayout.BeginVertical(GUILayout.ExpandHeight(true));
                 {
@@ -97,9 +97,9 @@ namespace UI
                 EditorGUILayout.BeginHorizontal();
                 {
                     if (GUILayout.Button("Add Element"))
-                        elementsList.Add(new Theme.Manifest_V1.Element()
+                        elementsList.Add(new Manifest_V1.Element()
                         {
-                            key = UIElement.Type.Null.ToString(),
+                            key = ElementType.Null.ToString(),
 
                             @base = CreateDefaultSprite(),
                             mask = CreateDefaultSprite(),
@@ -142,8 +142,8 @@ namespace UI
                 if (elementFoldoutStates[index])
                 {
                     EditorGUILayout.Space();
-                    var currentType = (UIElement.Type)Enum.Parse(typeof(UIElement.Type), element.key);
-                    currentType = (UIElement.Type)EditorGUILayout.EnumPopup("UI Element Type", currentType);
+                    var currentType = (ElementType)Enum.Parse(typeof(ElementType), element.key);
+                    currentType = (ElementType)EditorGUILayout.EnumPopup("UI Element Type", currentType);
                     element.key = currentType.ToString();
                     EditorGUILayout.Space();
 
@@ -160,7 +160,7 @@ namespace UI
 
             GUILayout.Space(5);
         }
-        void DrawSpriteFoldout(ref Theme.Manifest_V1.Element.Sprite sprite, string prefix, string uniqueKey)
+        void DrawSpriteFoldout(ref Manifest_V1.Element.Sprite sprite, string prefix, string uniqueKey)
         {
             if (sprite == null)
                 sprite = CreateDefaultSprite();
@@ -176,7 +176,7 @@ namespace UI
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
-                
+
                 var currentFilter = (FilterMode)sprite.filterMode;
                 currentFilter = (FilterMode)EditorGUILayout.EnumPopup("Filter Mode", currentFilter);
                 sprite.filterMode = (int)currentFilter;
@@ -205,7 +205,7 @@ namespace UI
                 EditorGUILayout.EndHorizontal();
 
                 sprite.pixelPerUnit = EditorGUILayout.IntField("Pixel Per Unit", sprite.pixelPerUnit);
-                
+
                 EditorGUILayout.Space();
 
                 bordersFoldoutStates[uniqueKey] = EditorGUILayout.Foldout(bordersFoldoutStates[uniqueKey], "Borders", true);
@@ -215,8 +215,8 @@ namespace UI
                     EditorGUI.indentLevel++;
 
                     if (sprite.borders == null)
-                        sprite.borders = new Theme.Manifest_V1.Borders();
-                    
+                        sprite.borders = new Manifest_V1.Borders();
+
                     EditorGUILayout.Space();
 
                     sprite.borders.left = EditorGUILayout.IntField("Left", sprite.borders.left);
@@ -230,7 +230,7 @@ namespace UI
                 EditorGUI.indentLevel--;
             }
         }
-        void HandleDragAndDrop(Rect dropArea, ref Theme.Manifest_V1.Element.Sprite sprite)
+        void HandleDragAndDrop(Rect dropArea, ref Manifest_V1.Element.Sprite sprite)
         {
             var evt = Event.current;
             if (dropArea.Contains(evt.mousePosition))
@@ -256,7 +256,7 @@ namespace UI
                             sprite.fileName = draggedObject.name;
 
                             var s = draggedObject as Sprite;
-                            sprite.borders = new Theme.Manifest_V1.Borders
+                            sprite.borders = new Manifest_V1.Borders
                             {
                                 left = (int)s.border.x,
                                 right = (int)s.border.y,
@@ -286,9 +286,9 @@ namespace UI
                 return;
 
             var json = File.ReadAllText(jsonFilePath);
-            manifest = Theme.GetManifest_WithCast(json);
+            manifest = Manifest.Cast(json);
 
-            elementsList = manifest.elements != null ? new List<Theme.Manifest_V1.Element>(manifest.elements) : new List<Theme.Manifest_V1.Element>();
+            elementsList = manifest.elements != null ? new List<Manifest_V1.Element>(manifest.elements) : new List<Manifest_V1.Element>();
 
             foreach (var element in elementsList)
             {
@@ -304,6 +304,7 @@ namespace UI
             if (string.IsNullOrEmpty(jsonFilePath))
             {
                 SaveJSONAs();
+
                 return;
             }
 
@@ -320,35 +321,37 @@ namespace UI
             if (!string.IsNullOrEmpty(path))
             {
                 jsonFilePath = path;
+
                 SaveJSON();
             }
         }
         void CreateNewJSON()
         {
-            manifest = new Theme.Manifest_V1
+            manifest = new Manifest_V1
             {
                 version = 1,
                 name = "NewTheme",
-                elements = new Theme.Manifest_V1.Element[0]
+                elements = new Manifest_V1.Element[0]
             };
-            elementsList = new List<Theme.Manifest_V1.Element>();
+
+            elementsList = new List<Manifest_V1.Element>();
             jsonFilePath = "";
             jsonTextAsset = null;
         }
 
-        Theme.Manifest_V1.Element.Sprite CreateDefaultSprite()
-        {
-            return new Theme.Manifest_V1.Element.Sprite
+        Manifest_V1.Element.Sprite CreateDefaultSprite() =>
+            new Manifest_V1.Element.Sprite
             {
                 pixelPerUnit = 100,
                 filterMode = 1,
-                borders = new Theme.Manifest_V1.Borders()
+                borders = new Manifest_V1.Borders()
             };
-        }
-        Theme.Manifest_V1.Element.Sprite EnsureSpriteBorders(Theme.Manifest_V1.Element.Sprite sprite)
+        Manifest_V1.Element.Sprite EnsureSpriteBorders(Manifest_V1.Element.Sprite sprite)
         {
-            if (sprite != null && sprite.borders == null)
-                sprite.borders = new Theme.Manifest_V1.Borders();
+            if (sprite != null &&
+                 sprite.borders == null)
+                sprite.borders = new Manifest_V1.Borders();
+
             return sprite;
         }
     }

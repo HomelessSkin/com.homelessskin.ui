@@ -83,7 +83,7 @@ namespace UI
             return $"No Value for <{key}> key!";
         }
 
-        bool GetStyle(UIElement.Type element, TextStyle[] styles, out TextStyle style, string langKey = "default")
+        bool GetStyle(ElementType element, TextStyle[] styles, out TextStyle style, string langKey = "default")
         {
             for (int i = 0; i < styles.Length; i++)
                 if (styles[i].LanguageKey == langKey && styles[i].Element == element)
@@ -210,7 +210,7 @@ namespace UI
             {
                 var file = resManifests[m];
 
-                var manifest = Theme.GetManifest_WithCast(file.text);
+                var manifest = Manifest.Cast(file.text);
                 if (manifest.elements != null)
                     _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
@@ -224,7 +224,7 @@ namespace UI
                 {
                     var path = buildManifests[m];
 
-                    var manifest = Theme.GetManifest_WithCast(File.ReadAllText(path));
+                    var manifest = Manifest.Cast(File.ReadAllText(path));
                     if (manifest.elements != null)
                         _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
                 }
@@ -278,7 +278,7 @@ namespace UI
             }
         }
         void LoadDefaultTheme() => _Drawer.Default = new Theme(
-                    JsonConvert.DeserializeObject<Theme.Manifest_V1>(_Drawer.DefaultManifest.text),
+                    JsonConvert.DeserializeObject<Manifest_V1>(_Drawer.DefaultManifest.text),
                     _Drawer.DefaultPath, true);
         protected virtual void RedrawTheme(Theme theme)
         {
