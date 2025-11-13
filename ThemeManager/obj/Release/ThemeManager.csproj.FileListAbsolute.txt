@@ -1,0 +1,14 @@
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\WindowsForms.exe.config
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\WindowsForms.exe
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\WindowsForms.pdb
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\Newtonsoft.Json.dll
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\Newtonsoft.Json.xml
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.AssemblyReference.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\WindowsForms.exe.config
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\MyData.Editor.Forms.MainForm.resources
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\WindowsForms.Properties.Resources.resources
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.GenerateResource.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.CoreCompileInputs.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeMan.77AB3D0D.Up2Date
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\WindowsForms.exe
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\WindowsForms.pdb

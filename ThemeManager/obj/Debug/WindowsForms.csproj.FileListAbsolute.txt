@@ -1,0 +1,14 @@
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\bin\Debug\WindowsForms.exe.config
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\bin\Debug\WindowsForms.exe
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\bin\Debug\WindowsForms.pdb
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.csproj.AssemblyReference.cache
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.Properties.Resources.resources
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.csproj.GenerateResource.cache
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.csproj.CoreCompileInputs.cache
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsF.AEBE025B.Up2Date
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.exe
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.pdb
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\WindowsForms.exe.config
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\obj\Debug\MyData.Editor.Forms.MainForm.resources
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\bin\Debug\Newtonsoft.Json.dll
+E:\zagruzke\_DEV\.NET\ThemeManager\WindowsForms\bin\Debug\Newtonsoft.Json.xml
