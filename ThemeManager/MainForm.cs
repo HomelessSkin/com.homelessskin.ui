@@ -12,15 +12,15 @@ namespace ThemeManager
 {
     public partial class MainForm : Form
     {
-        string _jsonFilePath = "";
-        Manifest_V1 _manifest;
-        List<Manifest_V1.Element> _elementsList;
+        string FilePath = "";
+        Manifest_V1 _Manifest;
+        List<Manifest_V1.Element> Elements;
 
-        TextBox _filePathTextBox;
-        TextBox _themeNameTextBox;
-        NumericUpDown _versionNumeric;
-        FlowLayoutPanel _elementsPanel;
-        Panel _mainPanel;
+        TextBox FilePathBox;
+        TextBox ThemeNameBox;
+        NumericUpDown Version;
+        FlowLayoutPanel ElementsPanel;
+        Panel MainPanel;
 
         public MainForm()
         {
@@ -29,16 +29,16 @@ namespace ThemeManager
 
             void InitializeMainForm()
             {
-                this.Text = "Theme Manifest Editor";
-                this.Size = new Size(1200, 800);
-                this.StartPosition = FormStartPosition.CenterScreen;
-                this.MinimumSize = new Size(800, 600);
+                Text = "Theme Manifest Editor";
+                Size = new Size(1200, 800);
+                StartPosition = FormStartPosition.CenterScreen;
+                MinimumSize = new Size(800, 600);
 
                 CreateMainLayout();
 
                 void CreateMainLayout()
                 {
-                    var mainTable = new TableLayoutPanel
+                    var main = new TableLayoutPanel
                     {
                         Dock = DockStyle.Fill,
                         ColumnCount = 1,
@@ -47,24 +47,24 @@ namespace ThemeManager
                         CellBorderStyle = TableLayoutPanelCellBorderStyle.None
                     };
 
-                    mainTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-                    mainTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));
-                    mainTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-                    mainTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));
+                    main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
 
                     var jsonPanel = CreateJsonSection();
                     var themePanel = CreateThemeSection();
                     var elementsPanel = CreateElementsSection();
                     var buttonsPanel = CreateButtonsSection();
 
-                    mainTable.Controls.Add(jsonPanel, 0, 0);
-                    mainTable.Controls.Add(themePanel, 0, 1);
-                    mainTable.Controls.Add(elementsPanel, 0, 2);
-                    mainTable.Controls.Add(buttonsPanel, 0, 3);
+                    main.Controls.Add(jsonPanel, 0, 0);
+                    main.Controls.Add(themePanel, 0, 1);
+                    main.Controls.Add(elementsPanel, 0, 2);
+                    main.Controls.Add(buttonsPanel, 0, 3);
 
-                    _mainPanel = mainTable;
+                    MainPanel = main;
 
-                    this.Controls.Add(mainTable);
+                    Controls.Add(main);
 
                     Panel CreateJsonSection()
                     {
@@ -90,10 +90,10 @@ namespace ThemeManager
                             AutoSize = true
                         };
 
-                        _filePathTextBox = new TextBox
+                        FilePathBox = new TextBox
                         {
                             Location = new Point(80, 37),
-                            Width = 500, // Увеличили ширину
+                            Width = 500,
                             ReadOnly = true,
                             BackColor = SystemColors.Control
                         };
@@ -134,13 +134,13 @@ namespace ThemeManager
 
                         panel.Controls.AddRange(new Control[]
                         {
-                        titleLabel,
-                        fileLabel,
-                        _filePathTextBox,
-                        loadButton,
-                        newButton,
-                        saveButton,
-                        saveAsButton
+                            titleLabel,
+                            fileLabel,
+                            FilePathBox,
+                            loadButton,
+                            newButton,
+                            saveButton,
+                            saveAsButton
                         });
 
                         return panel;
@@ -150,30 +150,30 @@ namespace ThemeManager
                             var filePath = ShowOpenFileDialog("JSON files|*.json");
                             if (!string.IsNullOrEmpty(filePath))
                             {
-                                _jsonFilePath = filePath;
-                                _filePathTextBox.Text = filePath;
+                                FilePath = filePath;
+                                FilePathBox.Text = filePath;
 
-                                LoadJson();
-                            }
-
-                            void LoadJson()
-                            {
-                                if (string.IsNullOrEmpty(_jsonFilePath) || !File.Exists(_jsonFilePath))
+                                if (string.IsNullOrEmpty(FilePath) ||
+                                    !File.Exists(FilePath))
                                     return;
 
                                 try
                                 {
-                                    var json = File.ReadAllText(_jsonFilePath);
-                                    _manifest = Manifest.Cast(json);
-                                    _elementsList = new List<Manifest_V1.Element>(_manifest.elements ?? new Manifest_V1.Element[0]);
-                                    _themeNameTextBox.Text = _manifest.name;
-                                    _versionNumeric.Value = _manifest.version;
+                                    var json = File.ReadAllText(FilePath);
+
+                                    _Manifest = Manifest.Cast(json);
+                                    Elements = new List<Manifest_V1.Element>(_Manifest.elements ?? new Manifest_V1.Element[0]);
+                                    ThemeNameBox.Text = _Manifest.name;
+                                    Version.Value = _Manifest.version;
 
                                     RefreshElementsView();
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show($"Error loading JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show($"Error loading JSON: {ex.Message}",
+                                        "Error",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
                                 }
                             }
                         }
@@ -202,10 +202,10 @@ namespace ThemeManager
                             AutoSize = true
                         };
 
-                        _themeNameTextBox = new TextBox
+                        ThemeNameBox = new TextBox
                         {
                             Location = new Point(100, 37),
-                            Width = 250, // Увеличили ширину
+                            Width = 250,
                             Height = 25
                         };
 
@@ -216,7 +216,7 @@ namespace ThemeManager
                             AutoSize = true
                         };
 
-                        _versionNumeric = new NumericUpDown
+                        Version = new NumericUpDown
                         {
                             Location = new Point(430, 37),
                             Width = 80,
@@ -227,11 +227,11 @@ namespace ThemeManager
 
                         panel.Controls.AddRange(new Control[]
                         {
-                        titleLabel,
-                        nameLabel,
-                        _themeNameTextBox,
-                        versionLabel,
-                        _versionNumeric
+                            titleLabel,
+                            nameLabel,
+                            ThemeNameBox,
+                            versionLabel,
+                            Version
                         });
 
                         return panel;
@@ -253,7 +253,7 @@ namespace ThemeManager
                             AutoSize = true
                         };
 
-                        _elementsPanel = new FlowLayoutPanel
+                        ElementsPanel = new FlowLayoutPanel
                         {
                             Location = new Point(10, 40),
                             Size = new Size(panel.Width - 40, panel.Height - 60),
@@ -266,15 +266,15 @@ namespace ThemeManager
                             AutoSize = false
                         };
 
-                        // Обработчик изменения размера
                         panel.SizeChanged += (s, e) =>
                         {
-                            _elementsPanel.Size = new Size(panel.Width - 40, panel.Height - 60);
+                            ElementsPanel.Size = new Size(panel.Width - 40, panel.Height - 60);
+
                             RefreshElementsWidth();
                         };
 
                         panel.Controls.Add(titleLabel);
-                        panel.Controls.Add(_elementsPanel);
+                        panel.Controls.Add(ElementsPanel);
 
                         return panel;
                     }
@@ -313,16 +313,16 @@ namespace ThemeManager
 
                         panel.Controls.AddRange(new Control[]
                         {
-                        addButton,
-                        removeButton,
-                        clearButton
+                            addButton,
+                            removeButton,
+                            clearButton
                         });
 
                         return panel;
 
                         void AddElement()
                         {
-                            _elementsList.Add(new Manifest_V1.Element
+                            Elements.Add(new Manifest_V1.Element
                             {
                                 key = ElementType.Null.ToString(),
                                 @base = CreateDefaultSprite(),
@@ -334,9 +334,9 @@ namespace ThemeManager
                         }
                         void RemoveLastElement()
                         {
-                            if (_elementsList.Count > 0)
+                            if (Elements.Count > 0)
                             {
-                                _elementsList.RemoveAt(_elementsList.Count - 1);
+                                Elements.RemoveAt(Elements.Count - 1);
 
                                 RefreshElementsView();
                             }
@@ -346,7 +346,7 @@ namespace ThemeManager
                             if (MessageBox.Show("Are you sure you want to remove all elements?", "Clear All",
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
-                                _elementsList.Clear();
+                                Elements.Clear();
 
                                 RefreshElementsView();
                             }
@@ -358,18 +358,18 @@ namespace ThemeManager
 
         void CreateNewManifest()
         {
-            _manifest = Manifest.CreateNew();
-            _jsonFilePath = "";
-            _filePathTextBox.Text = "";
-            _themeNameTextBox.Text = _manifest.name;
-            _versionNumeric.Value = _manifest.version;
-            _elementsList = new List<Manifest_V1.Element>();
+            _Manifest = UI.Manifest.CreateNew();
+            FilePath = "";
+            FilePathBox.Text = "";
+            ThemeNameBox.Text = _Manifest.name;
+            Version.Value = _Manifest.version;
+            Elements = new List<Manifest_V1.Element>();
 
             RefreshElementsView();
         }
         void SaveJson()
         {
-            if (string.IsNullOrEmpty(_jsonFilePath))
+            if (string.IsNullOrEmpty(FilePath))
             {
                 SaveJsonAs();
 
@@ -378,13 +378,13 @@ namespace ThemeManager
 
             try
             {
-                _manifest.name = _themeNameTextBox.Text;
-                _manifest.version = (int)_versionNumeric.Value;
-                _manifest.elements = _elementsList.ToArray();
+                _Manifest.name = ThemeNameBox.Text;
+                _Manifest.version = (int)Version.Value;
+                _Manifest.elements = Elements.ToArray();
 
-                var json = JsonConvert.SerializeObject(_manifest, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(_Manifest, Formatting.Indented);
 
-                File.WriteAllText(_jsonFilePath, json);
+                File.WriteAllText(FilePath, json);
                 MessageBox.Show("JSON file saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -397,8 +397,8 @@ namespace ThemeManager
             var filePath = ShowSaveFileDialog("JSON files|*.json");
             if (!string.IsNullOrEmpty(filePath))
             {
-                _jsonFilePath = filePath;
-                _filePathTextBox.Text = filePath;
+                FilePath = filePath;
+                FilePathBox.Text = filePath;
 
                 SaveJson();
             }
@@ -416,21 +416,21 @@ namespace ThemeManager
         }
         void RefreshElementsView()
         {
-            if (_elementsPanel == null)
+            if (ElementsPanel == null)
                 return;
 
-            _elementsPanel.Controls.Clear();
+            ElementsPanel.Controls.Clear();
 
-            for (int i = 0; i < _elementsList.Count; i++)
-                _elementsPanel
+            for (int i = 0; i < Elements.Count; i++)
+                ElementsPanel
                     .Controls
-                    .Add(CreateElementPanel(i, _elementsList[i]));
+                    .Add(CreateElementPanel(i, Elements[i]));
 
             Panel CreateElementPanel(int index, Manifest_V1.Element element)
             {
                 var panelL = new Panel
                 {
-                    Width = _elementsPanel.ClientSize.Width - 10,
+                    Width = ElementsPanel.ClientSize.Width - 10,
                     Height = 40,
                     BorderStyle = BorderStyle.FixedSingle,
                     Margin = new Padding(5),
@@ -484,7 +484,7 @@ namespace ThemeManager
 
                 void ToggleElementExpansion()
                 {
-                    var elementPanel = _elementsPanel.Controls[index] as Panel;
+                    var elementPanel = ElementsPanel.Controls[index] as Panel;
                     if (elementPanel == null)
                         return;
 
@@ -631,10 +631,10 @@ namespace ThemeManager
                 }
                 void RemoveElement()
                 {
-                    if (MessageBox.Show($"Are you sure you want to remove element {_elementsList[index].key}?",
+                    if (MessageBox.Show($"Are you sure you want to remove element {Elements[index].key}?",
                         "Remove Element", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        _elementsList.RemoveAt(index);
+                        Elements.RemoveAt(index);
 
                         RefreshElementsView();
                     }
@@ -643,10 +643,10 @@ namespace ThemeManager
         }
         void RefreshElementsWidth()
         {
-            if (_elementsPanel != null)
-                foreach (Control control in _elementsPanel.Controls)
+            if (ElementsPanel != null)
+                foreach (Control control in ElementsPanel.Controls)
                     if (control is Panel panel)
-                        panel.Width = _elementsPanel.ClientSize.Width - 10;
+                        panel.Width = ElementsPanel.ClientSize.Width - 10;
         }
 
         string ShowOpenFileDialog(string filter, string title = "Open File")
