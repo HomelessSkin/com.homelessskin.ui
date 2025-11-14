@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using TMPro;
+
 using UnityEditor;
 
 using UnityEngine;
@@ -12,11 +14,15 @@ namespace UI
     public class ThemeManifestEditor : EditorWindow
     {
         string jsonFilePath = "";
+        string fontAssetPath = "";
         Vector2 scrollPosition;
-        Manifest_V1 manifest;
+        Vector2 scrolllPosition;
+        Manifest_V2 manifest;
         TextAsset jsonTextAsset;
+        TMP_FontAsset fontAsset;
+        GUIStyle textAreaStyle;
 
-        List<Manifest_V1.Element> elementsList;
+        List<Manifest.Element> elementsList;
 
         Dictionary<int, bool> elementFoldoutStates = new Dictionary<int, bool>();
         Dictionary<string, bool> spriteFoldoutStates = new Dictionary<string, bool>();
@@ -24,7 +30,15 @@ namespace UI
 
         [MenuItem("Tools/Theme Manifest Editor")]
         public static void ShowWindow() => GetWindow<ThemeManifestEditor>("Theme Manifest Editor");
-
+        void OnEnable()
+        {
+            textAreaStyle = new GUIStyle(EditorStyles.textArea)
+            {
+                wordWrap = true,
+                padding = new RectOffset(5, 5, 5, 5),
+                margin = new RectOffset(2, 2, 2, 2)
+            };
+        }
         void OnGUI()
         {
             GUILayout.Space(10);
@@ -35,7 +49,7 @@ namespace UI
 
                 EditorGUI.BeginChangeCheck();
                 jsonTextAsset = (TextAsset)EditorGUILayout.ObjectField("JSON File", jsonTextAsset, typeof(TextAsset), false);
-                if (EditorGUI.EndChangeCheck() && jsonTextAsset != null)
+                if (EditorGUI.EndChangeCheck() && jsonTextAsset)
                 {
                     jsonFilePath = AssetDatabase.GetAssetPath(jsonTextAsset);
 
@@ -70,7 +84,21 @@ namespace UI
                 GUILayout.Label("Theme Settings", EditorStyles.boldLabel);
 
                 manifest.name = EditorGUILayout.TextField("Theme Name", manifest.name);
-                manifest.version = EditorGUILayout.IntField("Version", manifest.version);
+
+                EditorGUI.BeginChangeCheck();
+                fontAsset = (TMP_FontAsset)EditorGUILayout.ObjectField("Font Asset File", fontAsset, typeof(TMP_FontAsset), false);
+                if (EditorGUI.EndChangeCheck() && fontAsset)
+                    fontAssetPath = fontAsset.name;
+
+                EditorGUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Version", EditorStyles.boldLabel);
+
+                    manifest.v.major = EditorGUILayout.IntField(manifest.v.major, GUILayout.Width(20));
+                    manifest.v.minor = EditorGUILayout.IntField(manifest.v.minor, GUILayout.Width(20));
+                    manifest.v.patch = EditorGUILayout.IntField(manifest.v.patch, GUILayout.Width(20));
+                }
+                EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndVertical();
 
@@ -81,7 +109,7 @@ namespace UI
                 GUILayout.Label("Elements", EditorStyles.boldLabel);
 
                 if (elementsList == null)
-                    elementsList = manifest.elements != null ? new List<Manifest_V1.Element>(manifest.elements) : new List<Manifest_V1.Element>();
+                    elementsList = manifest.elements != null ? new List<Manifest.Element>(manifest.elements) : new List<Manifest.Element>();
 
                 EditorGUILayout.BeginVertical(GUILayout.ExpandHeight(true));
                 {
@@ -97,13 +125,15 @@ namespace UI
                 EditorGUILayout.BeginHorizontal();
                 {
                     if (GUILayout.Button("Add Element"))
-                        elementsList.Add(new Manifest_V1.Element()
+                        elementsList.Add(new Manifest.Element()
                         {
                             key = ElementType.Null.ToString(),
 
                             @base = CreateDefaultSprite(),
                             mask = CreateDefaultSprite(),
-                            overlay = CreateDefaultSprite()
+                            overlay = CreateDefaultSprite(),
+
+                            text = new Manifest.Element.Text { }
                         });
 
                     if (GUILayout.Button("Remove Last") && elementsList.Count > 0)
@@ -147,6 +177,30 @@ namespace UI
                     element.key = currentType.ToString();
                     EditorGUILayout.Space();
 
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        GUILayout.Label("Element Text", EditorStyles.label);
+
+                        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition,
+                            GUILayout.Width(500),
+                            GUILayout.ExpandWidth(false),
+                            GUILayout.ExpandHeight(false));
+
+                        var newText = EditorGUILayout.TextArea(element.text.value, textAreaStyle,
+                            GUILayout.MinHeight(60));
+
+                        if (newText != element.text.value)
+                        {
+                            element.text.value = newText;
+
+                            Repaint();
+                        }
+
+                        EditorGUILayout.EndScrollView();
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.Space();
+
                     DrawSpriteFoldout(ref element.@base, "Base", $"{index}_base");
                     EditorGUILayout.Space();
 
@@ -160,7 +214,7 @@ namespace UI
 
             GUILayout.Space(5);
         }
-        void DrawSpriteFoldout(ref Manifest_V1.Element.Sprite sprite, string prefix, string uniqueKey)
+        void DrawSpriteFoldout(ref Manifest_V1.Sprite sprite, string prefix, string uniqueKey)
         {
             if (sprite == null)
                 sprite = CreateDefaultSprite();
@@ -215,7 +269,7 @@ namespace UI
                     EditorGUI.indentLevel++;
 
                     if (sprite.borders == null)
-                        sprite.borders = new Manifest_V1.Borders();
+                        sprite.borders = new Manifest.Sprite.Borders();
 
                     EditorGUILayout.Space();
 
@@ -230,7 +284,7 @@ namespace UI
                 EditorGUI.indentLevel--;
             }
         }
-        void HandleDragAndDrop(Rect dropArea, ref Manifest_V1.Element.Sprite sprite)
+        void HandleDragAndDrop(Rect dropArea, ref Manifest_V1.Sprite sprite)
         {
             var evt = Event.current;
             if (dropArea.Contains(evt.mousePosition))
@@ -256,7 +310,7 @@ namespace UI
                             sprite.fileName = draggedObject.name;
 
                             var s = draggedObject as Sprite;
-                            sprite.borders = new Manifest_V1.Borders
+                            sprite.borders = new Manifest.Sprite.Borders
                             {
                                 left = (int)s.border.x,
                                 right = (int)s.border.y,
@@ -288,7 +342,7 @@ namespace UI
             var json = File.ReadAllText(jsonFilePath);
             manifest = Manifest.Cast(json);
 
-            elementsList = manifest.elements != null ? new List<Manifest_V1.Element>(manifest.elements) : new List<Manifest_V1.Element>();
+            elementsList = manifest.elements != null ? new List<Manifest.Element>(manifest.elements) : new List<Manifest.Element>();
 
             foreach (var element in elementsList)
             {
@@ -309,6 +363,7 @@ namespace UI
             }
 
             manifest.elements = elementsList.ToArray();
+            manifest.font.assetName = fontAssetPath;
 
             var json = JsonUtility.ToJson(manifest, true);
             File.WriteAllText(jsonFilePath, json);
@@ -327,30 +382,30 @@ namespace UI
         }
         void CreateNewJSON()
         {
-            manifest = new Manifest_V1
+            manifest = new Manifest_V2
             {
-                version = 1,
+                v = new Manifest.Version { major = 0, minor = 0, patch = 2 },
                 name = "NewTheme",
-                elements = new Manifest_V1.Element[0]
+                elements = new Manifest.Element[0]
             };
 
-            elementsList = new List<Manifest_V1.Element>();
+            elementsList = new List<Manifest.Element>();
             jsonFilePath = "";
             jsonTextAsset = null;
         }
 
-        Manifest_V1.Element.Sprite CreateDefaultSprite() =>
-            new Manifest_V1.Element.Sprite
+        Manifest_V1.Sprite CreateDefaultSprite() =>
+            new Manifest_V1.Sprite
             {
                 pixelPerUnit = 100,
                 filterMode = 1,
-                borders = new Manifest_V1.Borders()
+                borders = new Manifest.Sprite.Borders()
             };
-        Manifest_V1.Element.Sprite EnsureSpriteBorders(Manifest_V1.Element.Sprite sprite)
+        Manifest_V1.Sprite EnsureSpriteBorders(Manifest_V1.Sprite sprite)
         {
             if (sprite != null &&
                  sprite.borders == null)
-                sprite.borders = new Manifest_V1.Borders();
+                sprite.borders = new Manifest.Sprite.Borders();
 
             return sprite;
         }

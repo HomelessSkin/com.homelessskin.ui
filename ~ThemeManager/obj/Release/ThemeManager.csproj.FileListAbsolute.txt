@@ -1,0 +1,13 @@
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.AssemblyReference.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.MainForm.resources
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.Properties.Resources.resources
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.GenerateResource.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.csproj.CoreCompileInputs.cache
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\ThemeManager.exe.config
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\ThemeManager.exe
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\ThemeManager.pdb
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\Newtonsoft.Json.dll
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\bin\Release\Newtonsoft.Json.xml
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeMan.77AB3D0D.Up2Date
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.exe
+E:\zagruzke\_DEV\Shared\com.homelessskin.ui\ThemeManager\obj\Release\ThemeManager.pdb

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Newtonsoft.Json;
-
 using TMPro;
 
 using Unity.Entities;
@@ -29,7 +27,7 @@ namespace UI
         [Serializable]
         protected class Localizator
         {
-            public Localizable[] Localizables;
+            public UIText[] Localizables;
 
             [Space]
             public TextAsset DefaultLanguage;
@@ -231,7 +229,7 @@ namespace UI
             }
         }
         public void SelectTheme(int index) => RedrawTheme(_Drawer.Themes[index]);
-        public bool TryGetSprite(string key, out Drawable.Data data)
+        public bool TryGetData(string key, out Drawable.Data data)
         {
             if (_Drawer.Current.Sprites.TryGetValue(key, out data))
                 return true;
@@ -277,9 +275,8 @@ namespace UI
                 break;
             }
         }
-        void LoadDefaultTheme() => _Drawer.Default = new Theme(
-                    JsonConvert.DeserializeObject<Manifest_V1>(_Drawer.DefaultManifest.text),
-                    _Drawer.DefaultPath, true);
+        void LoadDefaultTheme() => _Drawer.Default =
+            new Theme(Manifest.Cast(_Drawer.DefaultManifest.text), _Drawer.DefaultPath, true);
         protected virtual void RedrawTheme(Theme theme)
         {
             _Drawer.Current = theme;
@@ -291,8 +288,8 @@ namespace UI
             {
                 var drawable = _Drawer.Drawables[d];
                 var key = drawable.GetKey();
-                if (_Drawer.Current.Sprites.TryGetValue(key, out var sprite))
-                    drawable.SetValue(sprite);
+                if (_Drawer.Current.Sprites.TryGetValue(key, out var data))
+                    drawable.SetValue(data);
                 else
                     drawable.SetValue(_Drawer.Default.Sprites[key]);
             }
@@ -474,8 +471,8 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            _Localizator.Localizables = (Localizable[])GameObject
-                .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+            _Localizator.Localizables = (UIText[])GameObject
+                .FindObjectsByType(typeof(UIText), FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             _Drawer.Drawables = (Drawable[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);

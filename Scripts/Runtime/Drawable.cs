@@ -1,5 +1,7 @@
 using System;
 
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,21 +13,34 @@ namespace UI
         [SerializeField] Image Base;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
+        [SerializeField] TMP_Text Text;
 
         public override string GetKey() => _Type.ToString();
-        public Sprite GetValue() => Base.sprite;
         public void SetValue(Data data)
         {
-            Base.sprite = data.Base;
-            Mask.sprite = data.Mask;
+            if (Base)
+                Base.sprite = data.Base;
 
-            if (data.Overlay)
-                Overlay.sprite = data.Overlay;
-            else
+            if (Mask)
+                Mask.sprite = data.Mask;
+
+            if (Overlay)
             {
-                var color = Overlay.color;
-                color.a = 0f;
-                Overlay.color = color;
+                if (data.Overlay)
+                {
+                    Overlay.enabled = true;
+                    Overlay.sprite = data.Overlay;
+                }
+                else
+                    Overlay.enabled = false;
+            }
+
+            if (Text && data._Text != null)
+            {
+                Text.fontSize = data._Text.FontSize;
+                Text.font = data._Text.Font;
+                Text.text = data._Text.Localizable ? UIManager.GetTranslation(data._Text.Value) : data._Text.Value;
+                Text.transform.position += data._Text.Offset;
             }
         }
 
@@ -33,7 +48,7 @@ namespace UI
         {
             base.Start();
 
-            if (UIManager.TryGetSprite(GetKey(), out var data))
+            if (UIManager.TryGetData(GetKey(), out var data))
                 SetValue(data);
         }
 
@@ -41,9 +56,25 @@ namespace UI
         [Serializable]
         public class Data
         {
+            public string Name;
+
             public Sprite Base;
             public Sprite Mask;
             public Sprite Overlay;
+
+            public Text _Text;
+
+            [Serializable]
+            public class Text
+            {
+                public bool Localizable;
+                public string Value;
+
+                public int FontSize;
+                public TMP_FontAsset Font;
+
+                public Vector3 Offset;
+            }
         }
         #endregion 
     }
