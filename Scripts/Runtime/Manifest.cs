@@ -76,9 +76,6 @@ namespace UI
             [Serializable]
             public class Text
             {
-                public byte localizable;
-                public string value;
-
                 public int fontSize;
 
                 public int xOffset;
@@ -130,35 +127,6 @@ namespace UI
         public class Sprite_V0 : Sprite
         {
             public string key;
-        }
-    }
-
-    [Serializable]
-    public class Manifest_V1 : Manifest
-    {
-        public int version;
-        public Element[] elements;
-
-        public Manifest_V1() { }
-        public Manifest_V1(Manifest_V0 m0)
-        {
-            elements = new Element[m0.sprites.Length];
-            for (int e = 0; e < elements.Length; e++)
-            {
-                var sprite = m0.sprites[e];
-                elements[e] = new Element
-                {
-                    key = sprite.key,
-
-                    @base = new Sprite
-                    {
-                        fileName = sprite.fileName,
-                        pixelPerUnit = sprite.pixelPerUnit,
-                        filterMode = sprite.filterMode,
-                        borders = sprite.borders,
-                    }
-                };
-            }
         }
     }
 

@@ -39,7 +39,6 @@ namespace UI
             {
                 Text.fontSize = data._Text.FontSize;
                 Text.font = data._Text.Font;
-                Text.text = data._Text.Localizable ? UIManager.GetTranslation(data._Text.Value) : data._Text.Value;
                 Text.transform.position += data._Text.Offset;
             }
         }
@@ -67,9 +66,6 @@ namespace UI
             [Serializable]
             public class Text
             {
-                public bool Localizable;
-                public string Value;
-
                 public int FontSize;
                 public TMP_FontAsset Font;
 

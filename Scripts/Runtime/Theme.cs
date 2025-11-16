@@ -93,9 +93,6 @@ namespace UI
             }
             Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
             {
-                Localizable = text.localizable == 1,
-                Value = text.value,
-
                 FontSize = text.fontSize,
                 Font = font,
 

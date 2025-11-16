@@ -16,13 +16,18 @@ namespace ThemeManager
         Manifest_V2 _Manifest;
         List<Manifest_V2.Element> Elements;
 
+        Panel MainPanel;
+        FlowLayoutPanel ElementsPanel;
+
         TextBox FilePathBox;
         TextBox ThemeNameBox;
+        TextBox FontNameBox;
+
         NumericUpDown Major;
         NumericUpDown Minor;
         NumericUpDown Patch;
-        FlowLayoutPanel ElementsPanel;
-        Panel MainPanel;
+
+        Button FontBrowseButton;
 
         public MainForm()
         {
@@ -164,11 +169,13 @@ namespace ThemeManager
                                     var json = File.ReadAllText(FilePath);
 
                                     _Manifest = Manifest.Cast(json);
-                                    Elements = new List<Manifest_V1.Element>(_Manifest.elements ?? new Manifest_V1.Element[0]);
+                                    Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
                                     ThemeNameBox.Text = _Manifest.name;
                                     Major.Value = _Manifest.v.major;
                                     Minor.Value = _Manifest.v.minor;
                                     Patch.Value = _Manifest.v.patch;
+
+                                    FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
                                     RefreshElementsView();
                                 }
@@ -250,6 +257,36 @@ namespace ThemeManager
                             Maximum = 99,
                         };
 
+                        var fontLabel = new Label
+                        {
+                            Text = "Font Asset:",
+                            Location = new Point(570, 40),
+                            AutoSize = true
+                        };
+
+                        FontNameBox = new TextBox
+                        {
+                            Location = new Point(650, 37),
+                            Width = 250,
+                            Height = 25
+                        };
+
+                        FontBrowseButton = new Button
+                        {
+                            Text = "Browse...",
+                            Location = new Point(910, 35),
+                            Width = 80,
+                            Height = 25
+                        };
+                        FontBrowseButton.Click += (s, e) =>
+                        {
+                            var filePath = ShowOpenFileDialog("Font files|*.ttf;*.otf", "Select Font Asset");
+                            if (!string.IsNullOrEmpty(filePath))
+                            {
+                                FontNameBox.Text = Path.GetFileName(filePath);
+                            }
+                        };
+
                         panel.Controls.AddRange(new Control[]
                         {
                             titleLabel,
@@ -258,7 +295,10 @@ namespace ThemeManager
                             versionLabel,
                             Major,
                             Minor,
-                            Patch
+                            Patch,
+                            fontLabel,
+                            FontNameBox,
+                            FontBrowseButton
                         });
 
                         return panel;
@@ -349,12 +389,13 @@ namespace ThemeManager
 
                         void AddElement()
                         {
-                            Elements.Add(new Manifest_V1.Element
+                            Elements.Add(new Manifest.Element
                             {
                                 key = ElementType.Null.ToString(),
                                 @base = CreateDefaultSprite(),
                                 mask = CreateDefaultSprite(),
-                                overlay = CreateDefaultSprite()
+                                overlay = CreateDefaultSprite(),
+                                text = new Manifest.Element.Text()
                             });
 
                             RefreshElementsView();
@@ -392,7 +433,9 @@ namespace ThemeManager
             Major.Value = _Manifest.v.major;
             Minor.Value = _Manifest.v.minor;
             Patch.Value = _Manifest.v.patch;
-            Elements = new List<Manifest_V1.Element>();
+            Elements = new List<Manifest.Element>();
+
+            FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
             RefreshElementsView();
         }
@@ -410,6 +453,10 @@ namespace ThemeManager
                 _Manifest.name = ThemeNameBox.Text;
                 _Manifest.v = new Manifest.Version((int)Major.Value, (int)Minor.Value, (int)Patch.Value);
                 _Manifest.elements = Elements.ToArray();
+
+                if (_Manifest.font == null)
+                    _Manifest.font = new Manifest.Font();
+                _Manifest.font.assetName = FontNameBox.Text;
 
                 var json = JsonConvert.SerializeObject(_Manifest, Formatting.Indented);
 
@@ -455,7 +502,7 @@ namespace ThemeManager
                     .Controls
                     .Add(CreateElementPanel(i, Elements[i]));
 
-            Panel CreateElementPanel(int index, Manifest_V1.Element element)
+            Panel CreateElementPanel(int index, Manifest.Element element)
             {
                 var panelL = new Panel
                 {
@@ -523,7 +570,7 @@ namespace ThemeManager
 
                     if (elementPanel.Height == 40)
                     {
-                        elementPanel.Height = 350;
+                        elementPanel.Height = 400;
 
                         AddElementContent();
 
@@ -558,7 +605,7 @@ namespace ThemeManager
                             Dock = DockStyle.Fill,
                             BackColor = Color.White,
                             AutoSize = true,
-                            MinimumSize = new Size(0, 400)
+                            MinimumSize = new Size(0, 450)
                         };
 
                         var tabControl = new TabControl
@@ -578,6 +625,10 @@ namespace ThemeManager
                         var overlayTab = new TabPage("Overlay Sprite") { Padding = new Padding(10) };
                         overlayTab.Controls.Add(CreateSpritePanel(element.overlay, "Overlay"));
                         tabControl.TabPages.Add(overlayTab);
+
+                        var textTab = new TabPage("Text Settings") { Padding = new Padding(10) };
+                        textTab.Controls.Add(CreateTextPanel());
+                        tabControl.TabPages.Add(textTab);
 
                         var generalTab = new TabPage("Element Settings") { Padding = new Padding(10) };
                         generalTab.Controls.Add(CreateGeneralPanel());
@@ -656,6 +707,91 @@ namespace ThemeManager
 
                             return panel;
                         }
+                        Panel CreateTextPanel()
+                        {
+                            var panel = new Panel
+                            {
+                                Dock = DockStyle.Fill
+                            };
+
+                            var fontSizeLabel = new Label
+                            {
+                                Text = "Font Size:",
+                                Location = new Point(20, 20),
+                                Size = new Size(100, 20),
+                                TextAlign = ContentAlignment.MiddleLeft
+                            };
+
+                            var fontSizeNumeric = new NumericUpDown
+                            {
+                                Value = element.text?.fontSize ?? 14,
+                                Minimum = 1,
+                                Maximum = 100,
+                                Location = new Point(130, 17),
+                                Size = new Size(80, 20)
+                            };
+                            fontSizeNumeric.ValueChanged += (s, e) =>
+                            {
+                                if (element.text != null)
+                                    element.text.fontSize = (int)fontSizeNumeric.Value;
+                            };
+
+                            var xOffsetLabel = new Label
+                            {
+                                Text = "X Offset:",
+                                Location = new Point(20, 60),
+                                Size = new Size(100, 20),
+                                TextAlign = ContentAlignment.MiddleLeft
+                            };
+
+                            var xOffsetNumeric = new NumericUpDown
+                            {
+                                Value = element.text?.xOffset ?? 0,
+                                Minimum = -1000,
+                                Maximum = 1000,
+                                Location = new Point(130, 57),
+                                Size = new Size(80, 20)
+                            };
+                            xOffsetNumeric.ValueChanged += (s, e) =>
+                            {
+                                if (element.text != null)
+                                    element.text.xOffset = (int)xOffsetNumeric.Value;
+                            };
+
+                            var yOffsetLabel = new Label
+                            {
+                                Text = "Y Offset:",
+                                Location = new Point(20, 100),
+                                Size = new Size(100, 20),
+                                TextAlign = ContentAlignment.MiddleLeft
+                            };
+
+                            var yOffsetNumeric = new NumericUpDown
+                            {
+                                Value = element.text?.yOffset ?? 0,
+                                Minimum = -1000,
+                                Maximum = 1000,
+                                Location = new Point(130, 97),
+                                Size = new Size(80, 20)
+                            };
+                            yOffsetNumeric.ValueChanged += (s, e) =>
+                            {
+                                if (element.text != null)
+                                    element.text.yOffset = (int)yOffsetNumeric.Value;
+                            };
+
+                            panel.Controls.AddRange(new Control[]
+                            {
+                                fontSizeLabel,
+                                fontSizeNumeric,
+                                xOffsetLabel,
+                                xOffsetNumeric,
+                                yOffsetLabel,
+                                yOffsetNumeric
+                            });
+
+                            return panel;
+                        }
                     }
                 }
                 void RemoveElement()
@@ -688,7 +824,7 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
-        Panel CreateSpritePanel(Manifest_V1.Sprite sprite, string spriteType)
+        Panel CreateSpritePanel(Manifest.Sprite sprite, string spriteType)
         {
             var panel = new Panel
             {
@@ -895,13 +1031,11 @@ namespace ThemeManager
                     Size = new Size(80, 30)
                 };
 
-                // Обработчики изменений
                 leftNumeric.ValueChanged += (s, e) => sprite.borders.left = (int)leftNumeric.Value;
                 rightNumeric.ValueChanged += (s, e) => sprite.borders.right = (int)rightNumeric.Value;
                 topNumeric.ValueChanged += (s, e) => sprite.borders.top = (int)topNumeric.Value;
                 bottomNumeric.ValueChanged += (s, e) => sprite.borders.bottom = (int)bottomNumeric.Value;
 
-                // Добавляем элементы в GroupBox
                 groupBox.Controls.AddRange(new Control[]
                 {
                     leftLabel,
@@ -914,7 +1048,6 @@ namespace ThemeManager
                     bottomNumeric
                 });
 
-                // Добавляем элементы на форму
                 form.Controls.Add(groupBox);
                 form.Controls.Add(okButton);
 
@@ -922,15 +1055,12 @@ namespace ThemeManager
                 form.ShowDialog();
             }
         }
-        Manifest_V1.Sprite CreateDefaultSprite()
+        Manifest.Sprite CreateDefaultSprite() => new Manifest.Sprite
         {
-            return new Manifest_V1.Sprite
-            {
-                pixelPerUnit = 100,
-                filterMode = 1,
-                borders = new Manifest.Sprite.Borders()
-            };
-        }
+            pixelPerUnit = 100,
+            filterMode = 1,
+            borders = new Manifest.Sprite.Borders()
+        };
 
         protected override void OnResize(EventArgs e)
         {
