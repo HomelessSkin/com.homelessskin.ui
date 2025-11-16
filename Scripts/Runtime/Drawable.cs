@@ -37,9 +37,16 @@ namespace UI
 
             if (Text && data._Text != null)
             {
-                Text.fontSize = data._Text.FontSize;
                 Text.font = data._Text.Font;
-                Text.transform.position += data._Text.Offset;
+
+                if (data._Text.FontSize != 0)
+                    Text.fontSize = data._Text.FontSize;
+                if (data._Text.CharacterSpacing != 0)
+                    Text.characterSpacing = data._Text.CharacterSpacing;
+                if (data._Text.WordSpacing != 0)
+                    Text.wordSpacing = data._Text.WordSpacing;
+
+                Text.rectTransform.anchoredPosition3D += data._Text.Offset;
             }
         }
 
@@ -66,7 +73,11 @@ namespace UI
             [Serializable]
             public class Text
             {
+                public string LanguageKey;
+
                 public int FontSize;
+                public int CharacterSpacing;
+                public int WordSpacing;
                 public TMP_FontAsset Font;
 
                 public Vector3 Offset;

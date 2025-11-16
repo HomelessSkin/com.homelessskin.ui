@@ -6,7 +6,6 @@ namespace UI
     public class TextStyle : ScriptableObject
     {
         public ElementType Element;
-        public string LanguageKey;
         public int FontSize;
         public int CharacterSpacing;
         public int WordSpacing;

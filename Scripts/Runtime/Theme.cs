@@ -12,6 +12,7 @@ namespace UI
     public struct Theme
     {
         public string Name;
+        public string LanguageKey;
         public TMP_FontAsset FontAsset;
         public Dictionary<string, Drawable.Data> Sprites;
 
@@ -23,9 +24,11 @@ namespace UI
         {
             var font = manifest.font == null || string.IsNullOrEmpty(manifest.font.assetName) ?
              TMP_Settings.defaultFontAsset :
-             Resources.Load<TMP_FontAsset>(path + $"{manifest.font.assetName}");
+             LoadFont();
+            var lang = manifest.languageKey == null || string.IsNullOrEmpty(manifest.languageKey) ? "default" : manifest.languageKey;
 
             Name = manifest.name;
+            LanguageKey = lang;
             FontAsset = font;
             Sprites = new Dictionary<string, Drawable.Data>();
 
@@ -53,6 +56,34 @@ namespace UI
 #endif
             }
 
+            TMP_FontAsset LoadFont()
+            {
+                var result = TMP_Settings.defaultFontAsset;
+                var filePath = path + manifest.font.assetName;
+
+                if (fromResources)
+                    result = Resources.Load<TMP_FontAsset>(filePath.Replace(".asset", ""));
+                else if (File.Exists(filePath))
+                {
+                    var bundle = AssetBundle.LoadFromFile(filePath);
+                    var assets = bundle.GetAllAssetNames();
+                    bundle.LoadAsset("tempfontholder");
+
+                    result = bundle.LoadAsset<TMP_FontAsset>(assets[0]);
+                }
+                return result;
+            }
+            Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
+            {
+                LanguageKey = lang,
+
+                Font = font,
+                FontSize = text.fontSize,
+                CharacterSpacing = text.characterSpacing,
+                WordSpacing = text.wordSpacing,
+
+                Offset = new Vector3(text.xOffset, text.yOffset),
+            };
             Sprite TryLoadSprite(Manifest.Sprite sprite)
             {
                 if (sprite == null)
@@ -91,13 +122,6 @@ namespace UI
 
                 return null;
             }
-            Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
-            {
-                FontSize = text.fontSize,
-                Font = font,
-
-                Offset = new Vector3(text.xOffset, text.yOffset),
-            };
         }
     }
 }

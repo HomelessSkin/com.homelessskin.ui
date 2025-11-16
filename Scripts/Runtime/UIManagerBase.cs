@@ -27,31 +27,38 @@ namespace UI
         [Serializable]
         protected class Localizator
         {
-            public UIText[] Localizables;
+            public string[] LangKeys;
+            public Localizable[] Localizables;
 
             [Space]
             public TextAsset DefaultLanguage;
             public TextAsset[] Localizations;
 
-            [Space]
-            public TextStyle[] DefaultStyles;
-            public TextStyle[] TextStyles;
-
             public Dictionary<string, string> DefaultDict = new Dictionary<string, string>();
             public Dictionary<string, string> Current = new Dictionary<string, string>();
         }
 
+        public void SetLanguage(int index)
+        {
+            if (_Drawer.Current.LanguageKey != "default")
+            {
+                AddMessage("theme language override");
+
+                return;
+            }
+
+            if (index > 0 &&
+                _Localizator.LangKeys != null &&
+                 index < _Localizator.LangKeys.Length)
+                SetLanguage(_Localizator.LangKeys[index]);
+        }
         public void SetLanguage(string langKey)
         {
-            var lang = langKey.Split("-")[0].ToUpper();
-
-            Debug.Log($"Setting Language with {lang} key");
+            Debug.Log($"Setting Language with {langKey} key");
 
             _Localizator.Current = Deserialize(_Localizator.DefaultLanguage.text);
-            var langStyles = _Localizator.TextStyles.Where(x => x.LanguageKey == lang).ToArray();
-
             for (int i = 0; i < _Localizator.Localizations.Length; i++)
-                if (_Localizator.Localizations[i].name == lang)
+                if (_Localizator.Localizations[i].name == langKey)
                 {
                     _Localizator.Current = Deserialize(_Localizator.Localizations[i].text);
 
@@ -64,11 +71,6 @@ namespace UI
                     _Localizator.Localizables[i].SetValue(value);
                 else
                     _Localizator.Localizables[i].SetValue(_Localizator.DefaultDict[_Localizator.Localizables[i].GetKey()]);
-
-                if (GetStyle(_Localizator.Localizables[i].GetElementType(), _Localizator.TextStyles, out var style, lang))
-                    _Localizator.Localizables[i].SetStyle(style);
-                else if (GetStyle(_Localizator.Localizables[i].GetElementType(), _Localizator.DefaultStyles, out var def))
-                    _Localizator.Localizables[i].SetStyle(def);
             }
         }
         public string GetTranslation(string key)
@@ -81,20 +83,6 @@ namespace UI
             return $"No Value for <{key}> key!";
         }
 
-        bool GetStyle(ElementType element, TextStyle[] styles, out TextStyle style, string langKey = "default")
-        {
-            for (int i = 0; i < styles.Length; i++)
-                if (styles[i].LanguageKey == langKey && styles[i].Element == element)
-                {
-                    style = styles[i];
-
-                    return true;
-                }
-
-            style = null;
-
-            return false;
-        }
         string Serialize(Dictionary<string, string> dict)
         {
             var keys = dict.Keys.ToArray();
@@ -293,6 +281,8 @@ namespace UI
                 else
                     drawable.SetValue(_Drawer.Default.Sprites[key]);
             }
+
+            SetLanguage(_Drawer.Current.LanguageKey);
         }
         #endregion
 
@@ -326,6 +316,22 @@ namespace UI
 
         }
 
+        public void AddMessage(string key, float time = 5f, AdditionType addition = AdditionType.Null)
+        {
+            var index = -1;
+            for (int i = 0; i < _Messenger.Messages.Length; i++)
+                if (_Messenger.Messages[i] == key)
+                {
+                    index = i;
+
+                    break;
+                }
+
+            if (index >= 0)
+                AddMessage(index, time, addition);
+            else
+                Debug.LogWarning($"Message key {key} not found!");
+        }
         public void AddMessage(int index, float time = 5f, AdditionType addition = AdditionType.Null)
         {
             if (index >= _Messenger.Messages.Length)
@@ -438,6 +444,7 @@ namespace UI
 
             ReloadThemes();
             LoadTheme();
+            SelectTheme(0);
         }
         protected virtual void Update()
         {
@@ -471,8 +478,8 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            _Localizator.Localizables = (UIText[])GameObject
-                .FindObjectsByType(typeof(UIText), FindObjectsInactive.Include, FindObjectsSortMode.None);
+            _Localizator.Localizables = (Localizable[])GameObject
+                .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             _Drawer.Drawables = (Drawable[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);

@@ -20,6 +20,7 @@ namespace UI
             }
         }
         public string name;
+        public string languageKey;
         public Font font;
 
         [Serializable]
@@ -77,6 +78,8 @@ namespace UI
             public class Text
             {
                 public int fontSize;
+                public int characterSpacing;
+                public int wordSpacing;
 
                 public int xOffset;
                 public int yOffset;

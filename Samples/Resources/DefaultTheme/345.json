@@ -1,0 +1,101 @@
+{
+  "elements": [
+    {
+      "key": "Menu_Button",
+      "base": {
+        "fileName": "button.png",
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "mask": {
+        "fileName": null,
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "overlay": {
+        "fileName": null,
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "text": {
+        "fontSize": 32,
+        "characterSpacing": 0,
+        "wordSpacing": 0,
+        "xOffset": 10,
+        "yOffset": 10
+      }
+    },
+    {
+      "key": "Big_Panel",
+      "base": {
+        "fileName": "Field_Dark.png",
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "mask": {
+        "fileName": null,
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "overlay": {
+        "fileName": null,
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      },
+      "text": {
+        "fontSize": 32,
+        "characterSpacing": 0,
+        "wordSpacing": 0,
+        "xOffset": 0,
+        "yOffset": 0
+      }
+    }
+  ],
+  "v": {
+    "major": 0,
+    "minor": 0,
+    "patch": 2
+  },
+  "name": "Default",
+  "languageKey": "default",
+  "font": {
+    "assetName": "DelaGothicOne-Regular SDF.asset"
+  },
+  "V": "0.0.2"
+}

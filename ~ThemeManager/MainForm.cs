@@ -55,7 +55,7 @@ namespace ThemeManager
                     };
 
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
                     main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
 
@@ -220,6 +220,26 @@ namespace ThemeManager
                             Height = 25
                         };
 
+                        var languageKeyLabel = new Label
+                        {
+                            Text = "Language Key:",
+                            Location = new Point(10, 70),
+                            AutoSize = true
+                        };
+
+                        var languageKeyTextBox = new TextBox
+                        {
+                            Location = new Point(100, 67),
+                            Width = 250,
+                            Height = 25,
+                            Text = _Manifest?.languageKey ?? ""
+                        };
+                        languageKeyTextBox.TextChanged += (s, e) =>
+                        {
+                            if (_Manifest != null)
+                                _Manifest.languageKey = languageKeyTextBox.Text;
+                        };
+
                         var versionLabel = new Label
                         {
                             Text = "Version:",
@@ -260,13 +280,13 @@ namespace ThemeManager
                         var fontLabel = new Label
                         {
                             Text = "Font Asset:",
-                            Location = new Point(570, 40),
+                            Location = new Point(370, 70),
                             AutoSize = true
                         };
 
                         FontNameBox = new TextBox
                         {
-                            Location = new Point(650, 37),
+                            Location = new Point(450, 67),
                             Width = 250,
                             Height = 25
                         };
@@ -274,13 +294,13 @@ namespace ThemeManager
                         FontBrowseButton = new Button
                         {
                             Text = "Browse...",
-                            Location = new Point(910, 35),
+                            Location = new Point(710, 65),
                             Width = 80,
                             Height = 25
                         };
                         FontBrowseButton.Click += (s, e) =>
                         {
-                            var filePath = ShowOpenFileDialog("Font files|*.ttf;*.otf", "Select Font Asset");
+                            var filePath = ShowOpenFileDialog("Font Asset Files|*.asset", "Select Font Asset");
                             if (!string.IsNullOrEmpty(filePath))
                             {
                                 FontNameBox.Text = Path.GetFileName(filePath);
@@ -292,6 +312,8 @@ namespace ThemeManager
                             titleLabel,
                             nameLabel,
                             ThemeNameBox,
+                            languageKeyLabel,
+                            languageKeyTextBox,
                             versionLabel,
                             Major,
                             Minor,
@@ -395,7 +417,14 @@ namespace ThemeManager
                                 @base = CreateDefaultSprite(),
                                 mask = CreateDefaultSprite(),
                                 overlay = CreateDefaultSprite(),
-                                text = new Manifest.Element.Text()
+                                text = new Manifest.Element.Text
+                                {
+                                    fontSize = 32,
+                                    characterSpacing = 0,
+                                    wordSpacing = 0,
+                                    xOffset = 0,
+                                    yOffset = 0
+                                }
                             });
 
                             RefreshElementsView();
@@ -437,6 +466,10 @@ namespace ThemeManager
 
             FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
+            var languageKeyTextBox = GetLanguageKeyTextBox();
+            if (languageKeyTextBox != null)
+                languageKeyTextBox.Text = _Manifest.languageKey ?? "default";
+
             RefreshElementsView();
         }
         void SaveJson()
@@ -444,7 +477,6 @@ namespace ThemeManager
             if (string.IsNullOrEmpty(FilePath))
             {
                 SaveJsonAs();
-
                 return;
             }
 
@@ -453,6 +485,10 @@ namespace ThemeManager
                 _Manifest.name = ThemeNameBox.Text;
                 _Manifest.v = new Manifest.Version((int)Major.Value, (int)Minor.Value, (int)Patch.Value);
                 _Manifest.elements = Elements.ToArray();
+
+                var languageKeyTextBox = GetLanguageKeyTextBox();
+                if (languageKeyTextBox != null)
+                    _Manifest.languageKey = languageKeyTextBox.Text;
 
                 if (_Manifest.font == null)
                     _Manifest.font = new Manifest.Font();
@@ -467,6 +503,19 @@ namespace ThemeManager
             {
                 MessageBox.Show($"Error saving JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        TextBox GetLanguageKeyTextBox()
+        {
+            var themePanel = MainPanel?.Controls[1] as Panel;
+            if (themePanel != null)
+            {
+                foreach (Control control in themePanel.Controls)
+                {
+                    if (control is TextBox textBox && control.Location.X == 100 && control.Location.Y == 67)
+                        return textBox;
+                }
+            }
+            return null;
         }
         void SaveJsonAs()
         {
@@ -714,11 +763,12 @@ namespace ThemeManager
                                 Dock = DockStyle.Fill
                             };
 
+                            // Font Size
                             var fontSizeLabel = new Label
                             {
                                 Text = "Font Size:",
                                 Location = new Point(20, 20),
-                                Size = new Size(100, 20),
+                                Size = new Size(120, 20),
                                 TextAlign = ContentAlignment.MiddleLeft
                             };
 
@@ -727,7 +777,7 @@ namespace ThemeManager
                                 Value = element.text?.fontSize ?? 14,
                                 Minimum = 1,
                                 Maximum = 100,
-                                Location = new Point(130, 17),
+                                Location = new Point(150, 17),
                                 Size = new Size(80, 20)
                             };
                             fontSizeNumeric.ValueChanged += (s, e) =>
@@ -736,11 +786,58 @@ namespace ThemeManager
                                     element.text.fontSize = (int)fontSizeNumeric.Value;
                             };
 
+                            // Character Spacing
+                            var characterSpacingLabel = new Label
+                            {
+                                Text = "Character Spacing:",
+                                Location = new Point(20, 60),
+                                Size = new Size(120, 20),
+                                TextAlign = ContentAlignment.MiddleLeft
+                            };
+
+                            var characterSpacingNumeric = new NumericUpDown
+                            {
+                                Value = element.text?.characterSpacing ?? 0,
+                                Minimum = -50,
+                                Maximum = 50,
+                                Location = new Point(150, 57),
+                                Size = new Size(80, 20)
+                            };
+                            characterSpacingNumeric.ValueChanged += (s, e) =>
+                            {
+                                if (element.text != null)
+                                    element.text.characterSpacing = (int)characterSpacingNumeric.Value;
+                            };
+
+                            // Word Spacing
+                            var wordSpacingLabel = new Label
+                            {
+                                Text = "Word Spacing:",
+                                Location = new Point(20, 100),
+                                Size = new Size(120, 20),
+                                TextAlign = ContentAlignment.MiddleLeft
+                            };
+
+                            var wordSpacingNumeric = new NumericUpDown
+                            {
+                                Value = element.text?.wordSpacing ?? 0,
+                                Minimum = -50,
+                                Maximum = 50,
+                                Location = new Point(150, 97),
+                                Size = new Size(80, 20)
+                            };
+                            wordSpacingNumeric.ValueChanged += (s, e) =>
+                            {
+                                if (element.text != null)
+                                    element.text.wordSpacing = (int)wordSpacingNumeric.Value;
+                            };
+
+                            // X Offset
                             var xOffsetLabel = new Label
                             {
                                 Text = "X Offset:",
-                                Location = new Point(20, 60),
-                                Size = new Size(100, 20),
+                                Location = new Point(20, 140),
+                                Size = new Size(120, 20),
                                 TextAlign = ContentAlignment.MiddleLeft
                             };
 
@@ -749,7 +846,7 @@ namespace ThemeManager
                                 Value = element.text?.xOffset ?? 0,
                                 Minimum = -1000,
                                 Maximum = 1000,
-                                Location = new Point(130, 57),
+                                Location = new Point(150, 137),
                                 Size = new Size(80, 20)
                             };
                             xOffsetNumeric.ValueChanged += (s, e) =>
@@ -758,11 +855,12 @@ namespace ThemeManager
                                     element.text.xOffset = (int)xOffsetNumeric.Value;
                             };
 
+                            // Y Offset
                             var yOffsetLabel = new Label
                             {
                                 Text = "Y Offset:",
-                                Location = new Point(20, 100),
-                                Size = new Size(100, 20),
+                                Location = new Point(20, 180),
+                                Size = new Size(120, 20),
                                 TextAlign = ContentAlignment.MiddleLeft
                             };
 
@@ -771,7 +869,7 @@ namespace ThemeManager
                                 Value = element.text?.yOffset ?? 0,
                                 Minimum = -1000,
                                 Maximum = 1000,
-                                Location = new Point(130, 97),
+                                Location = new Point(150, 177),
                                 Size = new Size(80, 20)
                             };
                             yOffsetNumeric.ValueChanged += (s, e) =>
@@ -782,12 +880,11 @@ namespace ThemeManager
 
                             panel.Controls.AddRange(new Control[]
                             {
-                                fontSizeLabel,
-                                fontSizeNumeric,
-                                xOffsetLabel,
-                                xOffsetNumeric,
-                                yOffsetLabel,
-                                yOffsetNumeric
+        fontSizeLabel, fontSizeNumeric,
+        characterSpacingLabel, characterSpacingNumeric,
+        wordSpacingLabel, wordSpacingNumeric,
+        xOffsetLabel, xOffsetNumeric,
+        yOffsetLabel, yOffsetNumeric
                             });
 
                             return panel;
