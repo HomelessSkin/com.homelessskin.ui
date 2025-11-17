@@ -71,6 +71,10 @@ namespace UI
 
                     result = bundle.LoadAsset<TMP_FontAsset>(assets[0]);
                 }
+
+                if (result == null)
+                    result = TMP_Settings.defaultFontAsset;
+
                 return result;
             }
             Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
