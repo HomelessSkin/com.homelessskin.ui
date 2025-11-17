@@ -13,7 +13,7 @@ namespace UI
         [SerializeField] Image Base;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
-        [SerializeField] TMP_Text Text;
+        [SerializeField] TMP_Text[] Texts;
 
         public override string GetKey() => _Type.ToString();
         public void SetValue(Data data)
@@ -38,19 +38,22 @@ namespace UI
                     Overlay.enabled = false;
             }
 
-            if (Text && data._Text != null)
-            {
-                Text.font = data._Text.Font;
+            if (Texts != null && data._Text != null)
+                for (int t = 0; t < Texts.Length; t++)
+                {
+                    var text = Texts[t];
 
-                if (data._Text.FontSize != 0)
-                    Text.fontSize = data._Text.FontSize;
-                if (data._Text.CharacterSpacing != 0)
-                    Text.characterSpacing = data._Text.CharacterSpacing;
-                if (data._Text.WordSpacing != 0)
-                    Text.wordSpacing = data._Text.WordSpacing;
+                    text.font = data._Text.Font;
 
-                Text.rectTransform.anchoredPosition3D += data._Text.Offset;
-            }
+                    if (data._Text.FontSize != 0)
+                        text.fontSize = data._Text.FontSize;
+                    if (data._Text.CharacterSpacing != 0)
+                        text.characterSpacing = data._Text.CharacterSpacing;
+                    if (data._Text.WordSpacing != 0)
+                        text.wordSpacing = data._Text.WordSpacing;
+
+                    text.rectTransform.anchoredPosition3D += data._Text.Offset;
+                }
         }
 
         protected override void Start()
