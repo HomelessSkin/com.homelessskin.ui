@@ -12,6 +12,8 @@ namespace UI
         Drop_Down_Item = 7,
         Input_Area = 8,
         Text = 9,
+        Scroll = 10,
+        Scroll_Area = 11,
 
     }
 }
