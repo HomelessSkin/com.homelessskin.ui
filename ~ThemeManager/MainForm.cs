@@ -477,6 +477,7 @@ namespace ThemeManager
             if (string.IsNullOrEmpty(FilePath))
             {
                 SaveJsonAs();
+
                 return;
             }
 
@@ -758,6 +759,18 @@ namespace ThemeManager
                         }
                         Panel CreateTextPanel()
                         {
+                            if (element.text == null)
+                            {
+                                element.text = new Manifest.Element.Text
+                                {
+                                    fontSize = 14,
+                                    characterSpacing = 0,
+                                    wordSpacing = 0,
+                                    xOffset = 0,
+                                    yOffset = 0
+                                };
+                            }
+
                             var panel = new Panel
                             {
                                 Dock = DockStyle.Fill

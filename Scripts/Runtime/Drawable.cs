@@ -22,10 +22,16 @@ namespace UI
                 return;
 
             if (Base)
+            {
                 Base.sprite = data.Base;
+                Base.type = Image.Type.Sliced;
+            }
 
             if (Mask)
+            {
                 Mask.sprite = data.Mask;
+                Mask.type = Image.Type.Sliced;
+            }
 
             if (Overlay)
             {
@@ -33,6 +39,7 @@ namespace UI
                 {
                     Overlay.enabled = true;
                     Overlay.sprite = data.Overlay;
+                    Overlay.type = Image.Type.Sliced;
                 }
                 else
                     Overlay.enabled = false;
