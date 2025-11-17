@@ -73,7 +73,8 @@ namespace UI
         {
             base.Start();
 
-            if (UIManager.TryGetData(GetKey(), out var data))
+            if (!NonRedrawable &&
+                  UIManager.TryGetData(GetKey(), out var data))
                 SetValue(data);
         }
 
