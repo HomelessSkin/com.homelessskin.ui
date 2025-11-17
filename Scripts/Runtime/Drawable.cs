@@ -10,11 +10,13 @@ namespace UI
     [RequireComponent(typeof(Image)), DisallowMultipleComponent]
     public class Drawable : UIElement
     {
+        [SerializeField] bool Redrawable;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
         [SerializeField] TMP_Text[] Texts;
 
         public override string GetKey() => _Type.ToString();
+        public bool IsRedrawable() => Redrawable;
         public void SetValue(Data data)
         {
             if (data == null)
@@ -23,13 +25,15 @@ namespace UI
             if (TryGetComponent<Image>(out var basege))
             {
                 basege.sprite = data.Base;
-                basege.type = Image.Type.Sliced;
+                if (data.Base.border.magnitude > 0.0001f)
+                    basege.type = Image.Type.Sliced;
             }
 
             if (Mask)
             {
                 Mask.sprite = data.Mask;
-                Mask.type = Image.Type.Sliced;
+                if (data.Base.border.magnitude > 0.0001f)
+                    Mask.type = Image.Type.Sliced;
             }
 
             if (Overlay)
@@ -38,7 +42,8 @@ namespace UI
                 {
                     Overlay.enabled = true;
                     Overlay.sprite = data.Overlay;
-                    Overlay.type = Image.Type.Sliced;
+                    if (data.Base.border.magnitude > 0.0001f)
+                        Overlay.type = Image.Type.Sliced;
                 }
                 else
                     Overlay.enabled = false;
@@ -60,7 +65,7 @@ namespace UI
                     if (data._Text.WordSpacing != 0)
                         text.wordSpacing = data._Text.WordSpacing;
 
-                    text.rectTransform.anchoredPosition3D += data._Text.Offset;
+                    text.rectTransform.localPosition += data._Text.Offset;
                 }
         }
 

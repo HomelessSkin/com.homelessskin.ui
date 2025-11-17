@@ -275,6 +275,9 @@ namespace UI
             for (int d = 0; d < _Drawer.Drawables.Length; d++)
             {
                 var drawable = _Drawer.Drawables[d];
+                if (!drawable.IsRedrawable())
+                    continue;
+
                 var key = drawable.GetKey();
                 if (_Drawer.Current.Sprites.TryGetValue(key, out var data))
                     drawable.SetValue(data);

@@ -113,7 +113,7 @@ namespace UI
                         (sprite.pixelPerUnit > 0 ? sprite.pixelPerUnit : 1),
                         0,
                         SpriteMeshType.FullRect,
-                        new Vector4(sprite.borders.left, sprite.borders.right, sprite.borders.top, sprite.borders.bottom),
+                        new Vector4(sprite.borders.left, sprite.borders.bottom, sprite.borders.right, sprite.borders.top),
                         false);
 
                     result.name = sprite.fileName;
