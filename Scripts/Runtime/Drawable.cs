@@ -45,13 +45,14 @@ namespace UI
                     Overlay.enabled = false;
             }
 
-            if (Texts != null && data._Text != null)
+            if (Texts != null &&
+                data._Text != null)
                 for (int t = 0; t < Texts.Length; t++)
                 {
                     var text = Texts[t];
 
-                    text.font = data._Text.Font;
-
+                    if (data._Text.Font != null)
+                        text.font = data._Text.Font;
                     if (data._Text.FontSize != 0)
                         text.fontSize = data._Text.FontSize;
                     if (data._Text.CharacterSpacing != 0)
