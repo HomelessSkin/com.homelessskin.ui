@@ -10,7 +10,6 @@ namespace UI
     [RequireComponent(typeof(Image)), DisallowMultipleComponent]
     public class Drawable : UIElement
     {
-        [SerializeField] Image Base;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
         [SerializeField] TMP_Text[] Texts;
@@ -21,10 +20,10 @@ namespace UI
             if (data == null)
                 return;
 
-            if (Base)
+            if (TryGetComponent<Image>(out var basege))
             {
-                Base.sprite = data.Base;
-                Base.type = Image.Type.Sliced;
+                basege.sprite = data.Base;
+                basege.type = Image.Type.Sliced;
             }
 
             if (Mask)
