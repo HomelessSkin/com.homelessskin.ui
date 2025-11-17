@@ -444,7 +444,6 @@ namespace UI
 
             ReloadThemes();
             LoadTheme();
-            SelectTheme(0);
         }
         protected virtual void Update()
         {
