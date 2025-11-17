@@ -7,7 +7,7 @@ namespace UI
     public class ListTheme : MonoBehaviour
     {
         [SerializeField] TMP_Text Name;
-        [SerializeField] Drawable SelectButton;
+        [SerializeField] MenuButton SelectButton;
         [Space]
         [SerializeField] Drawable[] Drawables;
 
@@ -21,10 +21,12 @@ namespace UI
             for (int d = 0; d < Drawables.Length; d++)
                 Drawables[d].SetValue(GetData(Drawables[d].GetKey()));
 
-            SelectButton.SetValue(GetData("Menu_Button"));
+            SelectButton.AddListener(() => Manager.SelectTheme(index));
             SelectButton
-                .GetComponent<MenuButton>()
-                .AddListener(() => Manager.SelectTheme(index));
+                .targetGraphic
+                .gameObject
+                .GetComponent<Drawable>()
+                .SetValue(GetData("Menu_Button"));
 
             Drawable.Data GetData(string tag)
             {
