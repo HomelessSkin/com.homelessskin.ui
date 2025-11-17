@@ -18,6 +18,9 @@ namespace UI
         public override string GetKey() => _Type.ToString();
         public void SetValue(Data data)
         {
+            if (data == null)
+                return;
+
             if (Base)
                 Base.sprite = data.Base;
 

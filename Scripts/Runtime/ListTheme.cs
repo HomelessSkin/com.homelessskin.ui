@@ -1,46 +1,41 @@
 using TMPro;
 
-using UI;
-
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
     public class ListTheme : MonoBehaviour
     {
         [SerializeField] TMP_Text Name;
-        [SerializeField] Image TextPreview;
-        [SerializeField] Image DarkFieldPreview;
-        [SerializeField] Image LightFieldPreview;
-        [SerializeField] Image ChatMessagePreview;
-        [SerializeField] MenuButton Button;
+        [SerializeField] Drawable SelectButton;
+        [Space]
+        [SerializeField] Drawable[] Drawables;
 
         UIManagerBase Manager;
 
         public void Init(int index, Theme theme, UIManagerBase manager)
         {
-            //Manager = manager;
+            Manager = manager;
+            Name.text = theme.Name;
 
-            //Name.text = theme.Name;
-            //TextPreview.sprite = GetSprite("Text");
-            //DarkFieldPreview.sprite = GetSprite("Field_Dark");
-            //LightFieldPreview.sprite = GetSprite("Field_Light");
-            //ChatMessagePreview.sprite = GetSprite("Chat_Message");
-            //Button.image.sprite = GetSprite("Menu_Button");
+            for (int d = 0; d < Drawables.Length; d++)
+                Drawables[d].SetValue(GetData(Drawables[d].GetKey()));
 
-            //Button.AddListener(() => Manager.SelectTheme(index));
+            SelectButton.SetValue(GetData("Menu_Button"));
+            SelectButton
+                .GetComponent<MenuButton>()
+                .AddListener(() => Manager.SelectTheme(index));
 
-            //Sprite GetSprite(string tag)
-            //{
-            //    Sprite sprite = null;
-            //    if (theme.Sprites.TryGetValue(tag, out sprite))
-            //    { }
-            //    else if (Manager.TryGetSprite(tag, out sprite))
-            //    { }
+            Drawable.Data GetData(string tag)
+            {
+                Drawable.Data data = null;
+                if (theme.Sprites.TryGetValue(tag, out data))
+                { }
+                else if (Manager.TryGetData(tag, out data))
+                { }
 
-            //    return sprite;
-            //}
+                return data;
+            }
         }
     }
 }
