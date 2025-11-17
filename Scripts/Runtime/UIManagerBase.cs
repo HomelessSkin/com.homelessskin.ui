@@ -275,7 +275,7 @@ namespace UI
             for (int d = 0; d < _Drawer.Drawables.Length; d++)
             {
                 var drawable = _Drawer.Drawables[d];
-                if (!drawable.IsRedrawable())
+                if (drawable.IsNonRedrawable())
                     continue;
 
                 var key = drawable.GetKey();

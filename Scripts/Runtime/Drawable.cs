@@ -10,13 +10,13 @@ namespace UI
     [RequireComponent(typeof(Image)), DisallowMultipleComponent]
     public class Drawable : UIElement
     {
-        [SerializeField] bool Redrawable;
+        [SerializeField] bool NonRedrawable;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
         [SerializeField] TMP_Text[] Texts;
 
         public override string GetKey() => _Type.ToString();
-        public bool IsRedrawable() => Redrawable;
+        public bool IsNonRedrawable() => NonRedrawable;
         public void SetValue(Data data)
         {
             if (data == null)
