@@ -51,8 +51,8 @@ namespace UI
                 {
                     var text = Texts[t];
 
-                    if (data._Text.Font != null)
-                        text.font = data._Text.Font;
+                    text.font = data._Text.Font;
+
                     if (data._Text.FontSize != 0)
                         text.fontSize = data._Text.FontSize;
                     if (data._Text.CharacterSpacing != 0)
