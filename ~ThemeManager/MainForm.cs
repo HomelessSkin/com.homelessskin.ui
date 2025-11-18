@@ -18,6 +18,7 @@ namespace ThemeManager
         List<Manifest_V2.Element> Elements;
 
         Panel MainPanel;
+        Panel FontColorPanel;
         FlowLayoutPanel ElementsPanel;
 
         TextBox FilePathBox;
@@ -27,15 +28,12 @@ namespace ThemeManager
         NumericUpDown Major;
         NumericUpDown Minor;
         NumericUpDown Patch;
-
-        Button FontBrowseButton;
-
-        // Добавляем элементы для цвета шрифта
-        Panel FontColorPanel;
         NumericUpDown FontColorR;
         NumericUpDown FontColorG;
         NumericUpDown FontColorB;
         NumericUpDown FontColorA;
+
+        Button FontBrowseButton;
         Button FontColorPickerButton;
 
         public MainForm()
@@ -170,42 +168,41 @@ namespace ThemeManager
                                 FilePath = filePath;
                                 FilePathBox.Text = filePath;
 
-                                if (string.IsNullOrEmpty(FilePath) ||
-                                    !File.Exists(FilePath))
+                                if (string.IsNullOrEmpty(FilePath) || !File.Exists(FilePath))
                                     return;
 
-                                try
+                                var json = File.ReadAllText(FilePath);
+                                _Manifest = Manifest.Cast(json);
+                                Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
+
+                                ThemeNameBox.Text = _Manifest.name;
+                                Major.Value = _Manifest.v.major;
+                                Minor.Value = _Manifest.v.minor;
+                                Patch.Value = _Manifest.v.patch;
+                                FontNameBox.Text = _Manifest.font?.assetName ?? "";
+
+                                if (_Manifest.font != null)
                                 {
-                                    var json = File.ReadAllText(FilePath);
+                                    var color = _Manifest.font.color;
 
-                                    _Manifest = Manifest.Cast(json);
-                                    Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
-                                    ThemeNameBox.Text = _Manifest.name;
-                                    Major.Value = _Manifest.v.major;
-                                    Minor.Value = _Manifest.v.minor;
-                                    Patch.Value = _Manifest.v.patch;
+                                    FontColorR.Value = (decimal)(color.X);
+                                    FontColorG.Value = (decimal)(color.Y);
+                                    FontColorB.Value = (decimal)(color.Z);
+                                    FontColorA.Value = (decimal)(color.W);
 
-                                    FontNameBox.Text = _Manifest.font?.assetName ?? "";
-
-                                    // Загружаем цвет шрифта если он есть
-                                    if (_Manifest.font != null && _Manifest.font.color != null)
-                                    {
-                                        FontColorR.Value = (decimal)_Manifest.font.color.X;
-                                        FontColorG.Value = (decimal)_Manifest.font.color.Y;
-                                        FontColorB.Value = (decimal)_Manifest.font.color.Z;
-                                        FontColorA.Value = (decimal)_Manifest.font.color.W;
-                                        UpdateFontColorPreview();
-                                    }
-
-                                    RefreshElementsView();
+                                    UpdateFontColorPreview();
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    MessageBox.Show($"Error loading JSON: {ex.Message}",
-                                        "Error",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Error);
+                                    FontColorR.Value = 255;
+                                    FontColorG.Value = 255;
+                                    FontColorB.Value = 255;
+                                    FontColorA.Value = 255;
+
+                                    UpdateFontColorPreview();
                                 }
+
+                                RefreshElementsView();
                             }
                         }
                     }
@@ -327,7 +324,6 @@ namespace ThemeManager
                             }
                         };
 
-                        // Добавляем настройки цвета шрифта
                         var fontColorLabel = new Label
                         {
                             Text = "Font Color:",
@@ -420,7 +416,6 @@ namespace ThemeManager
                         };
                         FontColorPickerButton.Click += (s, e) => ShowColorPickerDialog();
 
-                        // Подписываемся на события изменения значений цвета
                         FontColorR.ValueChanged += (s, e) => UpdateFontColor();
                         FontColorG.ValueChanged += (s, e) => UpdateFontColor();
                         FontColorB.ValueChanged += (s, e) => UpdateFontColor();
@@ -454,6 +449,25 @@ namespace ThemeManager
                         });
 
                         return panel;
+
+                        void ShowColorPickerDialog()
+                        {
+                            using (var colorDialog = new ColorDialog())
+                            {
+                                colorDialog.Color = FontColorPanel.BackColor;
+                                colorDialog.FullOpen = true;
+
+                                if (colorDialog.ShowDialog() == DialogResult.OK)
+                                {
+                                    FontColorR.Value = colorDialog.Color.R;
+                                    FontColorG.Value = colorDialog.Color.G;
+                                    FontColorB.Value = colorDialog.Color.B;
+                                    FontColorA.Value = colorDialog.Color.A;
+
+                                    UpdateFontColor();
+                                }
+                            }
+                        }
                     }
                     Panel CreateElementsSection()
                     {
@@ -584,7 +598,6 @@ namespace ThemeManager
                 }
             }
         }
-
         void CreateNewManifest()
         {
             _Manifest = Manifest.CreateNew();
@@ -598,11 +611,11 @@ namespace ThemeManager
 
             FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
-            // Сбрасываем цвет шрифта к значениям по умолчанию
             FontColorR.Value = 255;
             FontColorG.Value = 255;
             FontColorB.Value = 255;
             FontColorA.Value = 255;
+
             UpdateFontColorPreview();
 
             var languageKeyTextBox = GetLanguageKeyTextBox();
@@ -611,7 +624,6 @@ namespace ThemeManager
 
             RefreshElementsView();
         }
-
         void SaveJson()
         {
             if (string.IsNullOrEmpty(FilePath))
@@ -635,7 +647,6 @@ namespace ThemeManager
 
                 _Manifest.font.assetName = FontNameBox.Text;
 
-                // Сохраняем цвет шрифта
                 _Manifest.font.color = new Vector4(
                     (float)FontColorR.Value,
                     (float)FontColorG.Value,
@@ -653,7 +664,6 @@ namespace ThemeManager
                 MessageBox.Show($"Error saving JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         TextBox GetLanguageKeyTextBox()
         {
             var themePanel = MainPanel?.Controls[1] as Panel;
@@ -667,7 +677,6 @@ namespace ThemeManager
             }
             return null;
         }
-
         void SaveJsonAs()
         {
             var filePath = ShowSaveFileDialog("JSON files|*.json");
@@ -690,7 +699,6 @@ namespace ThemeManager
                 }
             }
         }
-
         void RefreshElementsView()
         {
             // ... существующий код RefreshElementsView без изменений ...
@@ -1068,7 +1076,6 @@ namespace ThemeManager
                 }
             }
         }
-
         void RefreshElementsWidth()
         {
             if (ElementsPanel != null)
@@ -1076,7 +1083,6 @@ namespace ThemeManager
                     if (control is Panel panel)
                         panel.Width = ElementsPanel.ClientSize.Width - 10;
         }
-
         string ShowOpenFileDialog(string filter, string title = "Open File")
         {
             using (var dialog = new OpenFileDialog())
@@ -1087,10 +1093,8 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
-
         Panel CreateSpritePanel(Manifest.Sprite sprite, string spriteType)
         {
-            // ... существующий код CreateSpritePanel без изменений ...
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -1320,15 +1324,12 @@ namespace ThemeManager
                 form.ShowDialog();
             }
         }
-
         Manifest.Sprite CreateDefaultSprite() => new Manifest.Sprite
         {
             pixelPerUnit = 100,
             filterMode = 1,
             borders = new Manifest.Sprite.Borders()
         };
-
-        // Методы для работы с цветом шрифта
         void UpdateFontColor()
         {
             UpdateFontColorPreview();
@@ -1343,34 +1344,12 @@ namespace ThemeManager
                 );
             }
         }
-
         void UpdateFontColorPreview()
         {
-            var r = (int)FontColorR.Value;
-            var g = (int)FontColorG.Value;
-            var b = (int)FontColorB.Value;
-            var a = (int)FontColorA.Value;
-
-            FontColorPanel.BackColor = Color.FromArgb(a, r, g, b);
-        }
-
-        void ShowColorPickerDialog()
-        {
-            using (var colorDialog = new ColorDialog())
-            {
-                colorDialog.Color = FontColorPanel.BackColor;
-                colorDialog.FullOpen = true;
-
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    FontColorR.Value = colorDialog.Color.R;
-                    FontColorG.Value = colorDialog.Color.G;
-                    FontColorB.Value = colorDialog.Color.B;
-                    FontColorA.Value = colorDialog.Color.A;
-
-                    UpdateFontColor();
-                }
-            }
+            FontColorPanel.BackColor = Color.FromArgb((int)FontColorA.Value,
+                (int)FontColorR.Value,
+                (int)FontColorG.Value,
+                (int)FontColorB.Value);
         }
 
         protected override void OnResize(EventArgs e)

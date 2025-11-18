@@ -14,9 +14,6 @@ namespace UI
         {
             get
             {
-                if (v == null)
-                    v = new Version(0, 0, 1);
-
                 return $"{v.major}.{v.minor}.{v.patch}";
             }
         }
@@ -114,9 +111,6 @@ namespace UI
                 break;
             }
             result.name = manifest.name;
-
-            if (result.v == null)
-                result.v = new Version(0, 0, 1);
 
             return result;
         }
