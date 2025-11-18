@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 
 using Newtonsoft.Json;
 
@@ -43,6 +44,7 @@ namespace UI
         public class Font
         {
             public string assetName;
+            public Vector4 color;
         }
 
         [Serializable]

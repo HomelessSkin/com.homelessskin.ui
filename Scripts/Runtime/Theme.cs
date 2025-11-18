@@ -25,6 +25,12 @@ namespace UI
             var font = manifest.font == null || string.IsNullOrEmpty(manifest.font.assetName) ?
              TMP_Settings.defaultFontAsset :
              LoadFont();
+
+            var color = new Color(manifest.font.color.X / 255f,
+                manifest.font.color.Y / 255f,
+                manifest.font.color.Z / 255f,
+                manifest.font.color.W / 255f);
+
             var lang = manifest.languageKey == null || string.IsNullOrEmpty(manifest.languageKey) ? "default" : manifest.languageKey;
 
             Name = manifest.name;
@@ -83,6 +89,7 @@ namespace UI
                 CharacterSpacing = text.characterSpacing,
                 WordSpacing = text.wordSpacing,
 
+                Color = color,
                 Offset = new Vector3(text.xOffset, text.yOffset),
             };
             Sprite TryLoadSprite(Manifest.Sprite sprite)

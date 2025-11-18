@@ -65,6 +65,7 @@ namespace UI
                     if (data._Text.WordSpacing != 0)
                         text.wordSpacing = data._Text.WordSpacing;
 
+                    text.color = data._Text.Color;
                     text.rectTransform.localPosition += data._Text.Offset;
                 }
         }
@@ -100,6 +101,7 @@ namespace UI
                 public int WordSpacing;
                 public TMP_FontAsset Font;
 
+                public Color Color;
                 public Vector3 Offset;
             }
         }

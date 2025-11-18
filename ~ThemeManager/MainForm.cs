@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
 
 using Newtonsoft.Json;
@@ -29,6 +30,14 @@ namespace ThemeManager
 
         Button FontBrowseButton;
 
+        // Добавляем элементы для цвета шрифта
+        Panel FontColorPanel;
+        NumericUpDown FontColorR;
+        NumericUpDown FontColorG;
+        NumericUpDown FontColorB;
+        NumericUpDown FontColorA;
+        Button FontColorPickerButton;
+
         public MainForm()
         {
             InitializeMainForm();
@@ -55,7 +64,7 @@ namespace ThemeManager
                     };
 
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // Увеличиваем высоту для добавления цвета шрифта
                     main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
 
@@ -75,6 +84,7 @@ namespace ThemeManager
 
                     Panel CreateJsonSection()
                     {
+                        // ... существующий код CreateJsonSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -176,6 +186,16 @@ namespace ThemeManager
                                     Patch.Value = _Manifest.v.patch;
 
                                     FontNameBox.Text = _Manifest.font?.assetName ?? "";
+
+                                    // Загружаем цвет шрифта если он есть
+                                    if (_Manifest.font != null && _Manifest.font.color != null)
+                                    {
+                                        FontColorR.Value = (decimal)_Manifest.font.color.X;
+                                        FontColorG.Value = (decimal)_Manifest.font.color.Y;
+                                        FontColorB.Value = (decimal)_Manifest.font.color.Z;
+                                        FontColorA.Value = (decimal)_Manifest.font.color.W;
+                                        UpdateFontColorPreview();
+                                    }
 
                                     RefreshElementsView();
                                 }
@@ -307,6 +327,105 @@ namespace ThemeManager
                             }
                         };
 
+                        // Добавляем настройки цвета шрифта
+                        var fontColorLabel = new Label
+                        {
+                            Text = "Font Color:",
+                            Location = new Point(10, 100),
+                            AutoSize = true
+                        };
+
+                        FontColorPanel = new Panel
+                        {
+                            Location = new Point(100, 97),
+                            Size = new Size(40, 25),
+                            BorderStyle = BorderStyle.FixedSingle,
+                            BackColor = Color.White
+                        };
+
+                        var fontColorRLabel = new Label
+                        {
+                            Text = "R:",
+                            Location = new Point(150, 100),
+                            AutoSize = true
+                        };
+
+                        FontColorR = new NumericUpDown
+                        {
+                            Location = new Point(170, 97),
+                            Width = 40,
+                            Height = 25,
+                            Minimum = 0,
+                            Maximum = 255,
+                            Value = 255
+                        };
+
+                        var fontColorGLabel = new Label
+                        {
+                            Text = "G:",
+                            Location = new Point(220, 100),
+                            AutoSize = true
+                        };
+
+                        FontColorG = new NumericUpDown
+                        {
+                            Location = new Point(240, 97),
+                            Width = 40,
+                            Height = 25,
+                            Minimum = 0,
+                            Maximum = 255,
+                            Value = 255
+                        };
+
+                        var fontColorBLabel = new Label
+                        {
+                            Text = "B:",
+                            Location = new Point(290, 100),
+                            AutoSize = true
+                        };
+
+                        FontColorB = new NumericUpDown
+                        {
+                            Location = new Point(310, 97),
+                            Width = 40,
+                            Height = 25,
+                            Minimum = 0,
+                            Maximum = 255,
+                            Value = 255
+                        };
+
+                        var fontColorALabel = new Label
+                        {
+                            Text = "A:",
+                            Location = new Point(360, 100),
+                            AutoSize = true
+                        };
+
+                        FontColorA = new NumericUpDown
+                        {
+                            Location = new Point(380, 97),
+                            Width = 40,
+                            Height = 25,
+                            Minimum = 0,
+                            Maximum = 255,
+                            Value = 255
+                        };
+
+                        FontColorPickerButton = new Button
+                        {
+                            Text = "Pick Color...",
+                            Location = new Point(430, 95),
+                            Width = 80,
+                            Height = 25
+                        };
+                        FontColorPickerButton.Click += (s, e) => ShowColorPickerDialog();
+
+                        // Подписываемся на события изменения значений цвета
+                        FontColorR.ValueChanged += (s, e) => UpdateFontColor();
+                        FontColorG.ValueChanged += (s, e) => UpdateFontColor();
+                        FontColorB.ValueChanged += (s, e) => UpdateFontColor();
+                        FontColorA.ValueChanged += (s, e) => UpdateFontColor();
+
                         panel.Controls.AddRange(new Control[]
                         {
                             titleLabel,
@@ -320,13 +439,25 @@ namespace ThemeManager
                             Patch,
                             fontLabel,
                             FontNameBox,
-                            FontBrowseButton
+                            FontBrowseButton,
+                            fontColorLabel,
+                            FontColorPanel,
+                            fontColorRLabel,
+                            FontColorR,
+                            fontColorGLabel,
+                            FontColorG,
+                            fontColorBLabel,
+                            FontColorB,
+                            fontColorALabel,
+                            FontColorA,
+                            FontColorPickerButton
                         });
 
                         return panel;
                     }
                     Panel CreateElementsSection()
                     {
+                        // ... существующий код CreateElementsSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -369,6 +500,7 @@ namespace ThemeManager
                     }
                     Panel CreateButtonsSection()
                     {
+                        // ... существующий код CreateButtonsSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -466,18 +598,25 @@ namespace ThemeManager
 
             FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
+            // Сбрасываем цвет шрифта к значениям по умолчанию
+            FontColorR.Value = 255;
+            FontColorG.Value = 255;
+            FontColorB.Value = 255;
+            FontColorA.Value = 255;
+            UpdateFontColorPreview();
+
             var languageKeyTextBox = GetLanguageKeyTextBox();
             if (languageKeyTextBox != null)
                 languageKeyTextBox.Text = _Manifest.languageKey ?? "default";
 
             RefreshElementsView();
         }
+
         void SaveJson()
         {
             if (string.IsNullOrEmpty(FilePath))
             {
                 SaveJsonAs();
-
                 return;
             }
 
@@ -493,7 +632,16 @@ namespace ThemeManager
 
                 if (_Manifest.font == null)
                     _Manifest.font = new Manifest.Font();
+
                 _Manifest.font.assetName = FontNameBox.Text;
+
+                // Сохраняем цвет шрифта
+                _Manifest.font.color = new Vector4(
+                    (float)FontColorR.Value,
+                    (float)FontColorG.Value,
+                    (float)FontColorB.Value,
+                    (float)FontColorA.Value
+                );
 
                 var json = JsonConvert.SerializeObject(_Manifest, Formatting.Indented);
 
@@ -505,6 +653,7 @@ namespace ThemeManager
                 MessageBox.Show($"Error saving JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         TextBox GetLanguageKeyTextBox()
         {
             var themePanel = MainPanel?.Controls[1] as Panel;
@@ -518,6 +667,7 @@ namespace ThemeManager
             }
             return null;
         }
+
         void SaveJsonAs()
         {
             var filePath = ShowSaveFileDialog("JSON files|*.json");
@@ -540,8 +690,10 @@ namespace ThemeManager
                 }
             }
         }
+
         void RefreshElementsView()
         {
+            // ... существующий код RefreshElementsView без изменений ...
             if (ElementsPanel == null)
                 return;
 
@@ -916,6 +1068,7 @@ namespace ThemeManager
                 }
             }
         }
+
         void RefreshElementsWidth()
         {
             if (ElementsPanel != null)
@@ -934,8 +1087,10 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
+
         Panel CreateSpritePanel(Manifest.Sprite sprite, string spriteType)
         {
+            // ... существующий код CreateSpritePanel без изменений ...
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -1165,12 +1320,58 @@ namespace ThemeManager
                 form.ShowDialog();
             }
         }
+
         Manifest.Sprite CreateDefaultSprite() => new Manifest.Sprite
         {
             pixelPerUnit = 100,
             filterMode = 1,
             borders = new Manifest.Sprite.Borders()
         };
+
+        // Методы для работы с цветом шрифта
+        void UpdateFontColor()
+        {
+            UpdateFontColorPreview();
+
+            if (_Manifest != null && _Manifest.font != null)
+            {
+                _Manifest.font.color = new Vector4(
+                    (float)FontColorR.Value,
+                    (float)FontColorG.Value,
+                    (float)FontColorB.Value,
+                    (float)FontColorA.Value
+                );
+            }
+        }
+
+        void UpdateFontColorPreview()
+        {
+            var r = (int)FontColorR.Value;
+            var g = (int)FontColorG.Value;
+            var b = (int)FontColorB.Value;
+            var a = (int)FontColorA.Value;
+
+            FontColorPanel.BackColor = Color.FromArgb(a, r, g, b);
+        }
+
+        void ShowColorPickerDialog()
+        {
+            using (var colorDialog = new ColorDialog())
+            {
+                colorDialog.Color = FontColorPanel.BackColor;
+                colorDialog.FullOpen = true;
+
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    FontColorR.Value = colorDialog.Color.R;
+                    FontColorG.Value = colorDialog.Color.G;
+                    FontColorB.Value = colorDialog.Color.B;
+                    FontColorA.Value = colorDialog.Color.A;
+
+                    UpdateFontColor();
+                }
+            }
+        }
 
         protected override void OnResize(EventArgs e)
         {
