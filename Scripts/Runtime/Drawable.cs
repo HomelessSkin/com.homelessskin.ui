@@ -43,7 +43,10 @@ namespace UI
                     Overlay.enabled = true;
                     Overlay.sprite = data.Overlay;
                     if (data.Base.border.magnitude > 0.0001f)
+                    {
                         Overlay.type = Image.Type.Sliced;
+                        Overlay.fillCenter = false;
+                    }
                 }
                 else
                     Overlay.enabled = false;

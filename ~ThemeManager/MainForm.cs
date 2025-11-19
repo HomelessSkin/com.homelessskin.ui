@@ -171,38 +171,71 @@ namespace ThemeManager
                                 if (string.IsNullOrEmpty(FilePath) || !File.Exists(FilePath))
                                     return;
 
-                                var json = File.ReadAllText(FilePath);
-                                _Manifest = Manifest.Cast(json);
-                                Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
-
-                                ThemeNameBox.Text = _Manifest.name;
-                                Major.Value = _Manifest.v.major;
-                                Minor.Value = _Manifest.v.minor;
-                                Patch.Value = _Manifest.v.patch;
-                                FontNameBox.Text = _Manifest.font?.assetName ?? "";
-
-                                if (_Manifest.font != null)
+                                try
                                 {
-                                    var color = _Manifest.font.color;
+                                    var json = File.ReadAllText(FilePath);
+                                    _Manifest = Manifest.Cast(json);
+                                    Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
 
-                                    FontColorR.Value = (decimal)(color.X);
-                                    FontColorG.Value = (decimal)(color.Y);
-                                    FontColorB.Value = (decimal)(color.Z);
-                                    FontColorA.Value = (decimal)(color.W);
+                                    foreach (var element in Elements)
+                                    {
+                                        if (element.overlay == null)
+                                            element.overlay = CreateDefaultSprite();
+                                        else if (element.overlay.borders == null)
+                                            element.overlay.borders = new Manifest.Sprite.Borders();
 
-                                    UpdateFontColorPreview();
+                                        if (element.mask == null)
+                                            element.mask = CreateDefaultSprite();
+                                        else if (element.mask.borders == null)
+                                            element.mask.borders = new Manifest.Sprite.Borders();
+
+                                        if (element.@base.borders == null)
+                                            element.@base.borders = new Manifest.Sprite.Borders();
+
+                                        if (element.text == null)
+                                            element.text = new Manifest.Element.Text
+                                            {
+                                                fontSize = 32,
+                                                characterSpacing = 0,
+                                                wordSpacing = 0,
+                                                xOffset = 0,
+                                                yOffset = 0
+                                            };
+                                    }
+
+                                    ThemeNameBox.Text = _Manifest.name;
+                                    Major.Value = _Manifest.v.major;
+                                    Minor.Value = _Manifest.v.minor;
+                                    Patch.Value = _Manifest.v.patch;
+                                    FontNameBox.Text = _Manifest.font?.assetName ?? "";
+
+                                    if (_Manifest.font != null)
+                                    {
+                                        var color = _Manifest.font.color;
+
+                                        FontColorR.Value = (decimal)(color.X);
+                                        FontColorG.Value = (decimal)(color.Y);
+                                        FontColorB.Value = (decimal)(color.Z);
+                                        FontColorA.Value = (decimal)(color.W);
+
+                                        UpdateFontColorPreview();
+                                    }
+                                    else
+                                    {
+                                        FontColorR.Value = 255;
+                                        FontColorG.Value = 255;
+                                        FontColorB.Value = 255;
+                                        FontColorA.Value = 255;
+
+                                        UpdateFontColorPreview();
+                                    }
+
+                                    RefreshElementsView();
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    FontColorR.Value = 255;
-                                    FontColorG.Value = 255;
-                                    FontColorB.Value = 255;
-                                    FontColorA.Value = 255;
-
-                                    UpdateFontColorPreview();
+                                    MessageBox.Show($"Error loading JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
-
-                                RefreshElementsView();
                             }
                         }
                     }
@@ -1196,9 +1229,18 @@ namespace ThemeManager
             {
                 Text = "Edit Borders...",
                 Dock = DockStyle.Fill,
-                Height = 30
+                Height = 30,
+                Tag = sprite
             };
-            bordersButton.Click += (s, e) => ShowBordersDialog($"{spriteType} Sprite Borders");
+            bordersButton.Click += (s, e) =>
+            {
+                var btn = s as Button;
+                var targetSprite = btn?.Tag as Manifest.Sprite;
+                if (targetSprite != null)
+                {
+                    ShowBordersDialog($"{spriteType} Sprite Borders", targetSprite);
+                }
+            };
 
             layout.Controls.Add(fileNameLabel, 0, 0);
 
@@ -1229,100 +1271,99 @@ namespace ThemeManager
             panel.Controls.Add(layout);
 
             return panel;
+        }
+        void ShowBordersDialog(string title, Manifest.Sprite sprite)
+        {
+            if (sprite == null)
+                return;
 
-            void ShowBordersDialog(string title)
+            var form = new Form
             {
-                if (sprite == null)
-                    return;
+                Text = title,
+                Size = new Size(250, 280),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false
+            };
 
-                var form = new Form
-                {
-                    Text = title,
-                    Size = new Size(250, 280),
-                    StartPosition = FormStartPosition.CenterParent,
-                    FormBorderStyle = FormBorderStyle.FixedDialog,
-                    MaximizeBox = false
-                };
+            var groupBox = new GroupBox
+            {
+                Text = "Borders Settings",
+                Location = new Point(12, 12),
+                Size = new Size(210, 180),
+                Font = new Font(DefaultFont, FontStyle.Bold)
+            };
 
-                var groupBox = new GroupBox
-                {
-                    Text = "Borders Settings",
-                    Location = new Point(12, 12),
-                    Size = new Size(210, 180),
-                    Font = new Font(DefaultFont, FontStyle.Bold)
-                };
+            var leftLabel = new Label { Text = "Left:", Location = new Point(20, 30), Size = new Size(60, 20) };
+            var leftNumeric = new NumericUpDown
+            {
+                Location = new Point(80, 27),
+                Size = new Size(80, 20),
+                Minimum = 0,
+                Maximum = 1000,
+                Value = sprite.borders.left
+            };
 
-                var leftLabel = new Label { Text = "Left:", Location = new Point(20, 30), Size = new Size(60, 20) };
-                var leftNumeric = new NumericUpDown
-                {
-                    Location = new Point(80, 27),
-                    Size = new Size(80, 20),
-                    Minimum = 0,
-                    Maximum = 1000,
-                    Value = sprite.borders.left
-                };
+            var rightLabel = new Label { Text = "Right:", Location = new Point(20, 60), Size = new Size(60, 20) };
+            var rightNumeric = new NumericUpDown
+            {
+                Location = new Point(80, 57),
+                Size = new Size(80, 20),
+                Minimum = 0,
+                Maximum = 1000,
+                Value = sprite.borders.right
+            };
 
-                var rightLabel = new Label { Text = "Right:", Location = new Point(20, 60), Size = new Size(60, 20) };
-                var rightNumeric = new NumericUpDown
-                {
-                    Location = new Point(80, 57),
-                    Size = new Size(80, 20),
-                    Minimum = 0,
-                    Maximum = 1000,
-                    Value = sprite.borders.right
-                };
+            var topLabel = new Label { Text = "Top:", Location = new Point(20, 90), Size = new Size(60, 20) };
+            var topNumeric = new NumericUpDown
+            {
+                Location = new Point(80, 87),
+                Size = new Size(80, 20),
+                Minimum = 0,
+                Maximum = 1000,
+                Value = sprite.borders.top
+            };
 
-                var topLabel = new Label { Text = "Top:", Location = new Point(20, 90), Size = new Size(60, 20) };
-                var topNumeric = new NumericUpDown
-                {
-                    Location = new Point(80, 87),
-                    Size = new Size(80, 20),
-                    Minimum = 0,
-                    Maximum = 1000,
-                    Value = sprite.borders.top
-                };
+            var bottomLabel = new Label { Text = "Bottom:", Location = new Point(20, 120), Size = new Size(60, 20) };
+            var bottomNumeric = new NumericUpDown
+            {
+                Location = new Point(80, 117),
+                Size = new Size(80, 20),
+                Minimum = 0,
+                Maximum = 1000,
+                Value = sprite.borders.bottom
+            };
 
-                var bottomLabel = new Label { Text = "Bottom:", Location = new Point(20, 120), Size = new Size(60, 20) };
-                var bottomNumeric = new NumericUpDown
-                {
-                    Location = new Point(80, 117),
-                    Size = new Size(80, 20),
-                    Minimum = 0,
-                    Maximum = 1000,
-                    Value = sprite.borders.bottom
-                };
+            var okButton = new Button
+            {
+                Text = "OK",
+                DialogResult = DialogResult.OK,
+                Location = new Point(75, 210),
+                Size = new Size(80, 30)
+            };
 
-                var okButton = new Button
-                {
-                    Text = "OK",
-                    DialogResult = DialogResult.OK,
-                    Location = new Point(75, 210),
-                    Size = new Size(80, 30)
-                };
+            leftNumeric.ValueChanged += (s, e) => sprite.borders.left = (int)leftNumeric.Value;
+            rightNumeric.ValueChanged += (s, e) => sprite.borders.right = (int)rightNumeric.Value;
+            topNumeric.ValueChanged += (s, e) => sprite.borders.top = (int)topNumeric.Value;
+            bottomNumeric.ValueChanged += (s, e) => sprite.borders.bottom = (int)bottomNumeric.Value;
 
-                leftNumeric.ValueChanged += (s, e) => sprite.borders.left = (int)leftNumeric.Value;
-                rightNumeric.ValueChanged += (s, e) => sprite.borders.right = (int)rightNumeric.Value;
-                topNumeric.ValueChanged += (s, e) => sprite.borders.top = (int)topNumeric.Value;
-                bottomNumeric.ValueChanged += (s, e) => sprite.borders.bottom = (int)bottomNumeric.Value;
+            groupBox.Controls.AddRange(new Control[]
+            {
+        leftLabel,
+        leftNumeric,
+        rightLabel,
+        rightNumeric,
+        topLabel,
+        topNumeric,
+        bottomLabel,
+        bottomNumeric
+            });
 
-                groupBox.Controls.AddRange(new Control[]
-                {
-                    leftLabel,
-                    leftNumeric,
-                    rightLabel,
-                    rightNumeric,
-                    topLabel,
-                    topNumeric,
-                    bottomLabel,
-                    bottomNumeric
-                });
+            form.Controls.Add(groupBox);
+            form.Controls.Add(okButton);
 
-                form.Controls.Add(groupBox);
-                form.Controls.Add(okButton);
-
-                form.AcceptButton = okButton;
-                form.ShowDialog();
-            }
+            form.AcceptButton = okButton;
+            form.ShowDialog();
         }
         Manifest.Sprite CreateDefaultSprite() => new Manifest.Sprite
         {
