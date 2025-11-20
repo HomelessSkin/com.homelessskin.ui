@@ -19,19 +19,19 @@
   "samples": [
     {
       "displayName": "Prefabs",
-      "path": "Samples/Resources/UI_Prefabs"
+      "path": "~Samples/Resources/UI_Prefabs"
     },
     {
       "displayName": "DefaultTheme",
-      "path": "Samples/Resources/DefaultTheme"
+      "path": "~Samples/Resources/DefaultTheme"
     },
     {
       "displayName": "Test",
-      "path": "Samples/Test"
+      "path": "~Samples/Test"
     },
     {
       "displayName": "Fonts",
-      "path": "Samples/Fonts"
+      "path": "~Samples/Fonts"
     }
   ]
 }
