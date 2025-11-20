@@ -24,6 +24,8 @@ namespace UI
             if (data == null)
                 return;
 
+            InitOrigins();
+
             if (TryGetComponent<Image>(out var basege))
             {
                 basege.sprite = data.Base;
@@ -79,14 +81,22 @@ namespace UI
         {
             base.Start();
 
-            Origins = new Vector3[Texts.Length];
-            for (int t = 0; t < Texts.Length; t++)
-                if (Texts[t])
-                    Origins[t] = Texts[t].rectTransform.localPosition;
+            InitOrigins();
 
             if (!NonRedrawable &&
                   UIManager.TryGetData(GetKey(), out var data))
                 SetValue(data);
+        }
+
+        void InitOrigins()
+        {
+            if (Origins != null)
+                return;
+
+            Origins = new Vector3[Texts.Length];
+            for (int t = 0; t < Texts.Length; t++)
+                if (Texts[t])
+                    Origins[t] = Texts[t].rectTransform.localPosition;
         }
 
         #region DATA
