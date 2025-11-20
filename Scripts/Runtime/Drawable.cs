@@ -15,6 +15,8 @@ namespace UI
         [SerializeField] Image Overlay;
         [SerializeField] TMP_Text[] Texts;
 
+        Vector3[] Origins;
+
         public override string GetKey() => _Type.ToString();
         public bool IsNonRedrawable() => NonRedrawable;
         public void SetValue(Data data)
@@ -69,13 +71,18 @@ namespace UI
                         text.wordSpacing = data._Text.WordSpacing;
 
                     text.color = data._Text.Color;
-                    text.rectTransform.localPosition += data._Text.Offset;
+                    text.rectTransform.localPosition = Origins[t] + data._Text.Offset;
                 }
         }
 
         protected override void Start()
         {
             base.Start();
+
+            Origins = new Vector3[Texts.Length];
+            for (int t = 0; t < Texts.Length; t++)
+                if (Texts[t])
+                    Origins[t] = Texts[t].rectTransform.localPosition;
 
             if (!NonRedrawable &&
                   UIManager.TryGetData(GetKey(), out var data))
