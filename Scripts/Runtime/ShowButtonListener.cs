@@ -1,0 +1,54 @@
+using System;
+
+using UnityEngine;
+
+namespace UI
+{
+    public class ShowButtonListener : MonoBehaviour
+    {
+        [SerializeField] bool SkipSetEnabled;
+        [SerializeField] Dependency[] DependsOn;
+
+        bool State;
+
+        public void Enable() => gameObject.SetActive(true);
+        public void Disable() => gameObject.SetActive(false);
+        public void SwitchEnable() => gameObject.SetActive(!gameObject.activeInHierarchy);
+        public void EnableIfDisabled()
+        {
+            if (DependsOn == null || DependsOn.Length < 1)
+                return;
+
+            for (int i = 0; i < DependsOn.Length; i++)
+                if (DependsOn[i].Object.activeSelf != DependsOn[i].MustBe)
+                {
+                    gameObject.SetActive(false);
+
+                    return;
+                }
+
+            gameObject.SetActive(true);
+        }
+
+        void SetEnabled(bool value)
+        {
+            if (SkipSetEnabled)
+                return;
+
+            if (!value)
+            {
+                State = gameObject.activeInHierarchy;
+                gameObject.SetActive(false);
+            }
+            else
+                gameObject.SetActive(State);
+        }
+
+        [Serializable]
+        public struct Dependency
+        {
+            public GameObject Object;
+            public bool MustBe;
+        }
+    }
+}

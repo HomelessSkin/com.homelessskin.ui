@@ -82,7 +82,6 @@ namespace ThemeManager
 
                     Panel CreateJsonSection()
                     {
-                        // ... существующий код CreateJsonSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -631,6 +630,7 @@ namespace ThemeManager
                 }
             }
         }
+
         void CreateNewManifest()
         {
             _Manifest = Manifest.CreateNew();
