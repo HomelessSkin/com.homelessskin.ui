@@ -48,6 +48,11 @@ namespace UI
         public class Sprite
         {
             public string fileName;
+        }
+
+        [Serializable]
+        public class CustomSprite : Sprite
+        {
             public int pixelPerUnit;
             public int filterMode;
             public Borders borders;
@@ -67,11 +72,29 @@ namespace UI
         {
             public string key;
 
-            public Sprite @base;
+            public CustomSprite @base;
             public Sprite mask;
-            public Sprite overlay;
+            public CustomSprite overlay;
 
+            public Selectable selectable;
             public Text text;
+
+            [Serializable]
+            public class Selectable
+            {
+                public byte transition;
+
+                public Vector4 normalColor;
+                public Vector4 highlightedColor;
+                public Vector4 pressedColor;
+                public Vector4 selectedColor;
+                public Vector4 disabledColor;
+
+                public Sprite highlightedSprite;
+                public Sprite pressedSprite;
+                public Sprite selectedSprite;
+                public Sprite disabledSprite;
+            }
 
             [Serializable]
             public class Text
@@ -123,7 +146,7 @@ namespace UI
         public Sprite_V0[] sprites;
 
         [Serializable]
-        public class Sprite_V0 : Sprite
+        public class Sprite_V0 : CustomSprite
         {
             public string key;
         }
@@ -147,7 +170,7 @@ namespace UI
                     {
                         key = sprite.key,
 
-                        @base = new Sprite
+                        @base = new CustomSprite
                         {
                             fileName = sprite.fileName,
                             pixelPerUnit = sprite.pixelPerUnit,

@@ -13,6 +13,7 @@ namespace UI
         [SerializeField] bool NonRedrawable;
         [SerializeField] Image Mask;
         [SerializeField] Image Overlay;
+        [SerializeField] Selectable Selectable;
         [SerializeField] TMP_Text[] Texts;
 
         Vector3[] Origins;
@@ -54,6 +55,43 @@ namespace UI
                 }
                 else
                     Overlay.enabled = false;
+            }
+
+            if (Selectable &&
+                 data._Selectable != null)
+            {
+                Selectable.transition = data._Selectable.Transition;
+
+                switch (Selectable.transition)
+                {
+                    case Selectable.Transition.ColorTint:
+                    var colors = Selectable.colors;
+
+                    if (data._Selectable.NormalColor.magnitude >= 0.00001f)
+                        colors.normalColor = data._Selectable.NormalColor;
+                    if (data._Selectable.HighlightedColor.magnitude >= 0.00001f)
+                        colors.highlightedColor = data._Selectable.HighlightedColor;
+                    if (data._Selectable.PressedColor.magnitude >= 0.00001f)
+                        colors.pressedColor = data._Selectable.PressedColor;
+                    if (data._Selectable.SelectedColor.magnitude >= 0.00001f)
+                        colors.selectedColor = data._Selectable.SelectedColor;
+                    if (data._Selectable.DisabledColor.magnitude >= 0.00001f)
+                        colors.disabledColor = data._Selectable.DisabledColor;
+
+                    Selectable.colors = colors;
+                    break;
+
+                    case Selectable.Transition.SpriteSwap:
+                    var state = Selectable.spriteState;
+
+                    state.highlightedSprite = data._Selectable.HighlightedSprite;
+                    state.pressedSprite = data._Selectable.PressedSprite;
+                    state.selectedSprite = data._Selectable.SelectedSprite;
+                    state.disabledSprite = data._Selectable.DisabledSprite;
+
+                    Selectable.spriteState = state;
+                    break;
+                }
             }
 
             if (Texts != null &&
@@ -109,7 +147,25 @@ namespace UI
             public Sprite Mask;
             public Sprite Overlay;
 
+            public Selectable _Selectable;
             public Text _Text;
+
+            [Serializable]
+            public class Selectable
+            {
+                public UnityEngine.UI.Selectable.Transition Transition;
+
+                public Vector4 NormalColor;
+                public Vector4 HighlightedColor;
+                public Vector4 PressedColor;
+                public Vector4 SelectedColor;
+                public Vector4 DisabledColor;
+
+                public Sprite HighlightedSprite;
+                public Sprite PressedSprite;
+                public Sprite SelectedSprite;
+                public Sprite DisabledSprite;
+            }
 
             [Serializable]
             public class Text

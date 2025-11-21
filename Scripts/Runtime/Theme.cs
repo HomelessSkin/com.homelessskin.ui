@@ -47,10 +47,26 @@ namespace UI
                 var info = manifest.elements[s];
                 var data = new Drawable.Data
                 {
-                    Base = TryLoadSprite(info.@base),
-                    Mask = TryLoadSprite(info.mask),
-                    Overlay = TryLoadSprite(info.overlay),
+                    Base = TryLoadSprite(info.@base, info.@base),
+                    Mask = TryLoadSprite(info.mask, info.@base),
 
+                    Overlay = TryLoadSprite(info.overlay, info.overlay),
+
+                    _Selectable = new Drawable.Data.Selectable
+                    {
+                        Transition = info.selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
+
+                        NormalColor = new Vector4(info.selectable.normalColor.X, info.selectable.normalColor.Y, info.selectable.normalColor.Z, info.selectable.normalColor.W),
+                        HighlightedColor = new Vector4(info.selectable.highlightedColor.X, info.selectable.highlightedColor.Y, info.selectable.highlightedColor.Z, info.selectable.highlightedColor.W),
+                        PressedColor = new Vector4(info.selectable.pressedColor.X, info.selectable.pressedColor.Y, info.selectable.pressedColor.Z, info.selectable.pressedColor.W),
+                        SelectedColor = new Vector4(info.selectable.selectedColor.X, info.selectable.selectedColor.Y, info.selectable.selectedColor.Z, info.selectable.selectedColor.W),
+                        DisabledColor = new Vector4(info.selectable.disabledColor.X, info.selectable.disabledColor.Y, info.selectable.disabledColor.Z, info.selectable.disabledColor.W),
+
+                        HighlightedSprite = TryLoadSprite(info.selectable.highlightedSprite, info.@base),
+                        PressedSprite = TryLoadSprite(info.selectable.pressedSprite, info.@base),
+                        SelectedSprite = TryLoadSprite(info.selectable.selectedSprite, info.@base),
+                        DisabledSprite = TryLoadSprite(info.selectable.disabledSprite, info.@base),
+                    },
                     _Text = info.text == null ? null : LoadText(info.text),
                 };
                 data.Name = info.key;
@@ -92,7 +108,7 @@ namespace UI
                 Color = color,
                 Offset = new Vector3(text.xOffset, text.yOffset),
             };
-            Sprite TryLoadSprite(Manifest.Sprite sprite)
+            Sprite TryLoadSprite(Manifest.Sprite sprite, Manifest.CustomSprite param)
             {
                 if (sprite == null)
                     return null;
@@ -112,15 +128,15 @@ namespace UI
                     else if (!text.LoadImage(File.ReadAllBytes(filePath)))
                         return null;
 
-                    text.filterMode = (FilterMode)sprite.filterMode;
+                    text.filterMode = (FilterMode)param.filterMode;
                     var result = Sprite
                         .Create(text,
                         new Rect(0f, 0f, text.width, text.height),
                         new Vector2(text.width / 2f, text.height / 2f),
-                        (sprite.pixelPerUnit > 0 ? sprite.pixelPerUnit : 1),
+                        (param.pixelPerUnit > 0 ? param.pixelPerUnit : 1),
                         0,
                         SpriteMeshType.FullRect,
-                        new Vector4(sprite.borders.left, sprite.borders.bottom, sprite.borders.right, sprite.borders.top),
+                        new Vector4(param.borders.left, param.borders.bottom, param.borders.right, param.borders.top),
                         false);
 
                     result.name = sprite.fileName;

@@ -62,7 +62,7 @@ namespace ThemeManager
                     };
 
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // Увеличиваем высоту для добавления цвета шрифта
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
                     main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
 
@@ -82,6 +82,7 @@ namespace ThemeManager
 
                     Panel CreateJsonSection()
                     {
+                        // ... существующий код CreateJsonSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -181,15 +182,13 @@ namespace ThemeManager
                                         if (element.overlay == null)
                                             element.overlay = CreateDefaultSprite();
                                         else if (element.overlay.borders == null)
-                                            element.overlay.borders = new Manifest.Sprite.Borders();
+                                            element.overlay.borders = new Manifest.CustomSprite.Borders();
 
                                         if (element.mask == null)
                                             element.mask = CreateDefaultSprite();
-                                        else if (element.mask.borders == null)
-                                            element.mask.borders = new Manifest.Sprite.Borders();
 
                                         if (element.@base.borders == null)
-                                            element.@base.borders = new Manifest.Sprite.Borders();
+                                            element.@base.borders = new Manifest.CustomSprite.Borders();
 
                                         if (element.text == null)
                                             element.text = new Manifest.Element.Text
@@ -200,6 +199,20 @@ namespace ThemeManager
                                                 xOffset = 0,
                                                 yOffset = 0
                                             };
+
+                                        // Инициализация Selectable если его нет
+                                        if (element.selectable == null)
+                                        {
+                                            element.selectable = new Manifest.Element.Selectable
+                                            {
+                                                transition = 0,
+                                                normalColor = new Vector4(255f, 255f, 255f, 255f),
+                                                highlightedColor = new Vector4(255f, 255f, 255f, 255f),
+                                                pressedColor = new Vector4(255f, 255f, 255f, 255f),
+                                                selectedColor = new Vector4(255f, 255f, 255f, 255f),
+                                                disabledColor = new Vector4(255f, 255f, 255f, 255f)
+                                            };
+                                        }
                                     }
 
                                     ThemeNameBox.Text = _Manifest.name;
@@ -240,6 +253,7 @@ namespace ThemeManager
                     }
                     Panel CreateThemeSection()
                     {
+                        // ... существующий код CreateThemeSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -602,6 +616,15 @@ namespace ThemeManager
                                     wordSpacing = 0,
                                     xOffset = 0,
                                     yOffset = 0
+                                },
+                                selectable = new Manifest.Element.Selectable
+                                {
+                                    transition = 0,
+                                    normalColor = new Vector4(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    pressedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    selectedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    disabledColor = new Vector4(255f, 255f, 255f, 255f)
                                 }
                             });
 
@@ -734,7 +757,6 @@ namespace ThemeManager
         }
         void RefreshElementsView()
         {
-            // ... существующий код RefreshElementsView без изменений ...
             if (ElementsPanel == null)
                 return;
 
@@ -813,7 +835,7 @@ namespace ThemeManager
 
                     if (elementPanel.Height == 40)
                     {
-                        elementPanel.Height = 400;
+                        elementPanel.Height = 500; // Увеличиваем высоту для новой вкладки
 
                         AddElementContent();
 
@@ -848,7 +870,7 @@ namespace ThemeManager
                             Dock = DockStyle.Fill,
                             BackColor = Color.White,
                             AutoSize = true,
-                            MinimumSize = new Size(0, 450)
+                            MinimumSize = new Size(0, 500)
                         };
 
                         var tabControl = new TabControl
@@ -858,12 +880,8 @@ namespace ThemeManager
                         };
 
                         var baseTab = new TabPage("Base Sprite") { Padding = new Padding(10) };
-                        baseTab.Controls.Add(CreateSpritePanel(element.@base, "Base"));
+                        baseTab.Controls.Add(CreateSpritePanel(element.@base, "Base", element.mask));
                         tabControl.TabPages.Add(baseTab);
-
-                        var maskTab = new TabPage("Mask Sprite") { Padding = new Padding(10) };
-                        maskTab.Controls.Add(CreateSpritePanel(element.mask, "Mask"));
-                        tabControl.TabPages.Add(maskTab);
 
                         var overlayTab = new TabPage("Overlay Sprite") { Padding = new Padding(10) };
                         overlayTab.Controls.Add(CreateSpritePanel(element.overlay, "Overlay"));
@@ -872,6 +890,10 @@ namespace ThemeManager
                         var textTab = new TabPage("Text Settings") { Padding = new Padding(10) };
                         textTab.Controls.Add(CreateTextPanel());
                         tabControl.TabPages.Add(textTab);
+
+                        var selectableTab = new TabPage("Selectable Transitions") { Padding = new Padding(10) };
+                        selectableTab.Controls.Add(CreateSelectablePanel());
+                        tabControl.TabPages.Add(selectableTab);
 
                         var generalTab = new TabPage("Element Settings") { Padding = new Padding(10) };
                         generalTab.Controls.Add(CreateGeneralPanel());
@@ -1095,6 +1117,388 @@ namespace ThemeManager
 
                             return panel;
                         }
+                        Panel CreateSelectablePanel()
+                        {
+                            if (element.selectable == null)
+                            {
+                                element.selectable = new Manifest.Element.Selectable
+                                {
+                                    transition = 0,
+                                    normalColor = new Vector4(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    pressedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    selectedColor = new Vector4(255f, 255f, 255f, 255f),
+                                    disabledColor = new Vector4(255f, 255f, 255f, 255f)
+                                };
+                            }
+
+                            var panel = new Panel
+                            {
+                                Dock = DockStyle.Fill,
+                                AutoScroll = true
+                            };
+
+                            {
+                                var layout = new TableLayoutPanel
+                                {
+                                    Dock = DockStyle.Top,
+                                    ColumnCount = 2,
+                                    RowCount = 12,
+                                    Padding = new Padding(10),
+                                    AutoSize = true
+                                };
+
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+
+                                // Transition Type
+                                var transitionLabel = new Label
+                                {
+                                    Text = "Transition Type:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+
+                                var transitionCombo = new ComboBox
+                                {
+                                    Dock = DockStyle.Fill,
+                                    DropDownStyle = ComboBoxStyle.DropDownList,
+                                    Height = 25
+                                };
+                                transitionCombo.Items.AddRange(new object[] { "Color Tint", "Sprite Swap" });
+                                transitionCombo.SelectedIndex = element.selectable.transition;
+
+                                layout.Controls.Add(transitionLabel, 0, 0);
+                                layout.Controls.Add(transitionCombo, 1, 0);
+
+                                // Normal State
+                                var normalLabel = new Label
+                                {
+                                    Text = "Normal State:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+                                layout.Controls.Add(normalLabel, 0, 1);
+                                layout.SetColumnSpan(normalLabel, 2);
+
+                                // Normal Color (только для Color Tint)
+                                var normalColorLabel = new Label { Text = "Normal Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = color);
+                                layout.Controls.Add(normalColorLabel, 0, 2);
+                                layout.Controls.Add(normalColorPanel, 1, 2);
+
+                                // Highlighted State
+                                var highlightedLabel = new Label
+                                {
+                                    Text = "Highlighted State:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+                                layout.Controls.Add(highlightedLabel, 0, 3);
+                                layout.SetColumnSpan(highlightedLabel, 2);
+
+                                // Highlighted Color (для Color Tint)
+                                var highlightedColorLabel = new Label { Text = "Highlighted Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = color);
+                                layout.Controls.Add(highlightedColorLabel, 0, 4);
+                                layout.Controls.Add(highlightedColorPanel, 1, 4);
+
+                                // Highlighted Sprite (для Sprite Swap)
+                                var highlightedSpriteLabel = new Label { Text = "Highlighted Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var highlightedSpritePanel = CreateSpriteControl(element.selectable.highlightedSprite, sprite => element.selectable.highlightedSprite = sprite);
+                                layout.Controls.Add(highlightedSpriteLabel, 0, 4);
+                                layout.Controls.Add(highlightedSpritePanel, 1, 4);
+
+                                // Pressed State
+                                var pressedLabel = new Label
+                                {
+                                    Text = "Pressed State:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+                                layout.Controls.Add(pressedLabel, 0, 5);
+                                layout.SetColumnSpan(pressedLabel, 2);
+
+                                // Pressed Color
+                                var pressedColorLabel = new Label { Text = "Pressed Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = color);
+                                layout.Controls.Add(pressedColorLabel, 0, 6);
+                                layout.Controls.Add(pressedColorPanel, 1, 6);
+
+                                // Pressed Sprite
+                                var pressedSpriteLabel = new Label { Text = "Pressed Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var pressedSpritePanel = CreateSpriteControl(element.selectable.pressedSprite, sprite => element.selectable.pressedSprite = sprite);
+                                layout.Controls.Add(pressedSpriteLabel, 0, 6);
+                                layout.Controls.Add(pressedSpritePanel, 1, 6);
+
+                                // Selected State
+                                var selectedLabel = new Label
+                                {
+                                    Text = "Selected State:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+                                layout.Controls.Add(selectedLabel, 0, 7);
+                                layout.SetColumnSpan(selectedLabel, 2);
+
+                                // Selected Color
+                                var selectedColorLabel = new Label { Text = "Selected Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = color);
+                                layout.Controls.Add(selectedColorLabel, 0, 8);
+                                layout.Controls.Add(selectedColorPanel, 1, 8);
+
+                                // Selected Sprite
+                                var selectedSpriteLabel = new Label { Text = "Selected Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var selectedSpritePanel = CreateSpriteControl(element.selectable.selectedSprite, sprite => element.selectable.selectedSprite = sprite);
+                                layout.Controls.Add(selectedSpriteLabel, 0, 8);
+                                layout.Controls.Add(selectedSpritePanel, 1, 8);
+
+                                // Disabled State
+                                var disabledLabel = new Label
+                                {
+                                    Text = "Disabled State:",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Font = new Font(DefaultFont, FontStyle.Bold)
+                                };
+                                layout.Controls.Add(disabledLabel, 0, 9);
+                                layout.SetColumnSpan(disabledLabel, 2);
+
+                                // Disabled Color
+                                var disabledColorLabel = new Label { Text = "Disabled Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = color);
+                                layout.Controls.Add(disabledColorLabel, 0, 10);
+                                layout.Controls.Add(disabledColorPanel, 1, 10);
+
+                                // Disabled Sprite
+                                var disabledSpriteLabel = new Label { Text = "Disabled Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
+                                var disabledSpritePanel = CreateSpriteControl(element.selectable.disabledSprite, sprite => element.selectable.disabledSprite = sprite);
+                                layout.Controls.Add(disabledSpriteLabel, 0, 10);
+                                layout.Controls.Add(disabledSpritePanel, 1, 10);
+
+                                panel.Controls.Add(layout);
+
+                                // Функция обновления видимости элементов в зависимости от типа перехода
+                                void UpdateTransitionVisibility()
+                                {
+                                    bool isColorTint = transitionCombo.SelectedIndex == 0;
+
+                                    // Показываем/скрываем все элементы Color Tint (включая Normal Color)
+                                    normalColorLabel.Visible = isColorTint;
+                                    normalColorPanel.Visible = isColorTint;
+                                    highlightedColorLabel.Visible = isColorTint;
+                                    highlightedColorPanel.Visible = isColorTint;
+                                    pressedColorLabel.Visible = isColorTint;
+                                    pressedColorPanel.Visible = isColorTint;
+                                    selectedColorLabel.Visible = isColorTint;
+                                    selectedColorPanel.Visible = isColorTint;
+                                    disabledColorLabel.Visible = isColorTint;
+                                    disabledColorPanel.Visible = isColorTint;
+
+                                    // Показываем/скрываем элементы Sprite Swap
+                                    highlightedSpriteLabel.Visible = !isColorTint;
+                                    highlightedSpritePanel.Visible = !isColorTint;
+                                    pressedSpriteLabel.Visible = !isColorTint;
+                                    pressedSpritePanel.Visible = !isColorTint;
+                                    selectedSpriteLabel.Visible = !isColorTint;
+                                    selectedSpritePanel.Visible = !isColorTint;
+                                    disabledSpriteLabel.Visible = !isColorTint;
+                                    disabledSpritePanel.Visible = !isColorTint;
+                                }
+
+                                // Обработчик события после создания всех элементов
+                                transitionCombo.SelectedIndexChanged += (s, e) =>
+                                {
+                                    element.selectable.transition = (byte)transitionCombo.SelectedIndex;
+                                    UpdateTransitionVisibility();
+                                };
+
+                                // Инициализируем видимость при создании
+                                UpdateTransitionVisibility();
+                            }
+
+                            return panel;
+
+                            // Новый метод с Color Picker (фиксированная высота)
+                            Panel CreateColorControlWithPicker(Vector4 initialColor, Action<Vector4> onColorChanged)
+                            {
+                                var colorPanel = new Panel
+                                {
+                                    Height = 40, // Фиксированная высота
+                                    Dock = DockStyle.Top,
+                                    MinimumSize = new Size(0, 40)
+                                };
+
+                                var layout = new TableLayoutPanel
+                                {
+                                    Dock = DockStyle.Fill,
+                                    ColumnCount = 4,
+                                    RowCount = 1,
+                                    Height = 40,
+                                    MinimumSize = new Size(0, 40)
+                                };
+
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40)); // Preview
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); // Info label
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60)); // Pick button
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60)); // Clear button
+
+                                var previewPanel = new Panel
+                                {
+                                    Dock = DockStyle.Fill,
+                                    BorderStyle = BorderStyle.FixedSingle,
+                                    BackColor = Color.FromArgb(
+                                        (int)(initialColor.W),
+                                        (int)(initialColor.X),
+                                        (int)(initialColor.Y),
+                                        (int)(initialColor.Z)
+                                    ),
+                                    Margin = new Padding(2),
+                                    Size = new Size(36, 36)
+                                };
+
+                                var colorInfoLabel = new Label
+                                {
+                                    Text = $"R:{(int)(initialColor.X)} G:{(int)(initialColor.Y)} B:{(int)(initialColor.Z)} A:{(int)(initialColor.W)}",
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Dock = DockStyle.Fill,
+                                    Margin = new Padding(10, 0, 0, 0),
+                                    AutoSize = false,
+                                    Height = 40
+                                };
+
+                                var pickerButton = new Button
+                                {
+                                    Text = "Pick",
+                                    Dock = DockStyle.Fill,
+                                    Height = 30,
+                                    Margin = new Padding(2),
+                                    Size = new Size(56, 30)
+                                };
+
+                                var clearButton = new Button
+                                {
+                                    Text = "Clear",
+                                    Dock = DockStyle.Fill,
+                                    Height = 30,
+                                    Margin = new Padding(2),
+                                    Size = new Size(56, 30)
+                                };
+
+                                pickerButton.Click += (s, e) =>
+                                {
+                                    using (var colorDialog = new ColorDialog())
+                                    {
+                                        colorDialog.Color = previewPanel.BackColor;
+                                        colorDialog.FullOpen = true;
+
+                                        if (colorDialog.ShowDialog() == DialogResult.OK)
+                                        {
+                                            var color = colorDialog.Color;
+                                            var newColor = new Vector4(
+                                                color.R,
+                                                color.G,
+                                                color.B,
+                                                color.A
+                                            );
+
+                                            previewPanel.BackColor = color;
+                                            colorInfoLabel.Text = $"R:{color.R} G:{color.G} B:{color.B} A:{color.A}";
+                                            onColorChanged?.Invoke(newColor);
+                                        }
+                                    }
+                                };
+
+                                clearButton.Click += (s, e) =>
+                                {
+                                    var defaultColor = new Vector4(255f, 255f, 255f, 255f);
+                                    previewPanel.BackColor = Color.White;
+                                    colorInfoLabel.Text = "R:255 G:255 B:255 A:255";
+                                    onColorChanged?.Invoke(defaultColor);
+                                };
+
+                                layout.Controls.Add(previewPanel, 0, 0);
+                                layout.Controls.Add(colorInfoLabel, 1, 0);
+                                layout.Controls.Add(pickerButton, 2, 0);
+                                layout.Controls.Add(clearButton, 3, 0);
+
+                                colorPanel.Controls.Add(layout);
+                                return colorPanel;
+                            }
+
+                            // Исправленный метод для спрайтов (фиксированная высота)
+                            Panel CreateSpriteControl(Manifest.Sprite sprite, Action<Manifest.Sprite> onSpriteChanged)
+                            {
+                                var spritePanel = new Panel
+                                {
+                                    Height = 40, // Фиксированная высота
+                                    Dock = DockStyle.Top,
+                                    MinimumSize = new Size(0, 40)
+                                };
+
+                                var layout = new TableLayoutPanel
+                                {
+                                    Dock = DockStyle.Fill,
+                                    ColumnCount = 2,
+                                    RowCount = 1,
+                                    Height = 40,
+                                    MinimumSize = new Size(0, 40)
+                                };
+
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70));
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
+
+                                var fileNameTextBox = new TextBox
+                                {
+                                    Text = sprite?.fileName ?? "",
+                                    Dock = DockStyle.Fill,
+                                    Height = 30,
+                                    Margin = new Padding(2),
+                                    Anchor = AnchorStyles.Left | AnchorStyles.Right
+                                };
+
+                                var browseButton = new Button
+                                {
+                                    Text = "Browse...",
+                                    Dock = DockStyle.Fill,
+                                    Height = 30,
+                                    Margin = new Padding(2),
+                                    Anchor = AnchorStyles.Left | AnchorStyles.Right
+                                };
+
+                                fileNameTextBox.TextChanged += (s, e) =>
+                                {
+                                    if (sprite != null)
+                                        sprite.fileName = fileNameTextBox.Text;
+                                    else
+                                    {
+                                        sprite = CreateDefaultSprite();
+                                        sprite.fileName = fileNameTextBox.Text;
+                                        onSpriteChanged?.Invoke(sprite);
+                                    }
+                                };
+
+                                browseButton.Click += (s, e) =>
+                                {
+                                    var filePath = ShowOpenFileDialog("Image files|*.png;*.jpg;*.jpeg", "Select Sprite");
+                                    if (!string.IsNullOrEmpty(filePath))
+                                    {
+                                        fileNameTextBox.Text = Path.GetFileName(filePath);
+                                    }
+                                };
+
+                                layout.Controls.Add(fileNameTextBox, 0, 0);
+                                layout.Controls.Add(browseButton, 1, 0);
+
+                                spritePanel.Controls.Add(layout);
+                                return spritePanel;
+                            }
+                        }
                     }
                 }
                 void RemoveElement()
@@ -1126,7 +1530,7 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
-        Panel CreateSpritePanel(Manifest.Sprite sprite, string spriteType)
+        Panel CreateSpritePanel(Manifest.CustomSprite sprite, string spriteType, Manifest.Sprite maskSprite = null)
         {
             var panel = new Panel
             {
@@ -1134,11 +1538,16 @@ namespace ThemeManager
                 AutoSize = true
             };
 
+            // Увеличиваем количество строк для размещения настроек маски
+            int rowCount = 7;
+            if (spriteType == "Base")
+                rowCount += 2; // Добавляем строки для маски
+
             var layout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
-                RowCount = 7,
+                RowCount = rowCount,
                 Padding = new Padding(10),
                 AutoSize = true
             };
@@ -1146,7 +1555,7 @@ namespace ThemeManager
             layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
             layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < rowCount; i++)
                 layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 35));
 
             var fileNameLabel = new Label
@@ -1235,7 +1644,7 @@ namespace ThemeManager
             bordersButton.Click += (s, e) =>
             {
                 var btn = s as Button;
-                var targetSprite = btn?.Tag as Manifest.Sprite;
+                var targetSprite = btn?.Tag as Manifest.CustomSprite;
                 if (targetSprite != null)
                 {
                     ShowBordersDialog($"{spriteType} Sprite Borders", targetSprite);
@@ -1262,17 +1671,90 @@ namespace ThemeManager
             layout.Controls.Add(filterLabel, 0, 2);
             layout.Controls.Add(filterCombo, 1, 2);
 
-            layout.Controls.Add(new Label { Text = "" }, 0, 3);
-            layout.SetColumnSpan(new Label { Text = "" }, 2);
+            // Добавляем настройки маски только для базового спрайта
+            if (spriteType == "Base" && maskSprite != null)
+            {
+                var maskSeparator = new Label
+                {
+                    Text = "Mask Settings:",
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    Dock = DockStyle.Fill,
+                    Font = new Font(DefaultFont, FontStyle.Bold)
+                };
+                layout.Controls.Add(maskSeparator, 0, 3);
+                layout.SetColumnSpan(maskSeparator, 2);
 
-            layout.Controls.Add(bordersButton, 0, 4);
-            layout.SetColumnSpan(bordersButton, 2);
+                var maskFileNameLabel = new Label
+                {
+                    Text = "Mask File:",
+                    TextAlign = ContentAlignment.MiddleLeft,
+                    Dock = DockStyle.Fill
+                };
+
+                var maskFileNameTextBox = new TextBox
+                {
+                    Text = maskSprite?.fileName ?? "",
+                    Dock = DockStyle.Fill,
+                    Height = 25
+                };
+                maskFileNameTextBox.TextChanged += (s, e) =>
+                {
+                    if (maskSprite != null)
+                        maskSprite.fileName = maskFileNameTextBox.Text;
+                };
+
+                var maskBrowseButton = new Button
+                {
+                    Text = "Browse...",
+                    Dock = DockStyle.Fill,
+                    Height = 25
+                };
+                maskBrowseButton.Click += (s, e) =>
+                {
+                    var filePath = ShowOpenFileDialog("Image files|*.png;*.jpg;*.jpeg", "Select Mask sprite");
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        maskFileNameTextBox.Text = Path.GetFileName(filePath);
+                    }
+                };
+
+                var maskFileNameLayout = new TableLayoutPanel
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 2,
+                    RowCount = 1,
+                    Height = 25
+                };
+                maskFileNameLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70));
+                maskFileNameLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
+                maskFileNameLayout.Controls.Add(maskFileNameTextBox, 0, 0);
+                maskFileNameLayout.Controls.Add(maskBrowseButton, 1, 0);
+
+                layout.Controls.Add(maskFileNameLabel, 0, 4);
+                layout.Controls.Add(maskFileNameLayout, 1, 4);
+
+                // Сдвигаем кнопку редактирования границ
+                layout.Controls.Add(new Label { Text = "" }, 0, 5);
+                layout.SetColumnSpan(new Label { Text = "" }, 2);
+
+                layout.Controls.Add(bordersButton, 0, 6);
+                layout.SetColumnSpan(bordersButton, 2);
+            }
+            else
+            {
+                // Для остальных спрайтов оставляем стандартное расположение
+                layout.Controls.Add(new Label { Text = "" }, 0, 3);
+                layout.SetColumnSpan(new Label { Text = "" }, 2);
+
+                layout.Controls.Add(bordersButton, 0, 4);
+                layout.SetColumnSpan(bordersButton, 2);
+            }
 
             panel.Controls.Add(layout);
 
             return panel;
         }
-        void ShowBordersDialog(string title, Manifest.Sprite sprite)
+        void ShowBordersDialog(string title, Manifest.CustomSprite sprite)
         {
             if (sprite == null)
                 return;
@@ -1365,11 +1847,11 @@ namespace ThemeManager
             form.AcceptButton = okButton;
             form.ShowDialog();
         }
-        Manifest.Sprite CreateDefaultSprite() => new Manifest.Sprite
+        Manifest.CustomSprite CreateDefaultSprite() => new Manifest.CustomSprite
         {
             pixelPerUnit = 100,
             filterMode = 1,
-            borders = new Manifest.Sprite.Borders()
+            borders = new Manifest.CustomSprite.Borders()
         };
         void UpdateFontColor()
         {
