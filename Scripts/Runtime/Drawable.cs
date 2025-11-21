@@ -68,15 +68,15 @@ namespace UI
                     var colors = Selectable.colors;
 
                     if (data._Selectable.NormalColor.magnitude >= 0.00001f)
-                        colors.normalColor = data._Selectable.NormalColor;
+                        colors.normalColor = data._Selectable.NormalColor.ToColor();
                     if (data._Selectable.HighlightedColor.magnitude >= 0.00001f)
-                        colors.highlightedColor = data._Selectable.HighlightedColor;
+                        colors.highlightedColor = data._Selectable.HighlightedColor.ToColor();
                     if (data._Selectable.PressedColor.magnitude >= 0.00001f)
-                        colors.pressedColor = data._Selectable.PressedColor;
+                        colors.pressedColor = data._Selectable.PressedColor.ToColor();
                     if (data._Selectable.SelectedColor.magnitude >= 0.00001f)
-                        colors.selectedColor = data._Selectable.SelectedColor;
+                        colors.selectedColor = data._Selectable.SelectedColor.ToColor();
                     if (data._Selectable.DisabledColor.magnitude >= 0.00001f)
-                        colors.disabledColor = data._Selectable.DisabledColor;
+                        colors.disabledColor = data._Selectable.DisabledColor.ToColor();
 
                     Selectable.colors = colors;
                     break;
