@@ -49,24 +49,9 @@ namespace UI
                 {
                     Base = TryLoadSprite(info.@base, info.@base),
                     Mask = TryLoadSprite(info.mask, info.@base),
-
                     Overlay = TryLoadSprite(info.overlay, info.overlay),
 
-                    _Selectable = info.selectable == null ? null : new Drawable.Data.Selectable
-                    {
-                        Transition = info.selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
-
-                        NormalColor = new Vector4(info.selectable.normalColor.X, info.selectable.normalColor.Y, info.selectable.normalColor.Z, info.selectable.normalColor.W),
-                        HighlightedColor = new Vector4(info.selectable.highlightedColor.X, info.selectable.highlightedColor.Y, info.selectable.highlightedColor.Z, info.selectable.highlightedColor.W),
-                        PressedColor = new Vector4(info.selectable.pressedColor.X, info.selectable.pressedColor.Y, info.selectable.pressedColor.Z, info.selectable.pressedColor.W),
-                        SelectedColor = new Vector4(info.selectable.selectedColor.X, info.selectable.selectedColor.Y, info.selectable.selectedColor.Z, info.selectable.selectedColor.W),
-                        DisabledColor = new Vector4(info.selectable.disabledColor.X, info.selectable.disabledColor.Y, info.selectable.disabledColor.Z, info.selectable.disabledColor.W),
-
-                        HighlightedSprite = TryLoadSprite(info.selectable.highlightedSprite, info.@base),
-                        PressedSprite = TryLoadSprite(info.selectable.pressedSprite, info.@base),
-                        SelectedSprite = TryLoadSprite(info.selectable.selectedSprite, info.@base),
-                        DisabledSprite = TryLoadSprite(info.selectable.disabledSprite, info.@base),
-                    },
+                    _Selectable = info.selectable == null ? null : LoadSelectable(info.selectable, info.@base),
                     _Text = info.text == null ? null : LoadText(info.text),
                 };
                 data.Name = info.key;
@@ -96,18 +81,6 @@ namespace UI
 
                 return result ?? TMP_Settings.defaultFontAsset;
             }
-            Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
-            {
-                LanguageKey = lang,
-
-                Font = font,
-                FontSize = text.fontSize,
-                CharacterSpacing = text.characterSpacing,
-                WordSpacing = text.wordSpacing,
-
-                Color = color,
-                Offset = new Vector3(text.xOffset, text.yOffset),
-            };
             Sprite TryLoadSprite(Manifest.Sprite sprite, Manifest.CustomSprite param)
             {
                 if (sprite == null)
@@ -146,6 +119,33 @@ namespace UI
 
                 return null;
             }
+            Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
+            {
+                LanguageKey = lang,
+
+                Font = font,
+                FontSize = text.fontSize,
+                CharacterSpacing = text.characterSpacing,
+                WordSpacing = text.wordSpacing,
+
+                Color = color,
+                Offset = new Vector3(text.xOffset, text.yOffset),
+            };
+            Drawable.Data.Selectable LoadSelectable(Manifest.Element.Selectable selectable, Manifest.CustomSprite @base) => new Drawable.Data.Selectable
+            {
+                Transition = selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
+
+                NormalColor = new Vector4(selectable.normalColor.X, selectable.normalColor.Y, selectable.normalColor.Z, selectable.normalColor.W),
+                HighlightedColor = new Vector4(selectable.highlightedColor.X, selectable.highlightedColor.Y, selectable.highlightedColor.Z, selectable.highlightedColor.W),
+                PressedColor = new Vector4(selectable.pressedColor.X, selectable.pressedColor.Y, selectable.pressedColor.Z, selectable.pressedColor.W),
+                SelectedColor = new Vector4(selectable.selectedColor.X, selectable.selectedColor.Y, selectable.selectedColor.Z, selectable.selectedColor.W),
+                DisabledColor = new Vector4(selectable.disabledColor.X, selectable.disabledColor.Y, selectable.disabledColor.Z, selectable.disabledColor.W),
+
+                HighlightedSprite = TryLoadSprite(selectable.highlightedSprite, @base),
+                PressedSprite = TryLoadSprite(selectable.pressedSprite, @base),
+                SelectedSprite = TryLoadSprite(selectable.selectedSprite, @base),
+                DisabledSprite = TryLoadSprite(selectable.disabledSprite, @base),
+            };
         }
     }
 }
