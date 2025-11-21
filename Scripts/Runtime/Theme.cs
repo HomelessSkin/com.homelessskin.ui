@@ -52,7 +52,7 @@ namespace UI
 
                     Overlay = TryLoadSprite(info.overlay, info.overlay),
 
-                    _Selectable = new Drawable.Data.Selectable
+                    _Selectable = info.selectable == null ? null : new Drawable.Data.Selectable
                     {
                         Transition = info.selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
 
