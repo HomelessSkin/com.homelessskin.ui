@@ -170,6 +170,9 @@ namespace UI
 
         public void OpenThemes()
         {
+            if (_Drawer.IsEnabled())
+                return;
+
             _Drawer.ThemeScroll.Head.content = Instantiate(_Drawer.ThemeScroll.ContentPrefab, _Drawer.ThemeScroll.View).transform as RectTransform;
 
             for (int l = 0; l < _Drawer.Themes.Count; l++)
