@@ -183,7 +183,8 @@ namespace UI
         }
         public void CloseThemes()
         {
-            Destroy(_Drawer.ThemeScroll.Head.content.gameObject);
+            if (_Drawer.ThemeScroll.Head.content)
+                Destroy(_Drawer.ThemeScroll.Head.content.gameObject);
 
             _Drawer.SetEnabled(false);
         }

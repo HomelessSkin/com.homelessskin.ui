@@ -82,7 +82,6 @@ namespace ThemeManager
 
                     Panel CreateJsonSection()
                     {
-                        // ... существующий код CreateJsonSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -200,7 +199,6 @@ namespace ThemeManager
                                                 yOffset = 0
                                             };
 
-                                        // Инициализация Selectable если его нет
                                         if (element.selectable == null)
                                         {
                                             element.selectable = new Manifest.Element.Selectable
@@ -253,7 +251,6 @@ namespace ThemeManager
                     }
                     Panel CreateThemeSection()
                     {
-                        // ... существующий код CreateThemeSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -517,7 +514,6 @@ namespace ThemeManager
                     }
                     Panel CreateElementsSection()
                     {
-                        // ... существующий код CreateElementsSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -560,7 +556,6 @@ namespace ThemeManager
                     }
                     Panel CreateButtonsSection()
                     {
-                        // ... существующий код CreateButtonsSection без изменений ...
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -835,7 +830,7 @@ namespace ThemeManager
 
                     if (elementPanel.Height == 40)
                     {
-                        elementPanel.Height = 500; // Увеличиваем высоту для новой вкладки
+                        elementPanel.Height = 500;
 
                         AddElementContent();
 
@@ -1151,7 +1146,6 @@ namespace ThemeManager
                                 layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
                                 layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-                                // Transition Type
                                 var transitionLabel = new Label
                                 {
                                     Text = "Transition Type:",
@@ -1172,7 +1166,6 @@ namespace ThemeManager
                                 layout.Controls.Add(transitionLabel, 0, 0);
                                 layout.Controls.Add(transitionCombo, 1, 0);
 
-                                // Normal State
                                 var normalLabel = new Label
                                 {
                                     Text = "Normal State:",
@@ -1183,13 +1176,11 @@ namespace ThemeManager
                                 layout.Controls.Add(normalLabel, 0, 1);
                                 layout.SetColumnSpan(normalLabel, 2);
 
-                                // Normal Color (только для Color Tint)
                                 var normalColorLabel = new Label { Text = "Normal Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = color);
                                 layout.Controls.Add(normalColorLabel, 0, 2);
                                 layout.Controls.Add(normalColorPanel, 1, 2);
 
-                                // Highlighted State
                                 var highlightedLabel = new Label
                                 {
                                     Text = "Highlighted State:",
@@ -1200,19 +1191,16 @@ namespace ThemeManager
                                 layout.Controls.Add(highlightedLabel, 0, 3);
                                 layout.SetColumnSpan(highlightedLabel, 2);
 
-                                // Highlighted Color (для Color Tint)
                                 var highlightedColorLabel = new Label { Text = "Highlighted Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = color);
                                 layout.Controls.Add(highlightedColorLabel, 0, 4);
                                 layout.Controls.Add(highlightedColorPanel, 1, 4);
 
-                                // Highlighted Sprite (для Sprite Swap)
                                 var highlightedSpriteLabel = new Label { Text = "Highlighted Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var highlightedSpritePanel = CreateSpriteControl(element.selectable.highlightedSprite, sprite => element.selectable.highlightedSprite = sprite);
                                 layout.Controls.Add(highlightedSpriteLabel, 0, 4);
                                 layout.Controls.Add(highlightedSpritePanel, 1, 4);
 
-                                // Pressed State
                                 var pressedLabel = new Label
                                 {
                                     Text = "Pressed State:",
@@ -1223,19 +1211,16 @@ namespace ThemeManager
                                 layout.Controls.Add(pressedLabel, 0, 5);
                                 layout.SetColumnSpan(pressedLabel, 2);
 
-                                // Pressed Color
                                 var pressedColorLabel = new Label { Text = "Pressed Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = color);
                                 layout.Controls.Add(pressedColorLabel, 0, 6);
                                 layout.Controls.Add(pressedColorPanel, 1, 6);
 
-                                // Pressed Sprite
                                 var pressedSpriteLabel = new Label { Text = "Pressed Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var pressedSpritePanel = CreateSpriteControl(element.selectable.pressedSprite, sprite => element.selectable.pressedSprite = sprite);
                                 layout.Controls.Add(pressedSpriteLabel, 0, 6);
                                 layout.Controls.Add(pressedSpritePanel, 1, 6);
 
-                                // Selected State
                                 var selectedLabel = new Label
                                 {
                                     Text = "Selected State:",
@@ -1246,19 +1231,16 @@ namespace ThemeManager
                                 layout.Controls.Add(selectedLabel, 0, 7);
                                 layout.SetColumnSpan(selectedLabel, 2);
 
-                                // Selected Color
                                 var selectedColorLabel = new Label { Text = "Selected Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = color);
                                 layout.Controls.Add(selectedColorLabel, 0, 8);
                                 layout.Controls.Add(selectedColorPanel, 1, 8);
 
-                                // Selected Sprite
                                 var selectedSpriteLabel = new Label { Text = "Selected Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var selectedSpritePanel = CreateSpriteControl(element.selectable.selectedSprite, sprite => element.selectable.selectedSprite = sprite);
                                 layout.Controls.Add(selectedSpriteLabel, 0, 8);
                                 layout.Controls.Add(selectedSpritePanel, 1, 8);
 
-                                // Disabled State
                                 var disabledLabel = new Label
                                 {
                                     Text = "Disabled State:",
@@ -1269,13 +1251,11 @@ namespace ThemeManager
                                 layout.Controls.Add(disabledLabel, 0, 9);
                                 layout.SetColumnSpan(disabledLabel, 2);
 
-                                // Disabled Color
                                 var disabledColorLabel = new Label { Text = "Disabled Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = color);
                                 layout.Controls.Add(disabledColorLabel, 0, 10);
                                 layout.Controls.Add(disabledColorPanel, 1, 10);
 
-                                // Disabled Sprite
                                 var disabledSpriteLabel = new Label { Text = "Disabled Sprite:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
                                 var disabledSpritePanel = CreateSpriteControl(element.selectable.disabledSprite, sprite => element.selectable.disabledSprite = sprite);
                                 layout.Controls.Add(disabledSpriteLabel, 0, 10);
@@ -1283,12 +1263,10 @@ namespace ThemeManager
 
                                 panel.Controls.Add(layout);
 
-                                // Функция обновления видимости элементов в зависимости от типа перехода
                                 void UpdateTransitionVisibility()
                                 {
                                     bool isColorTint = transitionCombo.SelectedIndex == 0;
 
-                                    // Показываем/скрываем все элементы Color Tint (включая Normal Color)
                                     normalColorLabel.Visible = isColorTint;
                                     normalColorPanel.Visible = isColorTint;
                                     highlightedColorLabel.Visible = isColorTint;
@@ -1300,7 +1278,6 @@ namespace ThemeManager
                                     disabledColorLabel.Visible = isColorTint;
                                     disabledColorPanel.Visible = isColorTint;
 
-                                    // Показываем/скрываем элементы Sprite Swap
                                     highlightedSpriteLabel.Visible = !isColorTint;
                                     highlightedSpritePanel.Visible = !isColorTint;
                                     pressedSpriteLabel.Visible = !isColorTint;
@@ -1311,25 +1288,22 @@ namespace ThemeManager
                                     disabledSpritePanel.Visible = !isColorTint;
                                 }
 
-                                // Обработчик события после создания всех элементов
                                 transitionCombo.SelectedIndexChanged += (s, e) =>
                                 {
                                     element.selectable.transition = (byte)transitionCombo.SelectedIndex;
                                     UpdateTransitionVisibility();
                                 };
 
-                                // Инициализируем видимость при создании
                                 UpdateTransitionVisibility();
                             }
 
                             return panel;
 
-                            // Новый метод с Color Picker (фиксированная высота)
                             Panel CreateColorControlWithPicker(Vector4 initialColor, Action<Vector4> onColorChanged)
                             {
                                 var colorPanel = new Panel
                                 {
-                                    Height = 40, // Фиксированная высота
+                                    Height = 40,
                                     Dock = DockStyle.Top,
                                     MinimumSize = new Size(0, 40)
                                 };
@@ -1343,10 +1317,10 @@ namespace ThemeManager
                                     MinimumSize = new Size(0, 40)
                                 };
 
-                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40)); // Preview
-                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); // Info label
-                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60)); // Pick button
-                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60)); // Clear button
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40));
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60));
+                                layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60));
 
                                 var previewPanel = new Panel
                                 {
@@ -1431,12 +1405,11 @@ namespace ThemeManager
                                 return colorPanel;
                             }
 
-                            // Исправленный метод для спрайтов (фиксированная высота)
                             Panel CreateSpriteControl(Manifest.Sprite sprite, Action<Manifest.Sprite> onSpriteChanged)
                             {
                                 var spritePanel = new Panel
                                 {
-                                    Height = 40, // Фиксированная высота
+                                    Height = 40,
                                     Dock = DockStyle.Top,
                                     MinimumSize = new Size(0, 40)
                                 };
@@ -1538,10 +1511,9 @@ namespace ThemeManager
                 AutoSize = true
             };
 
-            // Увеличиваем количество строк для размещения настроек маски
             int rowCount = 7;
             if (spriteType == "Base")
-                rowCount += 2; // Добавляем строки для маски
+                rowCount += 2;
 
             var layout = new TableLayoutPanel
             {
@@ -1671,7 +1643,6 @@ namespace ThemeManager
             layout.Controls.Add(filterLabel, 0, 2);
             layout.Controls.Add(filterCombo, 1, 2);
 
-            // Добавляем настройки маски только для базового спрайта
             if (spriteType == "Base" && maskSprite != null)
             {
                 var maskSeparator = new Label
@@ -1733,7 +1704,6 @@ namespace ThemeManager
                 layout.Controls.Add(maskFileNameLabel, 0, 4);
                 layout.Controls.Add(maskFileNameLayout, 1, 4);
 
-                // Сдвигаем кнопку редактирования границ
                 layout.Controls.Add(new Label { Text = "" }, 0, 5);
                 layout.SetColumnSpan(new Label { Text = "" }, 2);
 
@@ -1742,7 +1712,6 @@ namespace ThemeManager
             }
             else
             {
-                // Для остальных спрайтов оставляем стандартное расположение
                 layout.Controls.Add(new Label { Text = "" }, 0, 3);
                 layout.SetColumnSpan(new Label { Text = "" }, 2);
 
