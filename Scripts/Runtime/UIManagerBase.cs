@@ -163,14 +163,13 @@ namespace UI
             [Space]
             public string ResourcesPath;
             public Theme Current;
-            public List<Theme> Themes = new List<Theme>();
         }
 
-        public void OpenThemes() => _Drawer.Open<Theme, ListTheme>(_Drawer.Themes, this);
+        public void OpenThemes() => _Drawer.Open<ListTheme>(this);
         public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes()
         {
-            _Drawer.Themes.Clear();
+            _Drawer.InitData.Clear();
 
             var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
             for (int m = 0; m < resManifests.Length; m++)
@@ -179,7 +178,7 @@ namespace UI
 
                 var manifest = Manifest.Cast(file.text);
                 if (manifest.elements != null)
-                    _Drawer.Themes.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
+                    _Drawer.InitData.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
 
             if (!Directory.Exists(Application.persistentDataPath))
@@ -193,11 +192,11 @@ namespace UI
 
                     var manifest = Manifest.Cast(File.ReadAllText(path));
                     if (manifest.elements != null)
-                        _Drawer.Themes.Add(new Theme(manifest, path.Replace("manifest.json", "")));
+                        _Drawer.InitData.Add(new Theme(manifest, path.Replace("manifest.json", "")));
                 }
             }
         }
-        public void SelectTheme(int index) => RedrawTheme(_Drawer.Themes[index]);
+        public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer.InitData[index]);
         public bool TryGetData(string key, out Drawable.Data data)
         {
             if (_Drawer.Current.Sprites.TryGetValue(key, out data))
@@ -225,9 +224,9 @@ namespace UI
                 default:
                 {
                     var found = false;
-                    for (int m = 0; m < _Drawer.Themes.Count; m++)
+                    for (int m = 0; m < _Drawer.InitData.Count; m++)
                     {
-                        var theme = _Drawer.Themes[m];
+                        var theme = (Theme)_Drawer.InitData[m];
                         if (theme._Name == saved)
                         {
                             found = true;

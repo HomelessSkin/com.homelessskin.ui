@@ -23,8 +23,9 @@ namespace UI
         public GameObject ContentPrefab;
         public GameObject ItemPrefab;
 
-        public void Open<U, T>(List<U> values, UIManagerBase manager)
-            where U : IInitData
+        public List<IInitData> InitData = new List<IInitData>();
+
+        public void Open<T>(UIManagerBase manager)
             where T : ScrollItem
         {
             if (IsEnabled())
@@ -32,11 +33,11 @@ namespace UI
 
             Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
 
-            for (int l = 0; l < values.Count; l++)
+            for (int l = 0; l < InitData.Count; l++)
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, values[l], manager);
+                lp.Init(l, InitData[l], manager);
             }
 
             SetEnabled(true);
