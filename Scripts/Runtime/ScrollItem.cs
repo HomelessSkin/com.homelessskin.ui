@@ -10,16 +10,11 @@ namespace UI
 
         protected UIManagerBase Manager;
 
-        public virtual void Init(int index, IInitData data, UIManagerBase manager)
+        public virtual void Init(int index, IElementData data, UIManagerBase manager)
         {
             Manager = manager;
 
             Name.text = data._Name;
         }
-    }
-
-    public interface IInitData
-    {
-        public string _Name { get; set; }
     }
 }

@@ -18,36 +18,50 @@ namespace UI
 
         Vector3[] Origins;
 
+        protected override void Start()
+        {
+            base.Start();
+
+            InitOrigins();
+
+            if (!NonRedrawable &&
+                  UIManager.TryGetData(GetKey(), out var data))
+                SetData(data);
+        }
+
         public override string GetKey() => _Type.ToString();
         public bool IsNonRedrawable() => NonRedrawable;
-        public void SetValue(Data data)
+
+        public override void SetData(Data data)
         {
             if (data == null)
                 return;
+
+            var drawData = data as DrawData;
 
             InitOrigins();
 
             if (TryGetComponent<Image>(out var basege))
             {
-                basege.sprite = data.Base;
-                if (data.Base.border.magnitude > 0.0001f)
+                basege.sprite = drawData.Base;
+                if (drawData.Base.border.magnitude > 0.0001f)
                     basege.type = Image.Type.Sliced;
             }
 
             if (Mask)
             {
-                Mask.sprite = data.Mask;
-                if (data.Base.border.magnitude > 0.0001f)
+                Mask.sprite = drawData.Mask;
+                if (drawData.Base.border.magnitude > 0.0001f)
                     Mask.type = Image.Type.Sliced;
             }
 
             if (Overlay)
             {
-                if (data.Overlay)
+                if (drawData.Overlay)
                 {
                     Overlay.enabled = true;
-                    Overlay.sprite = data.Overlay;
-                    if (data.Base.border.magnitude > 0.0001f)
+                    Overlay.sprite = drawData.Overlay;
+                    if (drawData.Base.border.magnitude > 0.0001f)
                     {
                         Overlay.type = Image.Type.Sliced;
                         Overlay.fillCenter = false;
@@ -58,25 +72,25 @@ namespace UI
             }
 
             if (Selectable &&
-                 data._Selectable != null)
+                 drawData._Selectable != null)
             {
-                Selectable.transition = data._Selectable.Transition;
+                Selectable.transition = drawData._Selectable.Transition;
 
                 switch (Selectable.transition)
                 {
                     case Selectable.Transition.ColorTint:
                     var colors = Selectable.colors;
 
-                    if (data._Selectable.NormalColor.magnitude >= 0.00001f)
-                        colors.normalColor = data._Selectable.NormalColor.ToColor();
-                    if (data._Selectable.HighlightedColor.magnitude >= 0.00001f)
-                        colors.highlightedColor = data._Selectable.HighlightedColor.ToColor();
-                    if (data._Selectable.PressedColor.magnitude >= 0.00001f)
-                        colors.pressedColor = data._Selectable.PressedColor.ToColor();
-                    if (data._Selectable.SelectedColor.magnitude >= 0.00001f)
-                        colors.selectedColor = data._Selectable.SelectedColor.ToColor();
-                    if (data._Selectable.DisabledColor.magnitude >= 0.00001f)
-                        colors.disabledColor = data._Selectable.DisabledColor.ToColor();
+                    if (drawData._Selectable.NormalColor.magnitude >= 0.00001f)
+                        colors.normalColor = drawData._Selectable.NormalColor.ToColor();
+                    if (drawData._Selectable.HighlightedColor.magnitude >= 0.00001f)
+                        colors.highlightedColor = drawData._Selectable.HighlightedColor.ToColor();
+                    if (drawData._Selectable.PressedColor.magnitude >= 0.00001f)
+                        colors.pressedColor = drawData._Selectable.PressedColor.ToColor();
+                    if (drawData._Selectable.SelectedColor.magnitude >= 0.00001f)
+                        colors.selectedColor = drawData._Selectable.SelectedColor.ToColor();
+                    if (drawData._Selectable.DisabledColor.magnitude >= 0.00001f)
+                        colors.disabledColor = drawData._Selectable.DisabledColor.ToColor();
 
                     Selectable.colors = colors;
                     break;
@@ -84,10 +98,10 @@ namespace UI
                     case Selectable.Transition.SpriteSwap:
                     var state = Selectable.spriteState;
 
-                    state.highlightedSprite = data._Selectable.HighlightedSprite;
-                    state.pressedSprite = data._Selectable.PressedSprite;
-                    state.selectedSprite = data._Selectable.SelectedSprite;
-                    state.disabledSprite = data._Selectable.DisabledSprite;
+                    state.highlightedSprite = drawData._Selectable.HighlightedSprite;
+                    state.pressedSprite = drawData._Selectable.PressedSprite;
+                    state.selectedSprite = drawData._Selectable.SelectedSprite;
+                    state.disabledSprite = drawData._Selectable.DisabledSprite;
 
                     Selectable.spriteState = state;
                     break;
@@ -95,35 +109,24 @@ namespace UI
             }
 
             if (Texts != null &&
-                data._Text != null)
+                 drawData._Text != null)
                 for (int t = 0; t < Texts.Length; t++)
                 {
                     var text = Texts[t];
                     if (!text)
                         continue;
 
-                    text.font = data._Text.Font;
-                    if (data._Text.FontSize != 0)
-                        text.fontSize = data._Text.FontSize;
-                    if (data._Text.CharacterSpacing != 0)
-                        text.characterSpacing = data._Text.CharacterSpacing;
-                    if (data._Text.WordSpacing != 0)
-                        text.wordSpacing = data._Text.WordSpacing;
+                    text.font = drawData._Text.Font;
+                    if (drawData._Text.FontSize != 0)
+                        text.fontSize = drawData._Text.FontSize;
+                    if (drawData._Text.CharacterSpacing != 0)
+                        text.characterSpacing = drawData._Text.CharacterSpacing;
+                    if (drawData._Text.WordSpacing != 0)
+                        text.wordSpacing = drawData._Text.WordSpacing;
 
-                    text.color = data._Text.Color;
-                    text.rectTransform.localPosition = Origins[t] + data._Text.Offset;
+                    text.color = drawData._Text.Color;
+                    text.rectTransform.localPosition = Origins[t] + drawData._Text.Offset;
                 }
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
-            InitOrigins();
-
-            if (!NonRedrawable &&
-                  UIManager.TryGetData(GetKey(), out var data))
-                SetValue(data);
         }
 
         void InitOrigins()
@@ -139,10 +142,8 @@ namespace UI
 
         #region DATA
         [Serializable]
-        public class Data
+        public class DrawData : Data
         {
-            public string Name;
-
             public Sprite Base;
             public Sprite Mask;
             public Sprite Overlay;

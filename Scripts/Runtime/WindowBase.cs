@@ -16,14 +16,22 @@ namespace UI
     }
 
     [Serializable]
-    public abstract class ScrollBase : WindowBase
+    public abstract class Storage : WindowBase
+    {
+        public IElementData Default;
+        public IElementData Current;
+
+        public List<IElementData> Data = new List<IElementData>();
+        public UIElement[] Elements;
+    }
+
+    [Serializable]
+    public abstract class ScrollBase : Storage
     {
         public ScrollRect Head;
         public Transform View;
         public GameObject ContentPrefab;
         public GameObject ItemPrefab;
-
-        public List<IInitData> InitData = new List<IInitData>();
 
         public void Open<T>(UIManagerBase manager)
             where T : ScrollItem
@@ -33,11 +41,11 @@ namespace UI
 
             Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
 
-            for (int l = 0; l < InitData.Count; l++)
+            for (int l = 0; l < Data.Count; l++)
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, InitData[l], manager);
+                lp.Init(l, Data[l], manager);
             }
 
             SetEnabled(true);

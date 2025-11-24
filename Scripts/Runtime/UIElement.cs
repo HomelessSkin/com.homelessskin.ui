@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 
 namespace UI
@@ -9,14 +11,19 @@ namespace UI
 
         protected UIManagerBase UIManager;
 
-        public ElementType GetElementType() => _Type;
-        public virtual string GetKey() => Key;
-
         protected virtual void Start()
         {
             UIManager = GameObject
                 .FindGameObjectWithTag("UIManager")
                 .GetComponent<UIManagerBase>();
         }
+
+        public virtual string GetKey() => Key;
+        public ElementType GetElementType() => _Type;
+
+        public abstract void SetData(Data data);
+
+        [Serializable]
+        public abstract class Data { }
     }
 }

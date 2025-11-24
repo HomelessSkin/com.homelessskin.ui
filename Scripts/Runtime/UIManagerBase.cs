@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Core.Util;
+
 using TMPro;
 
 using Unity.Entities;
@@ -24,35 +26,24 @@ namespace UI
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
         [Serializable]
-        protected class Localizator
+        protected class Localizator : Storage, IPrefKey
         {
-            public string[] LangKeys;
-            public Localizable[] Localizables;
+            string Key = "localization";
+            public string _Key => Key;
 
             [Space]
             public TextAsset DefaultLanguage;
             public TextAsset[] Localizations;
 
-            public Dictionary<string, string> DefaultDict = new Dictionary<string, string>();
-            public Dictionary<string, string> Current = new Dictionary<string, string>();
+            public Dictionary<string, Localizable.LocalData> DefaultDict = new Dictionary<string, Localizable.LocalData>();
+            public Dictionary<string, Localizable.LocalData> Current = new Dictionary<string, Localizable.LocalData>();
         }
 
-        public void SetLanguage(int index)
-        {
-            if (_Drawer.Current.LanguageKey != "default")
-            {
-                AddMessage("theme language override");
-
-                return;
-            }
-
-            if (index > 0 &&
-                _Localizator.LangKeys != null &&
-                 index < _Localizator.LangKeys.Length)
-                SetLanguage(_Localizator.LangKeys[index]);
-        }
         public void SetLanguage(string langKey)
         {
+            if (string.IsNullOrEmpty(langKey))
+                return;
+
             Debug.Log($"Setting Language with {langKey} key");
 
             _Localizator.Current = Deserialize(_Localizator.DefaultLanguage.text);
@@ -64,43 +55,42 @@ namespace UI
                     break;
                 }
 
-            for (int i = 0; i < _Localizator.Localizables.Length; i++)
+            for (int i = 0; i < _Localizator.Elements.Length; i++)
             {
-                if (_Localizator.Current.TryGetValue(_Localizator.Localizables[i].GetKey(), out var value))
-                    _Localizator.Localizables[i].SetValue(value);
+                if (_Localizator.Current.TryGetValue(_Localizator.Elements[i].GetKey(), out var value))
+                    _Localizator.Elements[i].SetData(value);
                 else
-                    _Localizator.Localizables[i].SetValue(_Localizator.DefaultDict[_Localizator.Localizables[i].GetKey()]);
+                    _Localizator.Elements[i].SetData(_Localizator.DefaultDict[_Localizator.Elements[i].GetKey()]);
             }
         }
         public string GetTranslation(string key)
         {
             if (_Localizator.Current.ContainsKey(key))
-                return _Localizator.Current[key];
+                return _Localizator.Current[key].Text;
             else if (_Localizator.DefaultDict.ContainsKey(key))
-                return _Localizator.DefaultDict[key];
+                return _Localizator.DefaultDict[key].Text;
 
             return $"No Value for <{key}> key!";
         }
 
-        string Serialize(Dictionary<string, string> dict)
+        string Serialize(Dictionary<string, Localizable.LocalData> dict)
         {
-            var keys = dict.Keys.ToArray();
             var str = "";
-            for (int i = 0; i < keys.Length; i++)
-                str += $"{keys[i]} ; {dict[keys[i]]}\n";
+            foreach (var kvp in dict)
+                str += $"{kvp.Key} ; {kvp.Value.Text}\n";
 
             return str;
         }
-        Dictionary<string, string> Deserialize(string text)
+        Dictionary<string, Localizable.LocalData> Deserialize(string text)
         {
-            var dict = new Dictionary<string, string>();
+            var dict = new Dictionary<string, Localizable.LocalData>();
             var array = text.Split("\n");
             for (int i = 0; i < array.Length; i++)
-                if (array[i] != "")
+                if (!string.IsNullOrEmpty(array[i]))
                 {
                     var str = array[i].Split(" ; ");
                     if (!dict.ContainsKey(str[0]))
-                        dict[str[0]] = str[1];
+                        dict[str[0]] = new Localizable.LocalData { Text = str[1] };
                 }
 
             return dict;
@@ -109,17 +99,17 @@ namespace UI
 #if UNITY_EDITOR
         public void Reload()
         {
-            var defDict = new Dictionary<string, string>();
-            for (int i = 0; i < _Localizator.Localizables.Length; i++)
-                defDict[_Localizator.Localizables[i].GetKey()] = _Localizator.Localizables[i].GetValue();
+            var defDict = new Dictionary<string, Localizable.LocalData>();
+            for (int i = 0; i < _Localizator.Elements.Length; i++)
+                defDict[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
 
-            defDict[_Tutorial.Key] = _Tutorial.Value;
+            defDict[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
 
             for (int i = 0; i < _Messenger.Messages.Length; i++)
-                defDict[_Messenger.Messages[i]] = _Messenger.Messages[i];
+                defDict[_Messenger.Messages[i]] = new Localizable.LocalData { Text = _Messenger.Messages[i] };
 
             for (int i = 0; i < _Confirm.Keys.Length; i++)
-                defDict[_Confirm.Keys[i]] = _Confirm.Keys[i];
+                defDict[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
 
             File.WriteAllText(Application.dataPath + "/Resources/UI/Localizations/_default.json", Serialize(defDict));
 
@@ -150,26 +140,25 @@ namespace UI
         [SerializeField] protected Drawer _Drawer;
         #region DRAWER
         [Serializable]
-        protected class Drawer : ScrollBase
+        protected class Drawer : ScrollBase, IPrefKey
         {
-            public static string ThemePref = "theme";
+            string Key = "theme";
+            public string _Key => Key;
+            public Theme _Default => Default as Theme;
+            public Theme _Current => Current as Theme;
 
             [Space]
-            public Drawable[] Drawables;
-            [Space]
-            public Theme Default;
             public string DefaultPath;
             public TextAsset DefaultManifest;
             [Space]
             public string ResourcesPath;
-            public Theme Current;
         }
 
         public void OpenThemes() => _Drawer.Open<ListTheme>(this);
         public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes()
         {
-            _Drawer.InitData.Clear();
+            _Drawer.Data.Clear();
 
             var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
             for (int m = 0; m < resManifests.Length; m++)
@@ -178,7 +167,7 @@ namespace UI
 
                 var manifest = Manifest.Cast(file.text);
                 if (manifest.elements != null)
-                    _Drawer.InitData.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
+                    _Drawer.Data.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
 
             if (!Directory.Exists(Application.persistentDataPath))
@@ -192,16 +181,16 @@ namespace UI
 
                     var manifest = Manifest.Cast(File.ReadAllText(path));
                     if (manifest.elements != null)
-                        _Drawer.InitData.Add(new Theme(manifest, path.Replace("manifest.json", "")));
+                        _Drawer.Data.Add(new Theme(manifest, path.Replace("manifest.json", "")));
                 }
             }
         }
-        public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer.InitData[index]);
-        public bool TryGetData(string key, out Drawable.Data data)
+        public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer.Data[index]);
+        public bool TryGetData(string key, out Drawable.DrawData data)
         {
-            if (_Drawer.Current.Sprites.TryGetValue(key, out data))
+            if (_Drawer._Current.Sprites.TryGetValue(key, out data))
                 return true;
-            else if (_Drawer.Default.Sprites.TryGetValue(key, out data))
+            else if (_Drawer._Default.Sprites.TryGetValue(key, out data))
                 return true;
 
             return false;
@@ -211,22 +200,22 @@ namespace UI
         {
             LoadDefaultTheme();
 
-            var saved = PlayerPrefs.GetString(Drawer.ThemePref);
+            var saved = _Drawer.LoadPrefString();
             switch (saved)
             {
                 case null:
                 case "":
                 case "Default":
                 {
-                    RedrawTheme(_Drawer.Default);
+                    RedrawTheme(_Drawer._Default);
                 }
                 break;
                 default:
                 {
                     var found = false;
-                    for (int m = 0; m < _Drawer.InitData.Count; m++)
+                    for (int m = 0; m < _Drawer.Data.Count; m++)
                     {
-                        var theme = (Theme)_Drawer.InitData[m];
+                        var theme = (Theme)_Drawer.Data[m];
                         if (theme._Name == saved)
                         {
                             found = true;
@@ -248,24 +237,22 @@ namespace UI
         protected virtual void RedrawTheme(Theme theme)
         {
             _Drawer.Current = theme;
+            _Drawer.SavePrefString(theme._Name);
 
-            PlayerPrefs.SetString(Drawer.ThemePref, theme._Name);
-            PlayerPrefs.Save();
-
-            for (int d = 0; d < _Drawer.Drawables.Length; d++)
+            for (int d = 0; d < _Drawer.Elements.Length; d++)
             {
-                var drawable = _Drawer.Drawables[d];
+                var drawable = _Drawer.Elements[d] as Drawable;
                 if (drawable.IsNonRedrawable())
                     continue;
 
                 var key = drawable.GetKey();
-                if (_Drawer.Current.Sprites.TryGetValue(key, out var data))
-                    drawable.SetValue(data);
+                if (_Drawer._Current.Sprites.TryGetValue(key, out var data))
+                    drawable.SetData(data);
                 else
-                    drawable.SetValue(_Drawer.Default.Sprites[key]);
+                    drawable.SetData(_Drawer._Default.Sprites[key]);
             }
 
-            SetLanguage(_Drawer.Current.LanguageKey);
+            SetLanguage(_Drawer._Current.LanguageKey);
         }
         #endregion
 
@@ -460,10 +447,10 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            _Localizator.Localizables = (Localizable[])GameObject
+            _Localizator.Elements = (UIElement[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
 
-            _Drawer.Drawables = (Drawable[])GameObject
+            _Drawer.Elements = (UIElement[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);
         }
         protected virtual void Reset()

@@ -9,17 +9,17 @@ using UnityEngine;
 namespace UI
 {
     [Serializable]
-    public struct Theme : IInitData
+    public class Theme : IElementData
     {
-        public string Name;
+        string Name;
         public string _Name { get => Name; set => Name = value; }
 
         public string LanguageKey;
         public TMP_FontAsset FontAsset;
-        public Dictionary<string, Drawable.Data> Sprites;
+        public Dictionary<string, Drawable.DrawData> Sprites;
 
 #if UNITY_EDITOR
-        public List<Drawable.Data> Preview;
+        public List<Drawable.DrawData> Preview;
 #endif
 
         public Theme(Manifest_V2 manifest, string path, bool fromResources = false)
@@ -38,16 +38,16 @@ namespace UI
             Name = manifest.name;
             LanguageKey = lang;
             FontAsset = font;
-            Sprites = new Dictionary<string, Drawable.Data>();
+            Sprites = new Dictionary<string, Drawable.DrawData>();
 
 #if UNITY_EDITOR
-            Preview = new List<Drawable.Data>();
+            Preview = new List<Drawable.DrawData>();
 #endif
 
             for (int s = 0; s < manifest.elements.Length; s++)
             {
                 var info = manifest.elements[s];
-                var data = new Drawable.Data
+                var data = new Drawable.DrawData
                 {
                     Base = TryLoadSprite(info.@base, info.@base),
                     Mask = TryLoadSprite(info.mask, info.@base),
@@ -56,7 +56,6 @@ namespace UI
                     _Selectable = info.selectable == null ? null : LoadSelectable(info.selectable, info.@base),
                     _Text = info.text == null ? null : LoadText(info.text),
                 };
-                data.Name = info.key;
 
                 Sprites[info.key] = data;
 
@@ -121,7 +120,7 @@ namespace UI
 
                 return null;
             }
-            Drawable.Data.Text LoadText(Manifest.Element.Text text) => new Drawable.Data.Text
+            Drawable.DrawData.Text LoadText(Manifest.Element.Text text) => new Drawable.DrawData.Text
             {
                 LanguageKey = lang,
 
@@ -133,7 +132,7 @@ namespace UI
                 Color = color,
                 Offset = new Vector3(text.xOffset, text.yOffset),
             };
-            Drawable.Data.Selectable LoadSelectable(Manifest.Element.Selectable selectable, Manifest.CustomSprite @base) => new Drawable.Data.Selectable
+            Drawable.DrawData.Selectable LoadSelectable(Manifest.Element.Selectable selectable, Manifest.CustomSprite @base) => new Drawable.DrawData.Selectable
             {
                 Transition = selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
 

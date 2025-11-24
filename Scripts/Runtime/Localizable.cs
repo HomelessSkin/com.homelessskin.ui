@@ -1,3 +1,5 @@
+using System;
+
 using TMPro;
 
 using UnityEngine;
@@ -10,7 +12,8 @@ namespace UI
         [SerializeField] TMP_Text Value;
 
         public string GetValue() => Value.text;
-        public void SetValue(string value) => Value.text = value;
+
+        public override void SetData(Data data) => Value.text = (data as LocalData).Text;
 
 #if UNITY_EDITOR
         void OnValidate()
@@ -18,5 +21,11 @@ namespace UI
             Value = GetComponent<TMP_Text>();
         }
 #endif
+
+        [Serializable]
+        public class LocalData : Data
+        {
+            public string Text;
+        }
     }
 }

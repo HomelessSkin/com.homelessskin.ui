@@ -1,5 +1,3 @@
-using TMPro;
-
 using UnityEngine;
 
 namespace UI
@@ -10,24 +8,24 @@ namespace UI
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        public override void Init(int index, IInitData data, UIManagerBase manager)
+        public override void Init(int index, IElementData data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 
-            var theme = (Theme)data;
+            var theme = data as Theme;
             for (int d = 0; d < Drawables.Length; d++)
-                Drawables[d].SetValue(GetData(Drawables[d].GetKey()));
+                Drawables[d].SetData(GetData(Drawables[d].GetKey()));
 
             SelectButton.AddListener(() => Manager.SelectTheme(index));
             SelectButton
                 .targetGraphic
                 .gameObject
                 .GetComponent<Drawable>()
-                .SetValue(GetData("Menu_Button"));
+                .SetData(GetData("Menu_Button"));
 
-            Drawable.Data GetData(string tag)
+            Drawable.DrawData GetData(string tag)
             {
-                Drawable.Data data = null;
+                Drawable.DrawData data = null;
                 if (theme.Sprites.TryGetValue(tag, out data))
                 { }
                 else if (Manager.TryGetData(tag, out data))
