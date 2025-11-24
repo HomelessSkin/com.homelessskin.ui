@@ -171,11 +171,11 @@ namespace UI
             if (_Drawer.IsEnabled())
                 return;
 
-            _Drawer.Scroll.Head.content = Instantiate(_Drawer.Scroll.ContentPrefab, _Drawer.Scroll.View).transform as RectTransform;
+            _Drawer.Head.content = Instantiate(_Drawer.ContentPrefab, _Drawer.View).transform as RectTransform;
 
             for (int l = 0; l < _Drawer.Themes.Count; l++)
             {
-                var go = Instantiate(_Drawer.Scroll.ItemPrefab, _Drawer.Scroll.Head.content);
+                var go = Instantiate(_Drawer.ItemPrefab, _Drawer.Head.content);
                 var lp = go.GetComponent<ListTheme>();
                 lp.Init(l, _Drawer.Themes[l], this);
             }

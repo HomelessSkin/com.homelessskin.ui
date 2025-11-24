@@ -17,23 +17,17 @@ namespace UI
     [Serializable]
     public abstract class ScrollBase : WindowBase
     {
-        public MenuScroll Scroll;
+        public ScrollRect Head;
+        public Transform View;
+        public GameObject ContentPrefab;
+        public GameObject ItemPrefab;
 
         public void Close()
         {
-            if (Scroll.Head.content)
-                GameObject.Destroy(Scroll.Head.content.gameObject);
+            if (Head.content)
+                GameObject.Destroy(Head.content.gameObject);
 
             SetEnabled(false);
-        }
-
-        [Serializable]
-        public class MenuScroll
-        {
-            public ScrollRect Head;
-            public Transform View;
-            public GameObject ContentPrefab;
-            public GameObject ItemPrefab;
         }
     }
 }
