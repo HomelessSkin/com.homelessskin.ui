@@ -166,22 +166,7 @@ namespace UI
             public List<Theme> Themes = new List<Theme>();
         }
 
-        public void OpenThemes()
-        {
-            if (_Drawer.IsEnabled())
-                return;
-
-            _Drawer.Head.content = Instantiate(_Drawer.ContentPrefab, _Drawer.View).transform as RectTransform;
-
-            for (int l = 0; l < _Drawer.Themes.Count; l++)
-            {
-                var go = Instantiate(_Drawer.ItemPrefab, _Drawer.Head.content);
-                var lp = go.GetComponent<ListTheme>();
-                lp.Init(l, _Drawer.Themes[l], this);
-            }
-
-            _Drawer.SetEnabled(true);
-        }
+        public void OpenThemes() => _Drawer.Open<Theme, ListTheme>(_Drawer.Themes, this);
         public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes()
         {

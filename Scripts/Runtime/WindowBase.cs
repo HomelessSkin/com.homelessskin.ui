@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,24 @@ namespace UI
         public GameObject ContentPrefab;
         public GameObject ItemPrefab;
 
+        public void Open<U, T>(List<U> values, UIManagerBase manager)
+            where U : IInitData
+            where T : ScrollItem
+        {
+            if (IsEnabled())
+                return;
+
+            Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
+
+            for (int l = 0; l < values.Count; l++)
+            {
+                var go = GameObject.Instantiate(ItemPrefab, Head.content);
+                var lp = go.GetComponent<T>();
+                lp.Init(l, values[l], manager);
+            }
+
+            SetEnabled(true);
+        }
         public void Close()
         {
             if (Head.content)
