@@ -13,7 +13,6 @@ using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace UI
 {
@@ -151,10 +150,11 @@ namespace UI
         [SerializeField] protected Drawer _Drawer;
         #region DRAWER
         [Serializable]
-        protected class Drawer : WindowBase
+        protected class Drawer : ScrollBase
         {
             public static string ThemePref = "theme";
 
+            [Space]
             public Drawable[] Drawables;
             [Space]
             public Theme Default;
@@ -164,8 +164,6 @@ namespace UI
             public string ResourcesPath;
             public Theme Current;
             public List<Theme> Themes = new List<Theme>();
-            [Space]
-            public MenuScroll ThemeScroll;
         }
 
         public void OpenThemes()
@@ -173,24 +171,18 @@ namespace UI
             if (_Drawer.IsEnabled())
                 return;
 
-            _Drawer.ThemeScroll.Head.content = Instantiate(_Drawer.ThemeScroll.ContentPrefab, _Drawer.ThemeScroll.View).transform as RectTransform;
+            _Drawer.Scroll.Head.content = Instantiate(_Drawer.Scroll.ContentPrefab, _Drawer.Scroll.View).transform as RectTransform;
 
             for (int l = 0; l < _Drawer.Themes.Count; l++)
             {
-                var go = Instantiate(_Drawer.ThemeScroll.ItemPrefab, _Drawer.ThemeScroll.Head.content);
+                var go = Instantiate(_Drawer.Scroll.ItemPrefab, _Drawer.Scroll.Head.content);
                 var lp = go.GetComponent<ListTheme>();
                 lp.Init(l, _Drawer.Themes[l], this);
             }
 
             _Drawer.SetEnabled(true);
         }
-        public void CloseThemes()
-        {
-            if (_Drawer.ThemeScroll.Head.content)
-                Destroy(_Drawer.ThemeScroll.Head.content.gameObject);
-
-            _Drawer.SetEnabled(false);
-        }
+        public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes()
         {
             _Drawer.Themes.Clear();
@@ -251,7 +243,7 @@ namespace UI
                     for (int m = 0; m < _Drawer.Themes.Count; m++)
                     {
                         var theme = _Drawer.Themes[m];
-                        if (theme.Name == saved)
+                        if (theme._Name == saved)
                         {
                             found = true;
 
@@ -273,7 +265,7 @@ namespace UI
         {
             _Drawer.Current = theme;
 
-            PlayerPrefs.SetString(Drawer.ThemePref, theme.Name);
+            PlayerPrefs.SetString(Drawer.ThemePref, theme._Name);
             PlayerPrefs.Save();
 
             for (int d = 0; d < _Drawer.Drawables.Length; d++)
@@ -502,14 +494,5 @@ namespace UI
                 File.Create(Application.dataPath + "/Resources/UI/Localizations/_default.json");
         }
 #endif
-
-        [Serializable]
-        protected class MenuScroll
-        {
-            public ScrollRect Head;
-            public Transform View;
-            public GameObject ContentPrefab;
-            public GameObject ItemPrefab;
-        }
     }
 }

@@ -4,20 +4,17 @@ using UnityEngine;
 
 namespace UI
 {
-    public class ListTheme : MonoBehaviour
+    public class ListTheme : ScrollItem
     {
-        [SerializeField] TMP_Text Name;
         [SerializeField] MenuButton SelectButton;
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        UIManagerBase Manager;
-
-        public void Init(int index, Theme theme, UIManagerBase manager)
+        public override void Init(int index, IInitData data, UIManagerBase manager)
         {
-            Manager = manager;
-            Name.text = theme.Name;
+            base.Init(index, data, manager);
 
+            var theme = (Theme)data;
             for (int d = 0; d < Drawables.Length; d++)
                 Drawables[d].SetValue(GetData(Drawables[d].GetKey()));
 

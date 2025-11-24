@@ -9,9 +9,11 @@ using UnityEngine;
 namespace UI
 {
     [Serializable]
-    public struct Theme
+    public struct Theme : IInitData
     {
         public string Name;
+        public string _Name { get => Name; set => Name = value; }
+
         public string LanguageKey;
         public TMP_FontAsset FontAsset;
         public Dictionary<string, Drawable.Data> Sprites;
