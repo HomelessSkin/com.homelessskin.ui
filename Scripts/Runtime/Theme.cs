@@ -12,7 +12,7 @@ namespace UI
     public class Theme : IElementData
     {
         string Name;
-        public string _Name { get => Name; set => Name = value; }
+        public string _Name { get => Name; }
 
         public string LanguageKey;
         public TMP_FontAsset FontAsset;

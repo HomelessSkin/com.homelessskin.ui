@@ -1,3 +1,5 @@
+using Unity.Entities;
+
 using UnityEngine;
 
 namespace UI
@@ -17,11 +19,9 @@ namespace UI
                 Drawables[d].SetData(GetData(Drawables[d].GetKey()));
 
             SelectButton.AddListener(() => Manager.SelectTheme(index));
-            SelectButton
-                .targetGraphic
-                .gameObject
-                .GetComponent<Drawable>()
-                .SetData(GetData("Menu_Button"));
+
+            var drawable = SelectButton.targetGraphic.gameObject.GetComponent<Drawable>();
+            drawable.SetData(GetData(drawable.GetKey()));
 
             Drawable.DrawData GetData(string tag)
             {

@@ -28,8 +28,7 @@ namespace UI
         [Serializable]
         protected class Localizator : Storage, IPrefKey
         {
-            string Key = "localization";
-            public string _Key => Key;
+            public string _Key => "localization";
 
             [Space]
             public TextAsset DefaultLanguage;
@@ -142,8 +141,7 @@ namespace UI
         [Serializable]
         protected class Drawer : ScrollBase, IPrefKey
         {
-            string Key = "theme";
-            public string _Key => Key;
+            public string _Key => "theme";
             public Theme _Default => Default as Theme;
             public Theme _Current => Current as Theme;
 
