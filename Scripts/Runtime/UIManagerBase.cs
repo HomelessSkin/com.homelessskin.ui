@@ -340,6 +340,7 @@ namespace UI
 #endif
 
             ReloadThemes();
+            ReloadLocalizations();
 
             _Drawer.Load();
             _Localizator.Load();

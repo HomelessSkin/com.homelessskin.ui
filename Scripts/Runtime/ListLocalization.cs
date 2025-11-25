@@ -10,7 +10,6 @@ namespace UI
         {
             base.Init(index, data, manager);
 
-            SelectButton.SetLabel(data.Name);
             SelectButton.AddListener(() => manager.SelectLanguage(data.Name));
         }
     }
