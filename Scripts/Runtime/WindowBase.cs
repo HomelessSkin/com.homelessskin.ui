@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
+    #region WINDOW BASE
     [Serializable]
     public abstract class WindowBase
     {
@@ -17,7 +18,9 @@ namespace UI
         public void SetEnabled(bool value) => Panel.gameObject.SetActive(value);
         public bool IsEnabled() => Panel.gameObject.activeSelf;
     }
+    #endregion
 
+    #region STORAGE
     [Serializable]
     public abstract class Storage : WindowBase, IPrefKey
     {
@@ -38,7 +41,6 @@ namespace UI
 
         [Space]
         public Element[] Elements;
-
 
         public bool TryGetValue(string key, out Element.Data value) => TryGetValue<Element.Data>(key, out value);
         public bool TryGetValue<T>(string key, out T value) where T : Element.Data => TryGetCurrent<T>(key, out value) || TryGetDefault<T>(key, out value);
@@ -146,7 +148,9 @@ namespace UI
             public Dictionary<string, Element.Data> Store = new Dictionary<string, Element.Data>();
         }
     }
+    #endregion
 
+    #region SCROLL BASE
     [Serializable]
     public abstract class ScrollBase : Storage
     {
@@ -180,4 +184,5 @@ namespace UI
             SetEnabled(false);
         }
     }
+    #endregion
 }
