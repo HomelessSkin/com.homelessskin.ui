@@ -338,10 +338,7 @@ namespace UI
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
 
-            //if (_Localizator != null && _Localizator.DefaultLanguage)
-            //    _Localizator.Default.Store = Deserialize(_Localizator.DefaultLanguage.text);
-
-            //ReloadThemes();
+            ReloadThemes();
 
             _Drawer.Load();
             _Localizator.Load();
