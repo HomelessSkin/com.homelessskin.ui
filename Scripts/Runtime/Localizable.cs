@@ -11,11 +11,17 @@ namespace UI
     {
         [SerializeField] TMP_Text Value;
 
-        public string GetValue() => Value.text;
+        protected override void Start()
+        {
+            base.Start();
 
+            SetData(UIManager.GetTranslation(GetKey()));
+        }
         public override void SetData(Data data) => Value.text = (data as LocalData).Text;
 
 #if UNITY_EDITOR
+        public string GetValue() => Value.text;
+
         void OnValidate()
         {
             Value = GetComponent<TMP_Text>();

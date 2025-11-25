@@ -26,7 +26,7 @@ namespace UI
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
         [Serializable]
-        protected class Localizator : Storage
+        protected class Localizator : ScrollBase
         {
             public override void AddData(string serialized, string path, bool fromResources = false) =>
                 AllData.Add(new Localization(JsonConvert.DeserializeObject<Localization.Data>(serialized)));
@@ -62,12 +62,15 @@ namespace UI
                 JsonConvert.DeserializeObject<Localization.Data>(text);
         }
 
-        public string GetTranslation(string key)
+        public void OpenLocalizations() => _Localizator.Open<ListLocalization>(this);
+        public void CloseLocalizations() => _Localizator.Close();
+        public void ReloadLocalizations() => _Localizator.Collect();
+        public Localizable.LocalData GetTranslation(string key)
         {
             if (_Localizator.TryGetValue<Localizable.LocalData>(key, out var data))
-                return data.Text;
+                return data;
 
-            return $"No Value for <{key}> key!";
+            return null;
         }
 
         public void SelectLanguage(string langKey)
@@ -173,7 +176,7 @@ namespace UI
         public void OpenThemes() => _Drawer.Open<ListTheme>(this);
         public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes() => _Drawer.Collect();
-        public bool TryGetData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
+        public bool TryGetDrawData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
 
         public void SelectTheme(int index) => RedrawTheme(_Drawer.AllData[index]);
 
@@ -259,7 +262,7 @@ namespace UI
             {
                 _Messenger.Current.CallTime = Time.realtimeSinceStartup;
 
-                _Messenger.MessageText.text = GetTranslation(_Messenger.Messages[_Messenger.Current.Index]);
+                _Messenger.MessageText.text = GetTranslation(_Messenger.Messages[_Messenger.Current.Index]).Text;
                 _Messenger.SetEnabled(true);
             }
         }
@@ -291,7 +294,7 @@ namespace UI
 
         void InitConfirmation(int key, UnityAction action)
         {
-            _Confirm.Text.text = GetTranslation(_Confirm.Keys[key]);
+            _Confirm.Text.text = GetTranslation(_Confirm.Keys[key]).Text;
             _Confirm.CurrentAction = action;
 
             _Confirm.ConfirmButton.AddListener(action);
@@ -324,9 +327,7 @@ namespace UI
 
         public void ShowTutorial()
         {
-            var variant = GetTranslation(_Tutorial.Key);
-            _Tutorial.Text.text = variant;
-
+            _Tutorial.Text.text = GetTranslation(_Tutorial.Key).Text;
             _Tutorial.SetEnabled(true);
         }
         public void HideTutorial() => _Tutorial.SetEnabled(false);

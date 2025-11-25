@@ -25,7 +25,7 @@ namespace UI
             InitOrigins();
 
             if (!NonRedrawable &&
-                  UIManager.TryGetData(GetKey(), out var data))
+                  UIManager.TryGetDrawData(GetKey(), out var data))
                 SetData(data);
         }
 
