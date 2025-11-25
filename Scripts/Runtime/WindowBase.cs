@@ -18,13 +18,41 @@ namespace UI
     [Serializable]
     public abstract class Storage : WindowBase
     {
-        public Data Default;
-        public Data Current;
+        public Data Default = new Data();
+        public Data Current = new Data();
 
-        public List<Data> _Data = new List<Data>();
+        public List<Data> AllData = new List<Data>();
         public Element[] Elements;
 
-        public abstract class Data
+        public bool TryGetCurrent(string key, out Element.Data value) => TryGetCurrent<Element.Data>(key, out value);
+        public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
+        {
+            value = null;
+            if (Current.Store.TryGetValue(key, out var data))
+            {
+                value = data as T;
+
+                return true;
+            }
+
+            return false;
+        }
+        public bool TryGetDefault(string key, out Element.Data value) => TryGetDefault<Element.Data>(key, out value);
+        public bool TryGetDefault<T>(string key, out T value) where T : Element.Data
+        {
+            value = null;
+            if (Default.Store.TryGetValue(key, out var data))
+            {
+                value = data as T;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        [Serializable]
+        public class Data
         {
             public string _Name { get; }
 
@@ -48,11 +76,11 @@ namespace UI
 
             Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
 
-            for (int l = 0; l < _Data.Count; l++)
+            for (int l = 0; l < AllData.Count; l++)
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, _Data[l], manager);
+                lp.Init(l, AllData[l], manager);
             }
 
             SetEnabled(true);

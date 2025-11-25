@@ -18,7 +18,7 @@ namespace UI
         public TMP_FontAsset FontAsset;
 
 #if UNITY_EDITOR
-        public List<Drawable.DrawData> Preview;
+        public List<Element.Data> Preview = new List<Element.Data>();
 #endif
 
         public Theme(Manifest_V2 manifest, string path, bool fromResources = false)
@@ -37,10 +37,6 @@ namespace UI
             Name = manifest.name;
             LanguageKey = lang;
             FontAsset = font;
-
-#if UNITY_EDITOR
-            Preview = new List<Drawable.DrawData>();
-#endif
 
             for (int s = 0; s < manifest.elements.Length; s++)
             {
