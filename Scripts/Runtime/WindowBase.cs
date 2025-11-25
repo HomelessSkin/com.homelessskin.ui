@@ -54,7 +54,7 @@ namespace UI
         [Serializable]
         public class Data
         {
-            public string _Name { get; }
+            public string Name;
 
             public Dictionary<string, Element.Data> Store = new Dictionary<string, Element.Data>();
         }

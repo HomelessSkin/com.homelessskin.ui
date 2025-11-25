@@ -214,7 +214,7 @@ namespace UI
                     for (int m = 0; m < _Drawer.AllData.Count; m++)
                     {
                         var theme = _Drawer.AllData[m];
-                        if (theme._Name == saved)
+                        if (theme.Name == saved)
                         {
                             found = true;
 
@@ -235,7 +235,7 @@ namespace UI
         protected virtual void RedrawTheme(Storage.Data storage)
         {
             _Drawer.Current = storage;
-            _Drawer.SavePrefString(storage._Name);
+            _Drawer.SavePrefString(storage.Name);
 
             for (int d = 0; d < _Drawer.Elements.Length; d++)
             {

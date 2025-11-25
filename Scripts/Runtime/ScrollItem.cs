@@ -14,7 +14,7 @@ namespace UI
         {
             Manager = manager;
 
-            Name.text = data._Name;
+            Name.text = data.Name;
         }
     }
 }
