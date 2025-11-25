@@ -1,5 +1,3 @@
-using Unity.Entities;
-
 using UnityEngine;
 
 namespace UI
@@ -10,11 +8,10 @@ namespace UI
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        public override void Init(int index, IElementData data, UIManagerBase manager)
+        public override void Init(int index, Storage.Data data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 
-            var theme = data as Theme;
             for (int d = 0; d < Drawables.Length; d++)
                 Drawables[d].SetData(GetData(Drawables[d].GetKey()));
 
@@ -23,15 +20,15 @@ namespace UI
             var drawable = SelectButton.targetGraphic.gameObject.GetComponent<Drawable>();
             drawable.SetData(GetData(drawable.GetKey()));
 
-            Drawable.DrawData GetData(string tag)
+            Element.Data GetData(string tag)
             {
-                Drawable.DrawData data = null;
-                if (theme.Sprites.TryGetValue(tag, out data))
+                Element.Data init = null;
+                if (data.Store.TryGetValue(tag, out init))
                 { }
-                else if (Manager.TryGetData(tag, out data))
+                else if (Manager.TryGetData(tag, out init))
                 { }
 
-                return data;
+                return init;
             }
         }
     }

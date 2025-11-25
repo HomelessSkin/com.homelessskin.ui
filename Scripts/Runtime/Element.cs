@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public abstract class UIElement : MonoBehaviour
+    public abstract class Element : MonoBehaviour
     {
         [SerializeField] protected ElementType _Type;
         [SerializeField] protected string Key;

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace UI
 {
     [DisallowMultipleComponent]
-    public class Localizable : UIElement
+    public class Localizable : Element
     {
         [SerializeField] TMP_Text Value;
 

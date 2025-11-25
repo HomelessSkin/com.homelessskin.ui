@@ -156,7 +156,7 @@ namespace UI
         public void CloseThemes() => _Drawer.Close();
         public void ReloadThemes()
         {
-            _Drawer.Data.Clear();
+            _Drawer._Data.Clear();
 
             var resManifests = Resources.LoadAll<TextAsset>(_Drawer.ResourcesPath);
             for (int m = 0; m < resManifests.Length; m++)
@@ -165,7 +165,7 @@ namespace UI
 
                 var manifest = Manifest.Cast(file.text);
                 if (manifest.elements != null)
-                    _Drawer.Data.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
+                    _Drawer._Data.Add(new Theme(manifest, $"{_Drawer.ResourcesPath}{manifest.name}/", true));
             }
 
             if (!Directory.Exists(Application.persistentDataPath))
@@ -179,16 +179,16 @@ namespace UI
 
                     var manifest = Manifest.Cast(File.ReadAllText(path));
                     if (manifest.elements != null)
-                        _Drawer.Data.Add(new Theme(manifest, path.Replace("manifest.json", "")));
+                        _Drawer._Data.Add(new Theme(manifest, path.Replace("manifest.json", "")));
                 }
             }
         }
-        public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer.Data[index]);
-        public bool TryGetData(string key, out Drawable.DrawData data)
+        public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer._Data[index]);
+        public bool TryGetData(string key, out Element.Data data)
         {
-            if (_Drawer._Current.Sprites.TryGetValue(key, out data))
+            if (_Drawer._Current.Store.TryGetValue(key, out data))
                 return true;
-            else if (_Drawer._Default.Sprites.TryGetValue(key, out data))
+            else if (_Drawer._Default.Store.TryGetValue(key, out data))
                 return true;
 
             return false;
@@ -211,9 +211,9 @@ namespace UI
                 default:
                 {
                     var found = false;
-                    for (int m = 0; m < _Drawer.Data.Count; m++)
+                    for (int m = 0; m < _Drawer._Data.Count; m++)
                     {
-                        var theme = (Theme)_Drawer.Data[m];
+                        var theme = _Drawer._Data[m];
                         if (theme._Name == saved)
                         {
                             found = true;
@@ -232,10 +232,10 @@ namespace UI
         }
         void LoadDefaultTheme() => _Drawer.Default =
             new Theme(Manifest.Cast(_Drawer.DefaultManifest.text), _Drawer.DefaultPath, true);
-        protected virtual void RedrawTheme(Theme theme)
+        protected virtual void RedrawTheme(Storage.Data storage)
         {
-            _Drawer.Current = theme;
-            _Drawer.SavePrefString(theme._Name);
+            _Drawer.Current = storage;
+            _Drawer.SavePrefString(storage._Name);
 
             for (int d = 0; d < _Drawer.Elements.Length; d++)
             {
@@ -244,10 +244,10 @@ namespace UI
                     continue;
 
                 var key = drawable.GetKey();
-                if (_Drawer._Current.Sprites.TryGetValue(key, out var data))
+                if (_Drawer._Current.Store.TryGetValue(key, out var data))
                     drawable.SetData(data);
                 else
-                    drawable.SetData(_Drawer._Default.Sprites[key]);
+                    drawable.SetData(_Drawer._Default.Store[key]);
             }
 
             SetLanguage(_Drawer._Current.LanguageKey);
@@ -445,10 +445,10 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            _Localizator.Elements = (UIElement[])GameObject
+            _Localizator.Elements = (Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
 
-            _Drawer.Elements = (UIElement[])GameObject
+            _Drawer.Elements = (Element[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);
         }
         protected virtual void Reset()

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace UI
 {
     [RequireComponent(typeof(Image)), DisallowMultipleComponent]
-    public class Drawable : UIElement
+    public class Drawable : Element
     {
         [SerializeField] bool NonRedrawable;
         [SerializeField] Image Mask;

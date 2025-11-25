@@ -18,11 +18,18 @@ namespace UI
     [Serializable]
     public abstract class Storage : WindowBase
     {
-        public IElementData Default;
-        public IElementData Current;
+        public Data Default;
+        public Data Current;
 
-        public List<IElementData> Data = new List<IElementData>();
-        public UIElement[] Elements;
+        public List<Data> _Data = new List<Data>();
+        public Element[] Elements;
+
+        public abstract class Data
+        {
+            public string _Name { get; }
+
+            public Dictionary<string, Element.Data> Store = new Dictionary<string, Element.Data>();
+        }
     }
 
     [Serializable]
@@ -41,11 +48,11 @@ namespace UI
 
             Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
 
-            for (int l = 0; l < Data.Count; l++)
+            for (int l = 0; l < _Data.Count; l++)
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, Data[l], manager);
+                lp.Init(l, _Data[l], manager);
             }
 
             SetEnabled(true);

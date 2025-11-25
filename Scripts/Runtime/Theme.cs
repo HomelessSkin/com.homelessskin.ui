@@ -9,14 +9,13 @@ using UnityEngine;
 namespace UI
 {
     [Serializable]
-    public class Theme : IElementData
+    public class Theme : Storage.Data
     {
         string Name;
-        public string _Name { get => Name; }
+        public new string _Name { get => Name; }
 
         public string LanguageKey;
         public TMP_FontAsset FontAsset;
-        public Dictionary<string, Drawable.DrawData> Sprites;
 
 #if UNITY_EDITOR
         public List<Drawable.DrawData> Preview;
@@ -38,7 +37,6 @@ namespace UI
             Name = manifest.name;
             LanguageKey = lang;
             FontAsset = font;
-            Sprites = new Dictionary<string, Drawable.DrawData>();
 
 #if UNITY_EDITOR
             Preview = new List<Drawable.DrawData>();
@@ -57,7 +55,7 @@ namespace UI
                     _Text = info.text == null ? null : LoadText(info.text),
                 };
 
-                Sprites[info.key] = data;
+                Store[info.key] = data;
 
 #if UNITY_EDITOR
                 Preview.Add(data);
