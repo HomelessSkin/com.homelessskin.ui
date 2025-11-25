@@ -24,6 +24,8 @@ namespace UI
         public List<Data> AllData = new List<Data>();
         public Element[] Elements;
 
+        public bool TryGetValue(string key, out Element.Data value) => TryGetValue<Element.Data>(key, out value);
+        public bool TryGetValue<T>(string key, out T value) where T : Element.Data => TryGetCurrent<T>(key, out value) || TryGetDefault<T>(key, out value);
         public bool TryGetCurrent(string key, out Element.Data value) => TryGetCurrent<Element.Data>(key, out value);
         public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
         {

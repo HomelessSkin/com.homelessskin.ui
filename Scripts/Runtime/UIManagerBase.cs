@@ -52,21 +52,12 @@ namespace UI
                 }
 
             for (int i = 0; i < _Localizator.Elements.Length; i++)
-            {
-                var key = _Localizator.Elements[i].GetKey();
-                Localizable.LocalData data;
-                if (_Localizator.TryGetCurrent<Localizable.LocalData>(key, out data))
+                if (_Localizator.TryGetValue(_Localizator.Elements[i].GetKey(), out var data))
                     _Localizator.Elements[i].SetData(data);
-                else if (_Localizator.TryGetDefault<Localizable.LocalData>(key, out data))
-                    _Localizator.Elements[i].SetData(data);
-            }
         }
         public string GetTranslation(string key)
         {
-            Localizable.LocalData data;
-            if (_Localizator.TryGetCurrent<Localizable.LocalData>(key, out data))
-                return data.Text;
-            else if (_Localizator.TryGetDefault<Localizable.LocalData>(key, out data))
+            if (_Localizator.TryGetValue<Localizable.LocalData>(key, out var data))
                 return data.Text;
 
             return $"No Value for <{key}> key!";
@@ -184,15 +175,7 @@ namespace UI
             }
         }
         public void SelectTheme(int index) => RedrawTheme((Theme)_Drawer.AllData[index]);
-        public bool TryGetData(string key, out Element.Data data)
-        {
-            if (_Drawer.TryGetCurrent(key, out data))
-                return true;
-            else if (_Drawer.TryGetDefault(key, out data))
-                return true;
-
-            return false;
-        }
+        public bool TryGetData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
 
         void LoadTheme()
         {
