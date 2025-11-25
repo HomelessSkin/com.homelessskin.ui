@@ -11,9 +11,6 @@ namespace UI
     [Serializable]
     public class Theme : Storage.Data
     {
-        string Name;
-        public new string _Name { get => Name; }
-
         public string LanguageKey;
         public TMP_FontAsset FontAsset;
 
@@ -21,7 +18,7 @@ namespace UI
         public List<Element.Data> Preview = new List<Element.Data>();
 #endif
 
-        public Theme(Manifest_V2 manifest, string path, bool fromResources = false)
+        public Theme(Manifest_V2 manifest, string path, bool fromResources)
         {
             var font = manifest.font == null || string.IsNullOrEmpty(manifest.font.assetName) ?
              TMP_Settings.defaultFontAsset :
