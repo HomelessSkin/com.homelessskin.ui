@@ -167,7 +167,7 @@ namespace UI
             }
 
             protected override void LoadDefault() =>
-                Default = new Theme(Manifest.Cast(Resources.Load<TextAsset>(DefaultPath).text), DefaultPath, true);
+                Default = new Theme(Manifest.Cast(Resources.Load<TextAsset>(DefaultPath).text), DefaultPath.Replace("manifest", ""), true);
         }
 
         public void OpenThemes() => _Drawer.Open<ListTheme>(this);
