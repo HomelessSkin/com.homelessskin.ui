@@ -391,15 +391,17 @@ namespace UI
         {
             StopAllCoroutines();
         }
+#if UNITY_EDITOR
         public virtual void OnValidate()
         {
-            _Localizator.Elements = (Element[])GameObject
-                .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+            _Localizator.Elements = ((Element[])GameObject
+                .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
+                .Where(x => x.gameObject.tag != "EditorOnly").ToArray();
 
-            _Drawer.Elements = (Element[])GameObject
-                .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);
+            _Drawer.Elements = ((Element[])GameObject
+                .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None))
+                .Where(x => x.gameObject.tag != "EditorOnly").ToArray();
         }
-#if UNITY_EDITOR
         protected virtual void Reset()
         {
             Core.Util.Tool.CreateTag("UIManager");
