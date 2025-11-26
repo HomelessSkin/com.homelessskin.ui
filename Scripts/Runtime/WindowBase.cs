@@ -70,6 +70,7 @@ namespace UI
 
             return false;
         }
+        public void AddData(Data data) => AllData.Add(data);
 
         public abstract void AddData(string serialized, string path, bool fromResources = false);
         protected abstract void LoadDefault();
