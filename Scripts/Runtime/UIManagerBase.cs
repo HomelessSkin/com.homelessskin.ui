@@ -391,7 +391,6 @@ namespace UI
         {
             StopAllCoroutines();
         }
-#if UNITY_EDITOR
         public virtual void OnValidate()
         {
             _Localizator.Elements = (Element[])GameObject
@@ -400,6 +399,7 @@ namespace UI
             _Drawer.Elements = (Element[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None);
         }
+#if UNITY_EDITOR
         protected virtual void Reset()
         {
             Core.Util.Tool.CreateTag("UIManager");
