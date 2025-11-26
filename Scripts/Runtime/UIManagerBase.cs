@@ -78,6 +78,13 @@ namespace UI
             if (string.IsNullOrEmpty(langKey))
                 return;
 
+            if ((_Drawer.Current as Theme).LanguageKey != "default")
+            {
+                AddMessage("theme lang override", 2f);
+
+                return;
+            }
+
             _Localizator.Current = _Localizator.Default;
             for (int l = 0; l < _Localizator.AllData.Count; l++)
                 if (_Localizator.AllData[l].Name == langKey)
