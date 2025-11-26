@@ -88,20 +88,18 @@ namespace UI
             if (string.IsNullOrEmpty(langKey))
                 return;
 
-            _Localizator.Current = _Localizator.Default;
+            var data = _Localizator.Default;
             for (int l = 0; l < _Localizator.AllData.Count; l++)
                 if (_Localizator.AllData[l].Name == langKey)
                 {
-                    _Localizator.Current = _Localizator.AllData[l];
+                    data = _Localizator.AllData[l];
 
                     Debug.Log($"Setting Language with {langKey} key");
 
                     break;
                 }
 
-            for (int i = 0; i < _Localizator.Elements.Length; i++)
-                if (_Localizator.TryGetValue(_Localizator.Elements[i].GetKey(), out var data))
-                    _Localizator.Elements[i].SetData(data);
+            _Localizator.SetData(data);
         }
 
 #if UNITY_EDITOR
