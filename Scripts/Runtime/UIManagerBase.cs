@@ -383,7 +383,7 @@ namespace UI
             StopAllCoroutines();
         }
 #if UNITY_EDITOR
-        protected virtual void OnValidate()
+        public virtual void OnValidate()
         {
             _Localizator.Elements = (Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None);
