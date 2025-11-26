@@ -240,7 +240,17 @@ namespace UI
             if (index >= 0)
                 AddMessage(index, time, addition);
             else
+            {
+                _Messenger.Current = new Message
+                {
+                    CallTime = Time.realtimeSinceStartup,
+                    Time = time,
+                };
+                _Messenger.MessageText.text = key;
+                _Messenger.SetEnabled(true);
+
                 Debug.LogWarning($"Message key {key} not found!");
+            }
         }
         public void AddMessage(int index, float time = 5f, AdditionType addition = AdditionType.Null)
         {
