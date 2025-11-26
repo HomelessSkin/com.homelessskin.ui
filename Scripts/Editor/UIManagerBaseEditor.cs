@@ -14,10 +14,12 @@ namespace UI
             if (target == null)
                 return;
 
-            manager.SendMessage("OnValidate");
 
             if (GUILayout.Button("Reload"))
+            {
+                manager.SendMessage("OnValidate");
                 manager.Reload();
+            }
 
             base.OnInspectorGUI();
         }
