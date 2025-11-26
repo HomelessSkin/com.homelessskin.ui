@@ -1,7 +1,8 @@
 using System;
-using System.Numerics;
 
-using Newtonsoft.Json;
+using UnityEngine;
+
+using Vector4 = System.Numerics.Vector4;
 
 namespace UI
 {
@@ -117,17 +118,17 @@ namespace UI
         };
         public static Manifest_V2 Cast(string serialized)
         {
-            var manifest = JsonConvert.DeserializeObject<Manifest>(serialized);
+            var manifest = JsonUtility.FromJson<Manifest>(serialized);
 
             Manifest_V2 result;
             switch (manifest.V)
             {
                 case "0.0.0":
-                result = new Manifest_V2(JsonConvert.DeserializeObject<Manifest_V0>(serialized));
+                result = new Manifest_V2(JsonUtility.FromJson<Manifest_V0>(serialized));
                 break;
                 case "0.0.1":
                 case "0.0.2":
-                result = JsonConvert.DeserializeObject<Manifest_V2>(serialized);
+                result = JsonUtility.FromJson<Manifest_V2>(serialized);
                 break;
                 default:
                 result = CreateNew();

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Newtonsoft.Json;
-
 using TMPro;
 
 using Unity.Entities;
@@ -29,7 +27,7 @@ namespace UI
         protected class Localizator : ScrollBase
         {
             public override void AddData(string serialized, string path, bool fromResources = false) =>
-                AllData.Add(new Localization(JsonConvert.DeserializeObject<Localization.Data>(serialized)));
+                AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
             public override void SetData(Data data)
             {
                 base.SetData(data);
@@ -56,10 +54,10 @@ namespace UI
                     c++;
                 }
 
-                return JsonConvert.SerializeObject(data);
+                return JsonUtility.ToJson(data);
             }
             public Localization.Data Deserialize(string text) =>
-                JsonConvert.DeserializeObject<Localization.Data>(text);
+                JsonUtility.FromJson<Localization.Data>(text);
         }
 
         public void OpenLocalizations()
