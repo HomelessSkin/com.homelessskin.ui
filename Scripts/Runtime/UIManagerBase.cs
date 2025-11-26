@@ -62,7 +62,17 @@ namespace UI
                 JsonConvert.DeserializeObject<Localization.Data>(text);
         }
 
-        public void OpenLocalizations() => _Localizator.Open<ListLocalization>(this);
+        public void OpenLocalizations()
+        {
+            if ((_Drawer.Current as Theme).LanguageKey != "default")
+            {
+                AddMessage("theme lang override", 2f);
+
+                return;
+            }
+
+            _Localizator.Open<ListLocalization>(this);
+        }
         public void CloseLocalizations() => _Localizator.Close();
         public void ReloadLocalizations() => _Localizator.Collect();
         public Localizable.LocalData GetTranslation(string key)
@@ -77,13 +87,6 @@ namespace UI
         {
             if (string.IsNullOrEmpty(langKey))
                 return;
-
-            if ((_Drawer.Current as Theme).LanguageKey != "default")
-            {
-                AddMessage("theme lang override", 2f);
-
-                return;
-            }
 
             _Localizator.Current = _Localizator.Default;
             for (int l = 0; l < _Localizator.AllData.Count; l++)
