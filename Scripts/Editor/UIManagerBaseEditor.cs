@@ -17,7 +17,7 @@ namespace UI
 
             if (GUILayout.Button("Reload"))
             {
-                manager.SendMessage("OnValidate");
+                manager.Invoke("OnValidate", 0f);
                 manager.Reload();
             }
 
