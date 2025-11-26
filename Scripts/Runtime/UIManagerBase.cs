@@ -213,7 +213,7 @@ namespace UI
         }
         protected class Message
         {
-            public int Index;
+            public string Text;
             public float Time;
             public float CallTime;
             public AdditionType Addition;
@@ -241,13 +241,12 @@ namespace UI
                 AddMessage(index, time, addition);
             else
             {
-                _Messenger.Current = new Message
+                _Messenger.Q.Enqueue(new Message
                 {
+                    Text = key,
                     CallTime = Time.realtimeSinceStartup,
                     Time = time,
-                };
-                _Messenger.MessageText.text = key;
-                _Messenger.SetEnabled(true);
+                });
 
                 Debug.LogWarning($"Message key {key} not found!");
             }
@@ -263,7 +262,7 @@ namespace UI
 
             _Messenger.Q.Enqueue(new Message
             {
-                Index = index,
+                Text = GetTranslation(_Messenger.Messages[index]).Text,
                 Time = time,
                 Addition = addition
             });
@@ -280,7 +279,7 @@ namespace UI
             {
                 _Messenger.Current.CallTime = Time.realtimeSinceStartup;
 
-                _Messenger.MessageText.text = GetTranslation(_Messenger.Messages[_Messenger.Current.Index]).Text;
+                _Messenger.MessageText.text = _Messenger.Current.Text;
                 _Messenger.SetEnabled(true);
             }
         }
