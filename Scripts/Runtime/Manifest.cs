@@ -2,15 +2,12 @@ using System;
 
 using UnityEngine;
 
-using Vector4 = System.Numerics.Vector4;
-
 namespace UI
 {
     #region MANIFEST
     [Serializable]
     public class Manifest
     {
-        public Version v;
         public string V
         {
             get
@@ -20,8 +17,17 @@ namespace UI
         }
         public string name;
         public string languageKey;
-        public Font font;
 
+        [Serializable]
+        public class Vector4
+        {
+            public float X;
+            public float Y;
+            public float Z;
+            public float W;
+        }
+
+        public Version v;
         [Serializable]
         public class Version
         {
@@ -38,6 +44,7 @@ namespace UI
             }
         }
 
+        public Font font;
         [Serializable]
         public class Font
         {
