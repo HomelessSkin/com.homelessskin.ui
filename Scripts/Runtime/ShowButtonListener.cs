@@ -16,11 +16,18 @@ namespace UI
         public void SwitchEnable()
         {
             if (!gameObject.activeInHierarchy)
-                EnableIfDisabled();
+                Enable();
             else
-                gameObject.SetActive(false);
+                Disable();
         }
-        public void EnableIfDisabled()
+        public void SwitchEnableWithDependency()
+        {
+            if (!gameObject.activeInHierarchy)
+                EnableWithDependency();
+            else
+                DisableWithDependency();
+        }
+        public void EnableWithDependency()
         {
             if (DependsOn != null && DependsOn.Length > 0)
                 for (int i = 0; i < DependsOn.Length; i++)
@@ -32,6 +39,19 @@ namespace UI
                     }
 
             gameObject.SetActive(true);
+        }
+        public void DisableWithDependency()
+        {
+            if (DependsOn != null && DependsOn.Length > 0)
+                for (int i = 0; i < DependsOn.Length; i++)
+                    if (DependsOn[i].Object.activeSelf != DependsOn[i].MustBe)
+                    {
+                        gameObject.SetActive(false);
+
+                        return;
+                    }
+
+            gameObject.SetActive(false);
         }
 
         void SetEnabled(bool value)
