@@ -201,7 +201,6 @@ namespace UI
         protected class Messenger : WindowBase
         {
             public TMP_Text MessageText;
-            public TMP_Text AdditionText;
 
             [Space]
             public string[] Messages;
@@ -359,8 +358,6 @@ namespace UI
                     _Messenger.Current.Time = 0f;
                     if (_Messenger.Q.Count > 0)
                         _Messenger.Current = _Messenger.Q.Dequeue();
-
-                    _Messenger.AdditionText.text = "";
 
                     RefreshCurrent();
                 }
