@@ -204,11 +204,11 @@ namespace ThemeManager
                                             element.selectable = new Manifest.Element.Selectable
                                             {
                                                 transition = 0,
-                                                normalColor = new Vector4(255f, 255f, 255f, 255f),
-                                                highlightedColor = new Vector4(255f, 255f, 255f, 255f),
-                                                pressedColor = new Vector4(255f, 255f, 255f, 255f),
-                                                selectedColor = new Vector4(255f, 255f, 255f, 255f),
-                                                disabledColor = new Vector4(255f, 255f, 255f, 255f)
+                                                normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                                highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                                pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                                selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                                disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
                                             };
                                         }
                                     }
@@ -615,11 +615,11 @@ namespace ThemeManager
                                 selectable = new Manifest.Element.Selectable
                                 {
                                     transition = 0,
-                                    normalColor = new Vector4(255f, 255f, 255f, 255f),
-                                    highlightedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    pressedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    selectedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    disabledColor = new Vector4(255f, 255f, 255f, 255f)
+                                    normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
                                 }
                             });
 
@@ -698,7 +698,7 @@ namespace ThemeManager
 
                 _Manifest.font.assetName = FontNameBox.Text;
 
-                _Manifest.font.color = new Vector4(
+                _Manifest.font.color = new Manifest.Vector4(
                     (float)FontColorR.Value,
                     (float)FontColorG.Value,
                     (float)FontColorB.Value,
@@ -1119,11 +1119,11 @@ namespace ThemeManager
                                 element.selectable = new Manifest.Element.Selectable
                                 {
                                     transition = 0,
-                                    normalColor = new Vector4(255f, 255f, 255f, 255f),
-                                    highlightedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    pressedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    selectedColor = new Vector4(255f, 255f, 255f, 255f),
-                                    disabledColor = new Vector4(255f, 255f, 255f, 255f)
+                                    normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
+                                    disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
                                 };
                             }
 
@@ -1177,7 +1177,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(normalLabel, 2);
 
                                 var normalColorLabel = new Label { Text = "Normal Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = color);
+                                var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = new Manifest.Vector4(color));
                                 layout.Controls.Add(normalColorLabel, 0, 2);
                                 layout.Controls.Add(normalColorPanel, 1, 2);
 
@@ -1192,7 +1192,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(highlightedLabel, 2);
 
                                 var highlightedColorLabel = new Label { Text = "Highlighted Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = color);
+                                var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = new Manifest.Vector4(color));
                                 layout.Controls.Add(highlightedColorLabel, 0, 4);
                                 layout.Controls.Add(highlightedColorPanel, 1, 4);
 
@@ -1212,7 +1212,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(pressedLabel, 2);
 
                                 var pressedColorLabel = new Label { Text = "Pressed Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = color);
+                                var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = new Manifest.Vector4(color));
                                 layout.Controls.Add(pressedColorLabel, 0, 6);
                                 layout.Controls.Add(pressedColorPanel, 1, 6);
 
@@ -1232,7 +1232,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(selectedLabel, 2);
 
                                 var selectedColorLabel = new Label { Text = "Selected Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = color);
+                                var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = new Manifest.Vector4(color));
                                 layout.Controls.Add(selectedColorLabel, 0, 8);
                                 layout.Controls.Add(selectedColorPanel, 1, 8);
 
@@ -1252,7 +1252,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(disabledLabel, 2);
 
                                 var disabledColorLabel = new Label { Text = "Disabled Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = color);
+                                var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = new Manifest.Vector4(color));
                                 layout.Controls.Add(disabledColorLabel, 0, 10);
                                 layout.Controls.Add(disabledColorPanel, 1, 10);
 
@@ -1299,7 +1299,7 @@ namespace ThemeManager
 
                             return panel;
 
-                            Panel CreateColorControlWithPicker(Vector4 initialColor, Action<Vector4> onColorChanged)
+                            Panel CreateColorControlWithPicker(Manifest.Vector4 initialColor, Action<Vector4> onColorChanged)
                             {
                                 var colorPanel = new Panel
                                 {
@@ -1828,7 +1828,7 @@ namespace ThemeManager
 
             if (_Manifest != null && _Manifest.font != null)
             {
-                _Manifest.font.color = new Vector4(
+                _Manifest.font.color = new Manifest.Vector4(
                     (float)FontColorR.Value,
                     (float)FontColorG.Value,
                     (float)FontColorB.Value,

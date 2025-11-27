@@ -1,6 +1,11 @@
 using System;
 
+
+#if UNITY_STANDALONE || UNITY_EDITOR
 using UnityEngine;
+#else
+using Newtonsoft.Json;
+#endif
 
 namespace UI
 {
@@ -8,13 +13,7 @@ namespace UI
     [Serializable]
     public class Manifest
     {
-        public string V
-        {
-            get
-            {
-                return $"{v.major}.{v.minor}.{v.patch}";
-            }
-        }
+        public string V => $"{v.major}.{v.minor}.{v.patch}";
         public string name;
         public string languageKey;
 
@@ -25,6 +24,23 @@ namespace UI
             public float Y;
             public float Z;
             public float W;
+
+            public Vector4() { }
+            public Vector4(float x, float y, float z, float w)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+                W = w;
+            }
+
+            public Vector4(System.Numerics.Vector4 color)
+            {
+                X = color.X;
+                Y = color.Y;
+                Z = color.Z;
+                W = color.W;
+            }
         }
 
         public Version v;
@@ -125,17 +141,30 @@ namespace UI
         };
         public static Manifest_V2 Cast(string serialized)
         {
-            var manifest = JsonUtility.FromJson<Manifest>(serialized);
+            Manifest manifest = null;
+#if UNITY_STANDALONE || UNITY_EDITOR
+            manifest = JsonUtility.FromJson<Manifest>(serialized);
+#else
+            manifest = JsonConvert.DeserializeObject<Manifest>(serialized);
+#endif
 
-            Manifest_V2 result;
+            Manifest_V2 result = null;
             switch (manifest.V)
             {
                 case "0.0.0":
+#if UNITY_STANDALONE || UNITY_EDITOR
                 result = new Manifest_V2(JsonUtility.FromJson<Manifest_V0>(serialized));
+#else
+                result = new Manifest_V2(JsonConvert.DeserializeObject<Manifest_V0>(serialized));
+#endif
                 break;
                 case "0.0.1":
                 case "0.0.2":
+#if UNITY_STANDALONE || UNITY_EDITOR
                 result = JsonUtility.FromJson<Manifest_V2>(serialized);
+#else
+                result = JsonConvert.DeserializeObject<Manifest_V2>(serialized);
+#endif
                 break;
                 default:
                 result = CreateNew();
