@@ -245,6 +245,19 @@ namespace UI
                     CallTime = Time.realtimeSinceStartup,
                     Time = _Messenger.Timers[(int)level],
                 });
+
+                switch (level)
+                {
+                    case LogLevel.Nominal:
+                    Debug.Log(key);
+                    break;
+                    case LogLevel.Warning:
+                    Debug.LogWarning(key);
+                    break;
+                    case LogLevel.Error:
+                    Debug.LogError(key);
+                    break;
+                }
             }
         }
         public void AddMessage(int index, LogLevel level = LogLevel.Nominal)
