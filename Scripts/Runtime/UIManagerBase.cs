@@ -64,7 +64,7 @@ namespace UI
         {
             if ((_Drawer.Current as Theme).LanguageKey != "default")
             {
-                AddMessage("theme lang override", 2f);
+                AddMessage("theme lang override", LogLevel.Warning);
 
                 return;
             }
@@ -205,6 +205,7 @@ namespace UI
 
             [Space]
             public string[] Messages;
+            public float[] Timers = new float[Enum.GetValues(typeof(LogLevel)).Length];
 
             public Message Current = new Message();
             public Queue<Message> Q = new Queue<Message>();
@@ -214,17 +215,17 @@ namespace UI
             public string Text;
             public float Time;
             public float CallTime;
-            public AdditionType Addition;
         }
 
-        public enum AdditionType : byte
+        public enum LogLevel : byte
         {
-            Null = 0,
-            AdTimer = 1,
+            Nominal = 0,
+            Error = 1,
+            Warning = 2,
 
         }
 
-        public void AddMessage(string key, float time = 5f, AdditionType addition = AdditionType.Null)
+        public void AddMessage(string key, LogLevel level = LogLevel.Nominal)
         {
             var index = -1;
             for (int i = 0; i < _Messenger.Messages.Length; i++)
@@ -236,20 +237,18 @@ namespace UI
                 }
 
             if (index >= 0)
-                AddMessage(index, time, addition);
+                AddMessage(index, level);
             else
             {
                 _Messenger.Q.Enqueue(new Message
                 {
                     Text = key,
                     CallTime = Time.realtimeSinceStartup,
-                    Time = time,
+                    Time = _Messenger.Timers[(int)level],
                 });
-
-                Debug.LogWarning($"Message key {key} not found!");
             }
         }
-        public void AddMessage(int index, float time = 5f, AdditionType addition = AdditionType.Null)
+        public void AddMessage(int index, LogLevel level = LogLevel.Nominal)
         {
             if (index >= _Messenger.Messages.Length)
             {
@@ -261,8 +260,7 @@ namespace UI
             _Messenger.Q.Enqueue(new Message
             {
                 Text = GetTranslation(_Messenger.Messages[index]).Text,
-                Time = time,
-                Addition = addition
+                Time = _Messenger.Timers[(int)level],
             });
         }
 
@@ -280,14 +278,6 @@ namespace UI
                 _Messenger.MessageText.text = _Messenger.Current.Text;
                 _Messenger.SetEnabled(true);
             }
-        }
-        string GetAddition(AdditionType addition)
-        {
-            //switch (addition)
-            //{
-            //}
-
-            return "";
         }
         #endregion
 
@@ -364,9 +354,6 @@ namespace UI
         {
             if (_Messenger.Current.Time != 0f)
             {
-                if (_Messenger.Current.Addition != AdditionType.Null)
-                    _Messenger.AdditionText.text = GetAddition(_Messenger.Current.Addition);
-
                 if (_Messenger.Current.Time + _Messenger.Current.CallTime < Time.realtimeSinceStartup)
                 {
                     _Messenger.Current.Time = 0f;
