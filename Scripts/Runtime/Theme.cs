@@ -73,7 +73,7 @@ namespace UI
 
                 return result ?? TMP_Settings.defaultFontAsset;
             }
-            Sprite TryLoadSprite(Manifest.Sprite sprite, Manifest.CustomSprite param)
+            Sprite TryLoadSprite(SpriteData sprite, CustomSprite param)
             {
                 if (sprite == null)
                     return null;
@@ -111,7 +111,7 @@ namespace UI
 
                 return null;
             }
-            Drawable.DrawData.Text LoadText(Manifest.Element.Text text) => new Drawable.DrawData.Text
+            Drawable.DrawData.Text LoadText(TextData text) => new Drawable.DrawData.Text
             {
                 LanguageKey = lang,
 
@@ -123,7 +123,7 @@ namespace UI
                 Color = color,
                 Offset = new Vector3(text.xOffset, text.yOffset),
             };
-            Drawable.DrawData.Selectable LoadSelectable(Manifest.Element.Selectable selectable, Manifest.CustomSprite @base) => new Drawable.DrawData.Selectable
+            Drawable.DrawData.Selectable LoadSelectable(SelectableData selectable, CustomSprite @base) => new Drawable.DrawData.Selectable
             {
                 Transition = selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
 

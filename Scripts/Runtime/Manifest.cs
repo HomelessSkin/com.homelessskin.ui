@@ -16,128 +16,15 @@ namespace UI
         public string V => $"{v.major}.{v.minor}.{v.patch}";
         public string name;
         public string languageKey;
-
-        [Serializable]
-        public class Vector4
-        {
-            public float X;
-            public float Y;
-            public float Z;
-            public float W;
-
-            public Vector4() { }
-            public Vector4(float x, float y, float z, float w)
-            {
-                X = x;
-                Y = y;
-                Z = z;
-                W = w;
-            }
-
-            public Vector4(System.Numerics.Vector4 color)
-            {
-                X = color.X;
-                Y = color.Y;
-                Z = color.Z;
-                W = color.W;
-            }
-        }
-
-        public Version v;
-        [Serializable]
-        public class Version
-        {
-            public int major;
-            public int minor;
-            public int patch;
-
-            public Version() { }
-            public Version(int a, int b, int c)
-            {
-                major = a;
-                minor = b;
-                patch = c;
-            }
-        }
-
-        public Font font;
-        [Serializable]
-        public class Font
-        {
-            public string assetName;
-            public Vector4 color;
-        }
-
-        [Serializable]
-        public class Sprite
-        {
-            public string fileName;
-        }
-
-        [Serializable]
-        public class CustomSprite : Sprite
-        {
-            public int pixelPerUnit;
-            public int filterMode;
-            public Borders borders;
-
-            [Serializable]
-            public class Borders
-            {
-                public int left;
-                public int right;
-                public int top;
-                public int bottom;
-            }
-        }
-
-        [Serializable]
-        public class Element
-        {
-            public string key;
-
-            public CustomSprite @base;
-            public Sprite mask;
-            public CustomSprite overlay;
-
-            public Selectable selectable;
-            public Text text;
-
-            [Serializable]
-            public class Selectable
-            {
-                public byte transition;
-
-                public Vector4 normalColor;
-                public Vector4 highlightedColor;
-                public Vector4 pressedColor;
-                public Vector4 selectedColor;
-                public Vector4 disabledColor;
-
-                public Sprite highlightedSprite;
-                public Sprite pressedSprite;
-                public Sprite selectedSprite;
-                public Sprite disabledSprite;
-            }
-
-            [Serializable]
-            public class Text
-            {
-                public int fontSize;
-                public int characterSpacing;
-                public int wordSpacing;
-
-                public int xOffset;
-                public int yOffset;
-            }
-        }
+        public VersionData v;
+        public FontData font;
 
         public static Manifest_V2 CreateNew() => new Manifest_V2
         {
-            v = new Version(0, 0, 2),
+            v = new VersionData(0, 0, 2),
             name = "NewTheme",
-            elements = new Manifest_V2.Element[0],
-            font = new Font { }
+            elements = new ElementData[0],
+            font = new FontData { }
         };
         public static Manifest_V2 Cast(string serialized)
         {
@@ -177,6 +64,119 @@ namespace UI
     }
 
     [Serializable]
+    public class Vector4Data
+    {
+        public float X;
+        public float Y;
+        public float Z;
+        public float W;
+
+        public Vector4Data() { }
+        public Vector4Data(float x, float y, float z, float w)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
+        }
+
+        public Vector4Data(System.Numerics.Vector4 color)
+        {
+            X = color.X;
+            Y = color.Y;
+            Z = color.Z;
+            W = color.W;
+        }
+    }
+
+    [Serializable]
+    public class VersionData
+    {
+        public int major;
+        public int minor;
+        public int patch;
+
+        public VersionData() { }
+        public VersionData(int a, int b, int c)
+        {
+            major = a;
+            minor = b;
+            patch = c;
+        }
+    }
+
+    [Serializable]
+    public class FontData
+    {
+        public string assetName;
+        public Vector4Data color;
+    }
+
+    [Serializable]
+    public class SpriteData
+    {
+        public string fileName;
+    }
+
+    [Serializable]
+    public class CustomSprite : SpriteData
+    {
+        public int pixelPerUnit;
+        public int filterMode;
+        public Borders borders;
+    }
+
+    [Serializable]
+    public class Borders
+    {
+        public int left;
+        public int right;
+        public int top;
+        public int bottom;
+    }
+
+    [Serializable]
+    public class SelectableData
+    {
+        public byte transition;
+
+        public Vector4Data normalColor;
+        public Vector4Data highlightedColor;
+        public Vector4Data pressedColor;
+        public Vector4Data selectedColor;
+        public Vector4Data disabledColor;
+
+        public SpriteData highlightedSprite;
+        public SpriteData pressedSprite;
+        public SpriteData selectedSprite;
+        public SpriteData disabledSprite;
+    }
+
+    [Serializable]
+    public class ElementData
+    {
+        public string key;
+
+        public CustomSprite @base;
+        public SpriteData mask;
+        public CustomSprite overlay;
+
+        public SelectableData selectable;
+        public TextData text;
+    }
+
+    [Serializable]
+    public class TextData
+    {
+        public int fontSize;
+        public int characterSpacing;
+        public int wordSpacing;
+
+        public int xOffset;
+        public int yOffset;
+    }
+
+    [Serializable]
     public class Manifest_V0 : Manifest
     {
         public int version;
@@ -192,18 +192,18 @@ namespace UI
     [Serializable]
     public class Manifest_V2 : Manifest
     {
-        public Element[] elements;
+        public ElementData[] elements;
 
         public Manifest_V2() { }
         public Manifest_V2(Manifest_V0 m0)
         {
             if (m0.sprites != null)
             {
-                elements = new Element[m0.sprites.Length];
+                elements = new ElementData[m0.sprites.Length];
                 for (int e = 0; e < elements.Length; e++)
                 {
                     var sprite = m0.sprites[e];
-                    elements[e] = new Element
+                    elements[e] = new ElementData
                     {
                         key = sprite.key,
 

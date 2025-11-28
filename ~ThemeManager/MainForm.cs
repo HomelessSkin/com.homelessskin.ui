@@ -15,7 +15,7 @@ namespace ThemeManager
     {
         string FilePath = "";
         Manifest_V2 _Manifest;
-        List<Manifest_V2.Element> Elements;
+        List<ElementData> Elements;
 
         Panel MainPanel;
         Panel FontColorPanel;
@@ -174,23 +174,23 @@ namespace ThemeManager
                                 {
                                     var json = File.ReadAllText(FilePath);
                                     _Manifest = Manifest.Cast(json);
-                                    Elements = new List<Manifest.Element>(_Manifest.elements ?? new Manifest.Element[0]);
+                                    Elements = new List<ElementData>(_Manifest.elements ?? new ElementData[0]);
 
                                     foreach (var element in Elements)
                                     {
                                         if (element.overlay == null)
                                             element.overlay = CreateDefaultSprite();
                                         else if (element.overlay.borders == null)
-                                            element.overlay.borders = new Manifest.CustomSprite.Borders();
+                                            element.overlay.borders = new Borders();
 
                                         if (element.mask == null)
                                             element.mask = CreateDefaultSprite();
 
                                         if (element.@base.borders == null)
-                                            element.@base.borders = new Manifest.CustomSprite.Borders();
+                                            element.@base.borders = new Borders();
 
                                         if (element.text == null)
-                                            element.text = new Manifest.Element.Text
+                                            element.text = new TextData
                                             {
                                                 fontSize = 32,
                                                 characterSpacing = 0,
@@ -201,14 +201,14 @@ namespace ThemeManager
 
                                         if (element.selectable == null)
                                         {
-                                            element.selectable = new Manifest.Element.Selectable
+                                            element.selectable = new SelectableData
                                             {
                                                 transition = 0,
-                                                normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                                highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                                pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                                selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                                disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
+                                                normalColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                                highlightedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                                pressedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                                selectedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                                disabledColor = new Vector4Data(255f, 255f, 255f, 255f)
                                             };
                                         }
                                     }
@@ -598,13 +598,13 @@ namespace ThemeManager
 
                         void AddElement()
                         {
-                            Elements.Add(new Manifest.Element
+                            Elements.Add(new ElementData
                             {
                                 key = ElementType.Null.ToString(),
                                 @base = CreateDefaultSprite(),
                                 mask = CreateDefaultSprite(),
                                 overlay = CreateDefaultSprite(),
-                                text = new Manifest.Element.Text
+                                text = new TextData
                                 {
                                     fontSize = 32,
                                     characterSpacing = 0,
@@ -612,14 +612,14 @@ namespace ThemeManager
                                     xOffset = 0,
                                     yOffset = 0
                                 },
-                                selectable = new Manifest.Element.Selectable
+                                selectable = new SelectableData
                                 {
                                     transition = 0,
-                                    normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
+                                    normalColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    pressedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    selectedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    disabledColor = new Vector4Data(255f, 255f, 255f, 255f)
                                 }
                             });
 
@@ -658,7 +658,7 @@ namespace ThemeManager
             Major.Value = _Manifest.v.major;
             Minor.Value = _Manifest.v.minor;
             Patch.Value = _Manifest.v.patch;
-            Elements = new List<Manifest.Element>();
+            Elements = new List<ElementData>();
 
             FontNameBox.Text = _Manifest.font?.assetName ?? "";
 
@@ -686,7 +686,7 @@ namespace ThemeManager
             try
             {
                 _Manifest.name = ThemeNameBox.Text;
-                _Manifest.v = new Manifest.Version((int)Major.Value, (int)Minor.Value, (int)Patch.Value);
+                _Manifest.v = new VersionData((int)Major.Value, (int)Minor.Value, (int)Patch.Value);
                 _Manifest.elements = Elements.ToArray();
 
                 var languageKeyTextBox = GetLanguageKeyTextBox();
@@ -694,11 +694,11 @@ namespace ThemeManager
                     _Manifest.languageKey = languageKeyTextBox.Text;
 
                 if (_Manifest.font == null)
-                    _Manifest.font = new Manifest.Font();
+                    _Manifest.font = new FontData();
 
                 _Manifest.font.assetName = FontNameBox.Text;
 
-                _Manifest.font.color = new Manifest.Vector4(
+                _Manifest.font.color = new Vector4Data(
                     (float)FontColorR.Value,
                     (float)FontColorG.Value,
                     (float)FontColorB.Value,
@@ -762,7 +762,7 @@ namespace ThemeManager
                     .Controls
                     .Add(CreateElementPanel(i, Elements[i]));
 
-            Panel CreateElementPanel(int index, Manifest.Element element)
+            Panel CreateElementPanel(int index, ElementData element)
             {
                 var panelL = new Panel
                 {
@@ -971,7 +971,7 @@ namespace ThemeManager
                         {
                             if (element.text == null)
                             {
-                                element.text = new Manifest.Element.Text
+                                element.text = new TextData
                                 {
                                     fontSize = 14,
                                     characterSpacing = 0,
@@ -1116,14 +1116,14 @@ namespace ThemeManager
                         {
                             if (element.selectable == null)
                             {
-                                element.selectable = new Manifest.Element.Selectable
+                                element.selectable = new SelectableData
                                 {
                                     transition = 0,
-                                    normalColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    highlightedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    pressedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    selectedColor = new Manifest.Vector4(255f, 255f, 255f, 255f),
-                                    disabledColor = new Manifest.Vector4(255f, 255f, 255f, 255f)
+                                    normalColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    highlightedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    pressedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    selectedColor = new Vector4Data(255f, 255f, 255f, 255f),
+                                    disabledColor = new Vector4Data(255f, 255f, 255f, 255f)
                                 };
                             }
 
@@ -1177,7 +1177,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(normalLabel, 2);
 
                                 var normalColorLabel = new Label { Text = "Normal Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = new Manifest.Vector4(color));
+                                var normalColorPanel = CreateColorControlWithPicker(element.selectable.normalColor, color => element.selectable.normalColor = new Vector4Data(color));
                                 layout.Controls.Add(normalColorLabel, 0, 2);
                                 layout.Controls.Add(normalColorPanel, 1, 2);
 
@@ -1192,7 +1192,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(highlightedLabel, 2);
 
                                 var highlightedColorLabel = new Label { Text = "Highlighted Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = new Manifest.Vector4(color));
+                                var highlightedColorPanel = CreateColorControlWithPicker(element.selectable.highlightedColor, color => element.selectable.highlightedColor = new Vector4Data(color));
                                 layout.Controls.Add(highlightedColorLabel, 0, 4);
                                 layout.Controls.Add(highlightedColorPanel, 1, 4);
 
@@ -1212,7 +1212,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(pressedLabel, 2);
 
                                 var pressedColorLabel = new Label { Text = "Pressed Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = new Manifest.Vector4(color));
+                                var pressedColorPanel = CreateColorControlWithPicker(element.selectable.pressedColor, color => element.selectable.pressedColor = new Vector4Data(color));
                                 layout.Controls.Add(pressedColorLabel, 0, 6);
                                 layout.Controls.Add(pressedColorPanel, 1, 6);
 
@@ -1232,7 +1232,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(selectedLabel, 2);
 
                                 var selectedColorLabel = new Label { Text = "Selected Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = new Manifest.Vector4(color));
+                                var selectedColorPanel = CreateColorControlWithPicker(element.selectable.selectedColor, color => element.selectable.selectedColor = new Vector4Data(color));
                                 layout.Controls.Add(selectedColorLabel, 0, 8);
                                 layout.Controls.Add(selectedColorPanel, 1, 8);
 
@@ -1252,7 +1252,7 @@ namespace ThemeManager
                                 layout.SetColumnSpan(disabledLabel, 2);
 
                                 var disabledColorLabel = new Label { Text = "Disabled Color:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill };
-                                var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = new Manifest.Vector4(color));
+                                var disabledColorPanel = CreateColorControlWithPicker(element.selectable.disabledColor, color => element.selectable.disabledColor = new Vector4Data(color));
                                 layout.Controls.Add(disabledColorLabel, 0, 10);
                                 layout.Controls.Add(disabledColorPanel, 1, 10);
 
@@ -1299,7 +1299,7 @@ namespace ThemeManager
 
                             return panel;
 
-                            Panel CreateColorControlWithPicker(Manifest.Vector4 initialColor, Action<Vector4> onColorChanged)
+                            Panel CreateColorControlWithPicker(Vector4Data initialColor, Action<Vector4> onColorChanged)
                             {
                                 var colorPanel = new Panel
                                 {
@@ -1405,7 +1405,7 @@ namespace ThemeManager
                                 return colorPanel;
                             }
 
-                            Panel CreateSpriteControl(Manifest.Sprite sprite, Action<Manifest.Sprite> onSpriteChanged)
+                            Panel CreateSpriteControl(SpriteData sprite, Action<SpriteData> onSpriteChanged)
                             {
                                 var spritePanel = new Panel
                                 {
@@ -1503,7 +1503,7 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
-        Panel CreateSpritePanel(Manifest.CustomSprite sprite, string spriteType, Manifest.Sprite maskSprite = null)
+        Panel CreateSpritePanel(CustomSprite sprite, string spriteType, SpriteData maskSprite = null)
         {
             var panel = new Panel
             {
@@ -1616,7 +1616,7 @@ namespace ThemeManager
             bordersButton.Click += (s, e) =>
             {
                 var btn = s as Button;
-                var targetSprite = btn?.Tag as Manifest.CustomSprite;
+                var targetSprite = btn?.Tag as CustomSprite;
                 if (targetSprite != null)
                 {
                     ShowBordersDialog($"{spriteType} Sprite Borders", targetSprite);
@@ -1723,7 +1723,7 @@ namespace ThemeManager
 
             return panel;
         }
-        void ShowBordersDialog(string title, Manifest.CustomSprite sprite)
+        void ShowBordersDialog(string title, CustomSprite sprite)
         {
             if (sprite == null)
                 return;
@@ -1816,11 +1816,11 @@ namespace ThemeManager
             form.AcceptButton = okButton;
             form.ShowDialog();
         }
-        Manifest.CustomSprite CreateDefaultSprite() => new Manifest.CustomSprite
+        CustomSprite CreateDefaultSprite() => new CustomSprite
         {
             pixelPerUnit = 100,
             filterMode = 1,
-            borders = new Manifest.CustomSprite.Borders()
+            borders = new Borders()
         };
         void UpdateFontColor()
         {
@@ -1828,7 +1828,7 @@ namespace ThemeManager
 
             if (_Manifest != null && _Manifest.font != null)
             {
-                _Manifest.font.color = new Manifest.Vector4(
+                _Manifest.font.color = new Vector4Data(
                     (float)FontColorR.Value,
                     (float)FontColorG.Value,
                     (float)FontColorB.Value,
