@@ -184,9 +184,6 @@ namespace UI
         public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
         {
             value = null;
-            if (Current.GetType() != typeof(Container))
-                return false;
-
             if ((Current as Container).Map.TryGetValue(key, out var data))
             {
                 value = data as T;
@@ -200,9 +197,6 @@ namespace UI
         public bool TryGetDefault<T>(string key, out T value) where T : Element.Data
         {
             value = null;
-            if (Default.GetType() != typeof(Container))
-                return false;
-
             if ((Default as Container).Map.TryGetValue(key, out var data))
             {
                 value = data as T;
