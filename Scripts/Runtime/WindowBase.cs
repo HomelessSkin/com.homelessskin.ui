@@ -132,7 +132,6 @@ namespace UI
                 Directory.CreateDirectory(Dir);
 
             var path = $"{Dir}{name}_{DataFile}";
-            File.Create(path);
             File.WriteAllText(path, serialized);
         }
 
