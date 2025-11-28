@@ -72,7 +72,6 @@ namespace UI
             _Localizator.Open<ListLocalization>(this);
         }
         public void CloseLocalizations() => _Localizator.Close();
-        public void ReloadLocalizations() => _Localizator.Collect();
         public Localizable.LocalData GetTranslation(string key)
         {
             if (_Localizator.TryGetValue<Localizable.LocalData>(key, out var data))
@@ -186,12 +185,13 @@ namespace UI
             _Drawer.Close();
             _Drawer.Collect();
             _Drawer.Open<ListTheme>(this);
+
+            RedrawTheme(_Drawer.Current);
         }
         public bool TryGetDrawData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
 
         public void SelectTheme(int index) => RedrawTheme(_Drawer.AllData[index]);
 
-        void ReloadThemes() => _Drawer.Collect();
         protected virtual void RedrawTheme(Storage.Data data)
         {
             _Drawer.SetData(data);
@@ -371,10 +371,10 @@ namespace UI
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
 
-            ReloadThemes();
-            ReloadLocalizations();
-
+            _Drawer.Collect();
             _Drawer.Load();
+
+            _Localizator.Collect();
             _Localizator.Load();
         }
         protected virtual void Update()
