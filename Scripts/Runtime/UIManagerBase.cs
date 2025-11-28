@@ -350,6 +350,11 @@ namespace UI
         public void HideTutorial() => _Tutorial.SetEnabled(false);
         #endregion
 
+        public virtual void Close()
+        {
+            Application.Quit();
+        }
+
         protected virtual void Awake()
         {
 #if UNITY_ENTITIES_INSTALLED

@@ -35,6 +35,10 @@ namespace UI
                     OnEnabledTargets.Invoke();
             }
         }
+        protected override void OnDestroy()
+        {
+            OnClick?.RemoveAllListeners();
+        }
 
         public void SetLabel(string name)
         {
@@ -49,11 +53,6 @@ namespace UI
             SetLabel(name);
 
             OnClick.AddListener(() => call.Invoke(index));
-        }
-
-        protected override void OnDestroy()
-        {
-            OnClick?.RemoveAllListeners();
         }
     }
 }
