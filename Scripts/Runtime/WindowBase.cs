@@ -139,7 +139,7 @@ namespace UI
         {
             public string Name;
 
-            public virtual string Serialize() => JsonUtility.ToJson(this);
+            public virtual string Serialize() => JsonUtility.ToJson(this, true);
         }
     }
     #endregion
