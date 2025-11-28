@@ -119,7 +119,7 @@ namespace UI
                 }
             }
         }
-        public virtual void Store(string name, Data data)
+        public virtual void Store(Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
@@ -131,7 +131,7 @@ namespace UI
             if (!Directory.Exists(Dir))
                 Directory.CreateDirectory(Dir);
 
-            File.WriteAllText($"{Dir}{name}_{DataFile}", data.Serialize());
+            File.WriteAllText($"{Dir}{data.Name}_{DataFile}", data.Serialize());
         }
 
         [Serializable]
