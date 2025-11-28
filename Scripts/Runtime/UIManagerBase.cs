@@ -181,11 +181,17 @@ namespace UI
 
         public void OpenThemes() => _Drawer.Open<ListTheme>(this);
         public void CloseThemes() => _Drawer.Close();
-        public void ReloadThemes() => _Drawer.Collect();
+        public void RefreshThemes()
+        {
+            _Drawer.Close();
+            _Drawer.Collect();
+            _Drawer.Open<ListTheme>(this);
+        }
         public bool TryGetDrawData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
 
         public void SelectTheme(int index) => RedrawTheme(_Drawer.AllData[index]);
 
+        void ReloadThemes() => _Drawer.Collect();
         protected virtual void RedrawTheme(Storage.Data data)
         {
             _Drawer.SetData(data);
