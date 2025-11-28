@@ -8,7 +8,7 @@ namespace UI
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        public override void Init(int index, Storage.Container data, UIManagerBase manager)
+        public override void Init(int index, ScrollBase.Container data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 

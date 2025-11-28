@@ -2,7 +2,7 @@ using System;
 
 namespace UI
 {
-    public class Localization : Storage.Container
+    public class Localization : ScrollBase.Container
     {
         public Localization(string lang)
         {

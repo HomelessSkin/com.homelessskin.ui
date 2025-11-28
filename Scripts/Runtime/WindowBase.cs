@@ -43,41 +43,6 @@ namespace UI
 
         [Space]
         public Element[] Elements;
-
-        public bool TryGetValue(string key, out Element.Data value) => TryGetValue<Element.Data>(key, out value);
-        public bool TryGetValue<T>(string key, out T value) where T : Element.Data => TryGetCurrent<T>(key, out value) || TryGetDefault<T>(key, out value);
-        public bool TryGetCurrent(string key, out Element.Data value) => TryGetCurrent<Element.Data>(key, out value);
-        public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
-        {
-            value = null;
-            if (Current.GetType() != typeof(Container))
-                return false;
-
-            if ((Current as Container).Map.TryGetValue(key, out var data))
-            {
-                value = data as T;
-
-                return true;
-            }
-
-            return false;
-        }
-        public bool TryGetDefault(string key, out Element.Data value) => TryGetDefault<Element.Data>(key, out value);
-        public bool TryGetDefault<T>(string key, out T value) where T : Element.Data
-        {
-            value = null;
-            if (Default.GetType() != typeof(Container))
-                return false;
-
-            if ((Default as Container).Map.TryGetValue(key, out var data))
-            {
-                value = data as T;
-
-                return true;
-            }
-
-            return false;
-        }
         public void AddData(Data data) => AllData.Add(data);
 
         public abstract void AddData(string serialized, string path, bool fromResources = false);
@@ -176,12 +141,6 @@ namespace UI
         {
             public string Name;
         }
-
-        [Serializable]
-        public class Container : Data
-        {
-            public Dictionary<string, Element.Data> Map = new Dictionary<string, Element.Data>();
-        }
     }
     #endregion
 
@@ -217,6 +176,47 @@ namespace UI
                 GameObject.Destroy(Head.content.gameObject);
 
             SetEnabled(false);
+        }
+
+        public bool TryGetValue(string key, out Element.Data value) => TryGetValue<Element.Data>(key, out value);
+        public bool TryGetValue<T>(string key, out T value) where T : Element.Data => TryGetCurrent<T>(key, out value) || TryGetDefault<T>(key, out value);
+        public bool TryGetCurrent(string key, out Element.Data value) => TryGetCurrent<Element.Data>(key, out value);
+        public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
+        {
+            value = null;
+            if (Current.GetType() != typeof(Container))
+                return false;
+
+            if ((Current as Container).Map.TryGetValue(key, out var data))
+            {
+                value = data as T;
+
+                return true;
+            }
+
+            return false;
+        }
+        public bool TryGetDefault(string key, out Element.Data value) => TryGetDefault<Element.Data>(key, out value);
+        public bool TryGetDefault<T>(string key, out T value) where T : Element.Data
+        {
+            value = null;
+            if (Default.GetType() != typeof(Container))
+                return false;
+
+            if ((Default as Container).Map.TryGetValue(key, out var data))
+            {
+                value = data as T;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        [Serializable]
+        public class Container : Data
+        {
+            public Dictionary<string, Element.Data> Map = new Dictionary<string, Element.Data>();
         }
     }
     #endregion
