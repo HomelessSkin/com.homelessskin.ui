@@ -119,7 +119,7 @@ namespace UI
                 }
             }
         }
-        public virtual void Store(string name, string serialized)
+        public virtual void Store<T>(string name, T data) where T : Data
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
@@ -132,7 +132,7 @@ namespace UI
                 Directory.CreateDirectory(Dir);
 
             var path = $"{Dir}{name}_{DataFile}";
-            File.WriteAllText(path, serialized);
+            File.WriteAllText(path, JsonUtility.ToJson(data));
         }
 
         [Serializable]
