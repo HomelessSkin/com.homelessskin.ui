@@ -10,7 +10,7 @@ namespace UI
 
         protected UIManagerBase Manager;
 
-        public virtual void Init(int index, ScrollBase.Container data, UIManagerBase manager)
+        public virtual void Init(int index, Storage.Data data, UIManagerBase manager)
         {
             Manager = manager;
 

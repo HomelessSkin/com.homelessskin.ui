@@ -8,9 +8,11 @@ namespace UI
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        public override void Init(int index, ScrollBase.Container data, UIManagerBase manager)
+        public override void Init(int index, Storage.Data data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
+
+            var container = data as ScrollBase.Container;
 
             for (int d = 0; d < Drawables.Length; d++)
                 Drawables[d].SetData(GetData(Drawables[d].GetKey()));
@@ -23,7 +25,7 @@ namespace UI
             Element.Data GetData(string tag)
             {
                 Element.Data init = null;
-                if (data.Map.TryGetValue(tag, out init))
+                if (container.Map.TryGetValue(tag, out init))
                 { }
                 else if (Manager.TryGetDrawData(tag, out init))
                 { }
