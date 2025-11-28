@@ -64,6 +64,7 @@ namespace UI
                     result = Resources.Load<TMP_FontAsset>(filePath.Replace(".asset", ""));
                 else if (File.Exists(filePath))
                 {
+                    filePath = filePath.Replace(".manifest", "");
                     var bundle = AssetBundle.LoadFromFile(filePath);
                     var assets = bundle.GetAllAssetNames();
                     bundle.LoadAsset("tempfontholder");

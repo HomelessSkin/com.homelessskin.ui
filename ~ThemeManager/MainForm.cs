@@ -360,7 +360,7 @@ namespace ThemeManager
                         };
                         FontBrowseButton.Click += (s, e) =>
                         {
-                            var filePath = ShowOpenFileDialog("Font Asset Files|*.asset", "Select Font Asset");
+                            var filePath = ShowOpenFileDialog("Asset Files|*.asset|Manifest Files|*.manifest", "Select Font Asset");
                             if (!string.IsNullOrEmpty(filePath))
                             {
                                 FontNameBox.Text = Path.GetFileName(filePath);
