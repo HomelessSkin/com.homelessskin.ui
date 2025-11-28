@@ -131,7 +131,7 @@ namespace UI
             if (!Directory.Exists($"{Dir}/{data.Type}"))
                 Directory.CreateDirectory($"{Dir}/{data.Type}");
 
-            File.WriteAllText($"{Dir}/{data.Type}/{data.Name}{DataFile}", data.Serialize());
+            File.WriteAllText($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
         }
 
         [Serializable]
