@@ -45,9 +45,9 @@ namespace UI
 
             public string Serialize(Localization localization)
             {
-                var data = new Localization.Data { name = localization.Name, dictionary = new Localization.Data.KVP[localization.Store.Count] };
+                var data = new Localization.Data { name = localization.Name, dictionary = new Localization.Data.KVP[localization.Map.Count] };
                 var c = 0;
-                foreach (var kvp in localization.Store)
+                foreach (var kvp in localization.Map)
                 {
                     data.dictionary[c] = new Localization.Data.KVP { key = kvp.Key, value = (kvp.Value as Localizable.LocalData).Text };
 
@@ -104,15 +104,15 @@ namespace UI
         {
             var local = new Localization("en");
             for (int i = 0; i < _Localizator.Elements.Length; i++)
-                local.Store[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
+                local.Map[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
 
-            local.Store[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
+            local.Map[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
 
             for (int i = 0; i < _Messenger.Messages.Length; i++)
-                local.Store[_Messenger.Messages[i]] = new Localizable.LocalData { Text = _Messenger.Messages[i] };
+                local.Map[_Messenger.Messages[i]] = new Localizable.LocalData { Text = _Messenger.Messages[i] };
 
             for (int i = 0; i < _Confirm.Keys.Length; i++)
-                local.Store[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
+                local.Map[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
 
             File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator.DefaultPath}.json", _Localizator.Serialize(local));
 
@@ -127,9 +127,9 @@ namespace UI
             for (int i = 0; i < localizations.Length; i++)
             {
                 var data = new Localization(_Localizator.Deserialize(localizations[i].text));
-                foreach (var kvp in local.Store)
-                    if (!data.Store.ContainsKey(kvp.Key))
-                        data.Store[kvp.Key] = kvp.Value;
+                foreach (var kvp in local.Map)
+                    if (!data.Map.ContainsKey(kvp.Key))
+                        data.Map[kvp.Key] = kvp.Value;
 
                 File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator.ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
             }

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace UI
 {
     [Serializable]
-    public class Theme : Storage.Data
+    public class Theme : Storage.Container
     {
         public string LanguageKey;
         public TMP_FontAsset FontAsset;
@@ -48,7 +48,7 @@ namespace UI
                     _Text = info.text == null ? null : LoadText(info.text),
                 };
 
-                Store[info.key] = data;
+                Map[info.key] = data;
 
 #if UNITY_EDITOR
                 Preview.Add(data);

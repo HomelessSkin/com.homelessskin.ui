@@ -8,7 +8,7 @@ namespace UI
         [Space]
         [SerializeField] Drawable[] Drawables;
 
-        public override void Init(int index, Storage.Data data, UIManagerBase manager)
+        public override void Init(int index, Storage.Container data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 
@@ -23,7 +23,7 @@ namespace UI
             Element.Data GetData(string tag)
             {
                 Element.Data init = null;
-                if (data.Store.TryGetValue(tag, out init))
+                if (data.Map.TryGetValue(tag, out init))
                 { }
                 else if (Manager.TryGetDrawData(tag, out init))
                 { }

@@ -50,7 +50,10 @@ namespace UI
         public bool TryGetCurrent<T>(string key, out T value) where T : Element.Data
         {
             value = null;
-            if (Current.Store.TryGetValue(key, out var data))
+            if (Current.GetType() != typeof(Container))
+                return false;
+
+            if ((Current as Container).Map.TryGetValue(key, out var data))
             {
                 value = data as T;
 
@@ -63,7 +66,10 @@ namespace UI
         public bool TryGetDefault<T>(string key, out T value) where T : Element.Data
         {
             value = null;
-            if (Default.Store.TryGetValue(key, out var data))
+            if (Default.GetType() != typeof(Container))
+                return false;
+
+            if ((Default as Container).Map.TryGetValue(key, out var data))
             {
                 value = data as T;
 
@@ -169,8 +175,12 @@ namespace UI
         public class Data
         {
             public string Name;
+        }
 
-            public Dictionary<string, Element.Data> Store = new Dictionary<string, Element.Data>();
+        [Serializable]
+        public class Container : Data
+        {
+            public Dictionary<string, Element.Data> Map = new Dictionary<string, Element.Data>();
         }
     }
     #endregion
@@ -196,7 +206,7 @@ namespace UI
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, AllData[l], manager);
+                lp.Init(l, AllData[l] as Container, manager);
             }
 
             SetEnabled(true);

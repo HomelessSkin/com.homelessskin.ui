@@ -6,7 +6,7 @@ namespace UI
     {
         [SerializeField] MenuButton SelectButton;
 
-        public override void Init(int index, Storage.Data data, UIManagerBase manager)
+        public override void Init(int index, Storage.Container data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 

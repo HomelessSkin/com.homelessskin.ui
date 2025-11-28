@@ -2,7 +2,7 @@ using System;
 
 namespace UI
 {
-    public class Localization : Storage.Data
+    public class Localization : Storage.Container
     {
         public Localization(string lang)
         {
@@ -16,7 +16,7 @@ namespace UI
             {
                 var kvp = data.dictionary[k];
 
-                Store[kvp.key] = new Localizable.LocalData { Text = kvp.value };
+                Map[kvp.key] = new Localizable.LocalData { Text = kvp.value };
             }
         }
 
