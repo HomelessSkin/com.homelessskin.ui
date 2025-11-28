@@ -79,7 +79,6 @@ namespace UI
             Z = z;
             W = w;
         }
-
         public Vector4Data(System.Numerics.Vector4 color)
         {
             X = color.X;
@@ -181,12 +180,12 @@ namespace UI
     {
         public int version;
         public Sprite_V0[] sprites;
+    }
 
-        [Serializable]
-        public class Sprite_V0 : CustomSprite
-        {
-            public string key;
-        }
+    [Serializable]
+    public class Sprite_V0 : CustomSprite
+    {
+        public string key;
     }
 
     [Serializable]

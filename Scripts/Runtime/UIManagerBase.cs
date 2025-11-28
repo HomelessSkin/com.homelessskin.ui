@@ -155,7 +155,7 @@ namespace UI
                 if (fromResources)
                     path += $"{manifest.name}/";
                 else
-                    path.Replace("manifest.json", "");
+                    path = path.Replace("manifest.json", "");
 
                 AllData.Add(new Theme(manifest, path, fromResources));
             }
