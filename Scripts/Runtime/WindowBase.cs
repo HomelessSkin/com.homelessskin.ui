@@ -32,6 +32,7 @@ namespace UI
         public string DefaultPath;
         public string ResourcesPath;
         public string PersistentPath;
+        public string Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
         [Space]
         public Data Default = new Data();
@@ -129,11 +130,11 @@ namespace UI
                 AddData(file.text, $"{ResourcesPath}", true);
             }
 
-            if (!Directory.Exists($"{Application.persistentDataPath}/{PersistentPath}"))
-                Directory.CreateDirectory($"{Application.persistentDataPath}/{PersistentPath}");
+            if (!Directory.Exists(Dir))
+                Directory.CreateDirectory(Dir);
             else
             {
-                var buildManifests = Directory.GetFiles(Application.persistentDataPath, DataFile, SearchOption.AllDirectories);
+                var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
                 for (int m = 0; m < buildManifests.Length; m++)
                 {
                     var path = buildManifests[m];
