@@ -119,7 +119,7 @@ namespace UI
                 }
             }
         }
-        public virtual void Store<T>(string name, T data) where T : Data
+        public virtual void Store(string name, Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
@@ -131,14 +131,15 @@ namespace UI
             if (!Directory.Exists(Dir))
                 Directory.CreateDirectory(Dir);
 
-            var path = $"{Dir}{name}_{DataFile}";
-            File.WriteAllText(path, JsonUtility.ToJson(data));
+            File.WriteAllText($"{Dir}{name}_{DataFile}", data.Serialize());
         }
 
         [Serializable]
         public class Data
         {
             public string Name;
+
+            public virtual string Serialize() => JsonUtility.ToJson(this);
         }
     }
     #endregion
