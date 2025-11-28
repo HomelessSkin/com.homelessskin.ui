@@ -83,7 +83,7 @@ namespace UI
 
             this.SavePrefString(data.Name);
         }
-        public virtual void Load()
+        public virtual void PickSaved()
         {
             LoadDefault();
 
@@ -123,24 +123,46 @@ namespace UI
         {
             AllData.Clear();
 
-            var resManifests = Resources.LoadAll<TextAsset>(ResourcesPath);
-            for (int m = 0; m < resManifests.Length; m++)
+            if (!string.IsNullOrEmpty(ResourcesPath))
             {
-                var file = resManifests[m];
-                AddData(file.text, $"{ResourcesPath}", true);
+                var resManifests = Resources.LoadAll<TextAsset>(ResourcesPath);
+                for (int m = 0; m < resManifests.Length; m++)
+                {
+                    var file = resManifests[m];
+                    AddData(file.text, $"{ResourcesPath}", true);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(PersistentPath))
+            {
+                if (!Directory.Exists(Dir))
+                    Directory.CreateDirectory(Dir);
+                else
+                {
+                    var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
+                    for (int m = 0; m < buildManifests.Length; m++)
+                    {
+                        var path = buildManifests[m];
+                        AddData(File.ReadAllText(path), path);
+                    }
+                }
+            }
+        }
+        public virtual void Store(string name, string serialized)
+        {
+            if (string.IsNullOrEmpty(PersistentPath))
+            {
+                Debug.LogError($"No Persistent Path for {this.GetType()} Data storing!\nPlease set this Value inside UIManager's relevant field!");
+
+                return;
             }
 
             if (!Directory.Exists(Dir))
                 Directory.CreateDirectory(Dir);
-            else
-            {
-                var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
-                for (int m = 0; m < buildManifests.Length; m++)
-                {
-                    var path = buildManifests[m];
-                    AddData(File.ReadAllText(path), path);
-                }
-            }
+
+            var path = $"{Dir}{name}_{DataFile}";
+            File.Create(path);
+            File.WriteAllText(path, serialized);
         }
 
         [Serializable]

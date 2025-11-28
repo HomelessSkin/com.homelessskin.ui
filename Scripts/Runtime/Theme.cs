@@ -20,7 +20,7 @@ namespace UI
 
         public Theme(Manifest_V2 manifest, string path, bool fromResources)
         {
-            var font = manifest.font == null || string.IsNullOrEmpty(manifest.font.assetName) ?
+            var font = string.IsNullOrEmpty(manifest.font.assetName) ?
              TMP_Settings.defaultFontAsset :
              LoadFont();
 
@@ -117,8 +117,8 @@ namespace UI
 
                 Font = font,
                 FontSize = text.fontSize,
-                CharacterSpacing = text.characterSpacing,
-                WordSpacing = text.wordSpacing,
+                CharacterSpacing = manifest.font.characterSpacing,
+                WordSpacing = manifest.font.wordSpacing,
 
                 Color = color,
                 Offset = new Vector3(text.xOffset, text.yOffset),

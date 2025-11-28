@@ -372,10 +372,10 @@ namespace UI
 #endif
 
             _Drawer.Collect();
-            _Drawer.Load();
+            _Drawer.PickSaved();
 
             _Localizator.Collect();
-            _Localizator.Load();
+            _Localizator.PickSaved();
         }
         protected virtual void Update()
         {

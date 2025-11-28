@@ -109,6 +109,8 @@ namespace UI
     {
         public string assetName;
         public Vector4Data color;
+        public int characterSpacing;
+        public int wordSpacing;
     }
 
     [Serializable]
@@ -168,8 +170,6 @@ namespace UI
     public class TextData
     {
         public int fontSize;
-        public int characterSpacing;
-        public int wordSpacing;
 
         public int xOffset;
         public int yOffset;

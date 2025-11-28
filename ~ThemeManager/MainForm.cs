@@ -32,6 +32,8 @@ namespace ThemeManager
         NumericUpDown FontColorG;
         NumericUpDown FontColorB;
         NumericUpDown FontColorA;
+        NumericUpDown CharacterSpacing;
+        NumericUpDown WordSpacing;
 
         Button FontBrowseButton;
         Button FontColorPickerButton;
@@ -62,7 +64,7 @@ namespace ThemeManager
                     };
 
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
+                    main.RowStyles.Add(new RowStyle(SizeType.Absolute, 200));
                     main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
                     main.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));
 
@@ -82,6 +84,7 @@ namespace ThemeManager
 
                     Panel CreateJsonSection()
                     {
+                        // ... (остается без изменений)
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -190,14 +193,14 @@ namespace ThemeManager
                                             element.@base.borders = new Borders();
 
                                         if (element.text == null)
+                                        {
                                             element.text = new TextData
                                             {
                                                 fontSize = 32,
-                                                characterSpacing = 0,
-                                                wordSpacing = 0,
                                                 xOffset = 0,
                                                 yOffset = 0
                                             };
+                                        }
 
                                         if (element.selectable == null)
                                         {
@@ -222,11 +225,16 @@ namespace ThemeManager
                                     if (_Manifest.font != null)
                                     {
                                         var color = _Manifest.font.color;
+                                        var cSpacing = _Manifest.font.characterSpacing;
+                                        var wSpacing = _Manifest.font.wordSpacing;
 
                                         FontColorR.Value = (decimal)(color.X);
                                         FontColorG.Value = (decimal)(color.Y);
                                         FontColorB.Value = (decimal)(color.Z);
                                         FontColorA.Value = (decimal)(color.W);
+
+                                        CharacterSpacing.Value = cSpacing;
+                                        WordSpacing.Value = wSpacing;
 
                                         UpdateFontColorPreview();
                                     }
@@ -236,6 +244,8 @@ namespace ThemeManager
                                         FontColorG.Value = 255;
                                         FontColorB.Value = 255;
                                         FontColorA.Value = 255;
+                                        CharacterSpacing.Value = 0;
+                                        WordSpacing.Value = 0;
 
                                         UpdateFontColorPreview();
                                     }
@@ -459,10 +469,46 @@ namespace ThemeManager
                         };
                         FontColorPickerButton.Click += (s, e) => ShowColorPickerDialog();
 
+                        var characterSpacingLabel = new Label
+                        {
+                            Text = "Character Spacing:",
+                            Location = new Point(10, 130),
+                            AutoSize = true
+                        };
+
+                        CharacterSpacing = new NumericUpDown
+                        {
+                            Location = new Point(120, 127),
+                            Width = 60,
+                            Height = 25,
+                            Minimum = -50,
+                            Maximum = 50,
+                            Value = 0
+                        };
+
+                        var wordSpacingLabel = new Label
+                        {
+                            Text = "Word Spacing:",
+                            Location = new Point(200, 130),
+                            AutoSize = true
+                        };
+
+                        WordSpacing = new NumericUpDown
+                        {
+                            Location = new Point(280, 127),
+                            Width = 60,
+                            Height = 25,
+                            Minimum = -50,
+                            Maximum = 50,
+                            Value = 0
+                        };
+
                         FontColorR.ValueChanged += (s, e) => UpdateFontColor();
                         FontColorG.ValueChanged += (s, e) => UpdateFontColor();
                         FontColorB.ValueChanged += (s, e) => UpdateFontColor();
                         FontColorA.ValueChanged += (s, e) => UpdateFontColor();
+                        CharacterSpacing.ValueChanged += (s, e) => UpdateFontSpacing();
+                        WordSpacing.ValueChanged += (s, e) => UpdateFontSpacing();
 
                         panel.Controls.AddRange(new Control[]
                         {
@@ -488,7 +534,11 @@ namespace ThemeManager
                             FontColorB,
                             fontColorALabel,
                             FontColorA,
-                            FontColorPickerButton
+                            FontColorPickerButton,
+                            characterSpacingLabel,
+                            CharacterSpacing,
+                            wordSpacingLabel,
+                            WordSpacing
                         });
 
                         return panel;
@@ -514,6 +564,7 @@ namespace ThemeManager
                     }
                     Panel CreateElementsSection()
                     {
+                        // ... (без изменений)
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -556,6 +607,7 @@ namespace ThemeManager
                     }
                     Panel CreateButtonsSection()
                     {
+                        // ... (без изменений)
                         var panel = new Panel
                         {
                             Dock = DockStyle.Fill,
@@ -607,8 +659,6 @@ namespace ThemeManager
                                 text = new TextData
                                 {
                                     fontSize = 32,
-                                    characterSpacing = 0,
-                                    wordSpacing = 0,
                                     xOffset = 0,
                                     yOffset = 0
                                 },
@@ -666,6 +716,8 @@ namespace ThemeManager
             FontColorG.Value = 255;
             FontColorB.Value = 255;
             FontColorA.Value = 255;
+            CharacterSpacing.Value = 0;
+            WordSpacing.Value = 0;
 
             UpdateFontColorPreview();
 
@@ -705,6 +757,10 @@ namespace ThemeManager
                     (float)FontColorA.Value
                 );
 
+                // Сохраняем настройки spacing
+                _Manifest.font.characterSpacing = (int)CharacterSpacing.Value;
+                _Manifest.font.wordSpacing = (int)WordSpacing.Value;
+
                 var json = JsonConvert.SerializeObject(_Manifest, Formatting.Indented);
 
                 File.WriteAllText(FilePath, json);
@@ -713,6 +769,14 @@ namespace ThemeManager
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        void UpdateFontSpacing()
+        {
+            if (_Manifest != null && _Manifest.font != null)
+            {
+                _Manifest.font.characterSpacing = (int)CharacterSpacing.Value;
+                _Manifest.font.wordSpacing = (int)WordSpacing.Value;
             }
         }
         TextBox GetLanguageKeyTextBox()
@@ -974,8 +1038,6 @@ namespace ThemeManager
                                 element.text = new TextData
                                 {
                                     fontSize = 14,
-                                    characterSpacing = 0,
-                                    wordSpacing = 0,
                                     xOffset = 0,
                                     yOffset = 0
                                 };
@@ -1009,57 +1071,11 @@ namespace ThemeManager
                                     element.text.fontSize = (int)fontSizeNumeric.Value;
                             };
 
-                            // Character Spacing
-                            var characterSpacingLabel = new Label
-                            {
-                                Text = "Character Spacing:",
-                                Location = new Point(20, 60),
-                                Size = new Size(120, 20),
-                                TextAlign = ContentAlignment.MiddleLeft
-                            };
-
-                            var characterSpacingNumeric = new NumericUpDown
-                            {
-                                Value = element.text?.characterSpacing ?? 0,
-                                Minimum = -50,
-                                Maximum = 50,
-                                Location = new Point(150, 57),
-                                Size = new Size(80, 20)
-                            };
-                            characterSpacingNumeric.ValueChanged += (s, e) =>
-                            {
-                                if (element.text != null)
-                                    element.text.characterSpacing = (int)characterSpacingNumeric.Value;
-                            };
-
-                            // Word Spacing
-                            var wordSpacingLabel = new Label
-                            {
-                                Text = "Word Spacing:",
-                                Location = new Point(20, 100),
-                                Size = new Size(120, 20),
-                                TextAlign = ContentAlignment.MiddleLeft
-                            };
-
-                            var wordSpacingNumeric = new NumericUpDown
-                            {
-                                Value = element.text?.wordSpacing ?? 0,
-                                Minimum = -50,
-                                Maximum = 50,
-                                Location = new Point(150, 97),
-                                Size = new Size(80, 20)
-                            };
-                            wordSpacingNumeric.ValueChanged += (s, e) =>
-                            {
-                                if (element.text != null)
-                                    element.text.wordSpacing = (int)wordSpacingNumeric.Value;
-                            };
-
                             // X Offset
                             var xOffsetLabel = new Label
                             {
                                 Text = "X Offset:",
-                                Location = new Point(20, 140),
+                                Location = new Point(20, 60),
                                 Size = new Size(120, 20),
                                 TextAlign = ContentAlignment.MiddleLeft
                             };
@@ -1069,7 +1085,7 @@ namespace ThemeManager
                                 Value = element.text?.xOffset ?? 0,
                                 Minimum = -1000,
                                 Maximum = 1000,
-                                Location = new Point(150, 137),
+                                Location = new Point(150, 57),
                                 Size = new Size(80, 20)
                             };
                             xOffsetNumeric.ValueChanged += (s, e) =>
@@ -1082,7 +1098,7 @@ namespace ThemeManager
                             var yOffsetLabel = new Label
                             {
                                 Text = "Y Offset:",
-                                Location = new Point(20, 180),
+                                Location = new Point(20, 100),
                                 Size = new Size(120, 20),
                                 TextAlign = ContentAlignment.MiddleLeft
                             };
@@ -1092,7 +1108,7 @@ namespace ThemeManager
                                 Value = element.text?.yOffset ?? 0,
                                 Minimum = -1000,
                                 Maximum = 1000,
-                                Location = new Point(150, 177),
+                                Location = new Point(150, 97),
                                 Size = new Size(80, 20)
                             };
                             yOffsetNumeric.ValueChanged += (s, e) =>
@@ -1103,11 +1119,9 @@ namespace ThemeManager
 
                             panel.Controls.AddRange(new Control[]
                             {
-        fontSizeLabel, fontSizeNumeric,
-        characterSpacingLabel, characterSpacingNumeric,
-        wordSpacingLabel, wordSpacingNumeric,
-        xOffsetLabel, xOffsetNumeric,
-        yOffsetLabel, yOffsetNumeric
+                                fontSizeLabel, fontSizeNumeric,
+                                xOffsetLabel, xOffsetNumeric,
+                                yOffsetLabel, yOffsetNumeric,
                             });
 
                             return panel;
@@ -1115,7 +1129,6 @@ namespace ThemeManager
                         Panel CreateSelectablePanel()
                         {
                             if (element.selectable == null)
-                            {
                                 element.selectable = new SelectableData
                                 {
                                     transition = 0,
@@ -1125,7 +1138,6 @@ namespace ThemeManager
                                     selectedColor = new Vector4Data(255f, 255f, 255f, 255f),
                                     disabledColor = new Vector4Data(255f, 255f, 255f, 255f)
                                 };
-                            }
 
                             var panel = new Panel
                             {
@@ -1505,6 +1517,7 @@ namespace ThemeManager
         }
         Panel CreateSpritePanel(CustomSprite sprite, string spriteType, SpriteData maskSprite = null)
         {
+            // ... (без изменений)
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -1725,6 +1738,7 @@ namespace ThemeManager
         }
         void ShowBordersDialog(string title, CustomSprite sprite)
         {
+            // ... (без изменений)
             if (sprite == null)
                 return;
 
