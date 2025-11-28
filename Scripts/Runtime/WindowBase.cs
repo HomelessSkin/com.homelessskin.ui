@@ -128,16 +128,17 @@ namespace UI
                 return;
             }
 
-            if (!Directory.Exists(Dir))
-                Directory.CreateDirectory(Dir);
+            if (!Directory.Exists($"{Dir}/{data.Type}"))
+                Directory.CreateDirectory($"{Dir}/{data.Type}");
 
-            File.WriteAllText($"{Dir}{data.Name}_{DataFile}", data.Serialize());
+            File.WriteAllText($"{Dir}/{data.Type}/{data.Name}_{DataFile}", data.Serialize());
         }
 
         [Serializable]
         public class Data
         {
             public string Name;
+            public string Type;
 
             public virtual string Serialize() => JsonUtility.ToJson(this, true);
         }
