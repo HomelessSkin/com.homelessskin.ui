@@ -165,7 +165,7 @@ namespace UI
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
                 var lp = go.GetComponent<T>();
-                lp.Init(l, AllData[l] as Container, manager);
+                lp.Init(l, AllData[l], manager);
             }
 
             SetEnabled(true);
