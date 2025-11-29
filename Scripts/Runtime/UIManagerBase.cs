@@ -167,7 +167,8 @@ namespace UI
                         continue;
 
                     var key = element.GetKey();
-                    if (TryGetValue(key, out var elData))
+                    if (!string.IsNullOrEmpty(key) &&
+                         TryGetValue(key, out var elData))
                         element.SetData(elData);
                 }
             }

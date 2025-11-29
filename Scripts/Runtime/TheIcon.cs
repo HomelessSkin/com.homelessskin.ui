@@ -18,7 +18,8 @@ namespace UI
             base.Start();
 
             if (!NonRedrawable &&
-                 UIManager.TryGetDrawerData(GetKey(), out var data))
+                 !string.IsNullOrEmpty(Key) &&
+                  UIManager.TryGetDrawerData(GetKey(), out var data))
                 SetData(data);
         }
         public override void SetData(Data data)
