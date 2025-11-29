@@ -54,7 +54,7 @@ namespace UI
                     c++;
                 }
 
-                return JsonUtility.ToJson(data);
+                return JsonUtility.ToJson(data, true);
             }
             public Localization.Data Deserialize(string text) =>
                 JsonUtility.FromJson<Localization.Data>(text);
