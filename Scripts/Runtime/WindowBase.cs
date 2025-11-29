@@ -22,11 +22,9 @@ namespace UI
 
     #region STORAGE
     [Serializable]
-    public abstract class Storage : WindowBase, IPrefKey
+    public abstract class Storage : WindowBase
     {
         public string DataFile;
-        public string PrefKey;
-        public string _Key => PrefKey;
 
         [Space]
         public string DefaultPath;
@@ -35,61 +33,11 @@ namespace UI
         public string Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
         [Space]
-        public Data Default = new Data();
-        public Data Current = new Data();
-
-        [Space]
         public List<Data> AllData = new List<Data>();
 
-        [Space]
-        public Element[] Elements;
         public void AddData(Data data) => AllData.Add(data);
-
         public abstract void AddData(string serialized, string path, bool fromResources = false);
-        protected abstract void LoadDefault();
 
-        public virtual void SetData(Data data)
-        {
-            Current = data;
-
-            this.SavePrefString(data.Name);
-        }
-        public virtual void PickSaved()
-        {
-            LoadDefault();
-
-            var saved = this.LoadPrefString();
-            switch (saved)
-            {
-                case null:
-                case "":
-                case "Default":
-                {
-                    SetData(Default);
-                }
-                break;
-                default:
-                {
-                    var found = false;
-                    for (int m = 0; m < AllData.Count; m++)
-                    {
-                        var data = AllData[m];
-                        if (data.Name == saved)
-                        {
-                            found = true;
-
-                            SetData(data);
-
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                        goto case "Default";
-                }
-                break;
-            }
-        }
         public virtual void Collect()
         {
             AllData.Clear();
@@ -145,9 +93,69 @@ namespace UI
     }
     #endregion
 
+    #region PERSONAL STORAGE
+    [Serializable]
+    public abstract class PersonalizedStorage : Storage, IPrefKey
+    {
+        public string PrefKey;
+        public string _Key => PrefKey;
+
+        [Space]
+        public Data Default = new Data();
+        public Data Current = new Data();
+
+        [Space]
+        public Element[] Elements;
+
+        protected abstract void LoadDefault();
+        public virtual void SetData(Data data)
+        {
+            Current = data;
+
+            this.SavePrefString(data.Name);
+        }
+        public virtual void PickSaved()
+        {
+            LoadDefault();
+
+            var saved = this.LoadPrefString();
+            switch (saved)
+            {
+                case null:
+                case "":
+                case "Default":
+                {
+                    SetData(Default);
+                }
+                break;
+                default:
+                {
+                    var found = false;
+                    for (int m = 0; m < AllData.Count; m++)
+                    {
+                        var data = AllData[m];
+                        if (data.Name == saved)
+                        {
+                            found = true;
+
+                            SetData(data);
+
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        goto case "Default";
+                }
+                break;
+            }
+        }
+    }
+    #endregion
+
     #region SCROLL BASE
     [Serializable]
-    public abstract class ScrollBase : Storage
+    public abstract class ScrollBase : PersonalizedStorage
     {
         public ScrollRect Head;
         public Transform View;
