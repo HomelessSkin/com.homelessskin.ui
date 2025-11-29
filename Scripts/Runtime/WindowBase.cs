@@ -27,7 +27,6 @@ namespace UI
         public string DataFile;
 
         [Space]
-        public string DefaultPath;
         public string ResourcesPath;
         public string PersistentPath;
         public string Dir => $"{Application.persistentDataPath}/{PersistentPath}";
@@ -133,6 +132,7 @@ namespace UI
     [Serializable]
     public abstract class PersonalizedStorage : ScrollBase, IPrefKey
     {
+        public string DefaultPath;
         public string PrefKey;
         public string _Key => PrefKey;
 
