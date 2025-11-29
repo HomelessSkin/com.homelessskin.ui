@@ -9,7 +9,7 @@ using UnityEngine;
 namespace UI
 {
     [Serializable]
-    public class Theme : ScrollBase.Container
+    public class Theme : PersonalizedStorage.Container
     {
         public string LanguageKey;
         public TMP_FontAsset FontAsset;

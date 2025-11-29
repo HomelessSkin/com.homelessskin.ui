@@ -93,9 +93,45 @@ namespace UI
     }
     #endregion
 
+    #region SCROLL BASE
+    [Serializable]
+    public abstract class ScrollBase : Storage
+    {
+        public ScrollRect Head;
+        public Transform View;
+        public GameObject ContentPrefab;
+        public GameObject ItemPrefab;
+
+        public void Open<T>(UIManagerBase manager)
+            where T : ScrollItem
+        {
+            if (IsEnabled())
+                return;
+
+            Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
+
+            for (int l = 0; l < AllData.Count; l++)
+            {
+                var go = GameObject.Instantiate(ItemPrefab, Head.content);
+                var lp = go.GetComponent<T>();
+                lp.Init(l, AllData[l], manager);
+            }
+
+            SetEnabled(true);
+        }
+        public void Close()
+        {
+            if (Head.content)
+                GameObject.Destroy(Head.content.gameObject);
+
+            SetEnabled(false);
+        }
+    }
+    #endregion
+
     #region PERSONAL STORAGE
     [Serializable]
-    public abstract class PersonalizedStorage : Storage, IPrefKey
+    public abstract class PersonalizedStorage : ScrollBase, IPrefKey
     {
         public string PrefKey;
         public string _Key => PrefKey;
@@ -149,42 +185,6 @@ namespace UI
                 }
                 break;
             }
-        }
-    }
-    #endregion
-
-    #region SCROLL BASE
-    [Serializable]
-    public abstract class ScrollBase : PersonalizedStorage
-    {
-        public ScrollRect Head;
-        public Transform View;
-        public GameObject ContentPrefab;
-        public GameObject ItemPrefab;
-
-        public void Open<T>(UIManagerBase manager)
-            where T : ScrollItem
-        {
-            if (IsEnabled())
-                return;
-
-            Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
-
-            for (int l = 0; l < AllData.Count; l++)
-            {
-                var go = GameObject.Instantiate(ItemPrefab, Head.content);
-                var lp = go.GetComponent<T>();
-                lp.Init(l, AllData[l], manager);
-            }
-
-            SetEnabled(true);
-        }
-        public void Close()
-        {
-            if (Head.content)
-                GameObject.Destroy(Head.content.gameObject);
-
-            SetEnabled(false);
         }
 
         public bool TryGetValue(string key, out Element.Data value) => TryGetValue<Element.Data>(key, out value);

@@ -24,7 +24,7 @@ namespace UI
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
         [Serializable]
-        protected class Localizator : ScrollBase
+        protected class Localizator : PersonalizedStorage
         {
             public override void AddData(string serialized, string path, bool fromResources = false) =>
                 AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
@@ -144,10 +144,8 @@ namespace UI
         [SerializeField] protected Drawer _Drawer;
         #region DRAWER
         [Serializable]
-        protected class Drawer : ScrollBase
+        protected class Drawer : PersonalizedStorage
         {
-            public Theme _Current => Current as Theme;
-
             public override void AddData(string serialized, string path, bool fromResources = false)
             {
                 var manifest = Manifest.Cast(serialized);

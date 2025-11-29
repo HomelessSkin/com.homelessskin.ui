@@ -12,7 +12,7 @@ namespace UI
         {
             base.Init(index, data, manager);
 
-            var container = data as ScrollBase.Container;
+            var container = data as PersonalizedStorage.Container;
 
             for (int d = 0; d < Drawables.Length; d++)
                 Drawables[d].SetData(GetData(Drawables[d].GetKey()));
