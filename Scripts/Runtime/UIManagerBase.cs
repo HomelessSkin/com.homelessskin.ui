@@ -162,13 +162,13 @@ namespace UI
 
                 for (int d = 0; d < Elements.Length; d++)
                 {
-                    var drawable = Elements[d] as Drawable;
-                    if (drawable.IsNonRedrawable())
+                    var element = Elements[d];
+                    if (!(element as IRedrawable).IsRedrawable())
                         continue;
 
-                    var key = drawable.GetKey();
+                    var key = element.GetKey();
                     if (TryGetValue(key, out var elData))
-                        drawable.SetData(elData);
+                        element.SetData(elData);
                 }
             }
 
@@ -186,7 +186,7 @@ namespace UI
 
             RedrawTheme(_Drawer.Current);
         }
-        public bool TryGetDrawData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
+        public bool TryGetDrawerData(string key, out Element.Data data) => _Drawer.TryGetValue(key, out data);
 
         public void SelectTheme(int index) => RedrawTheme(_Drawer.AllData[index]);
 
@@ -406,9 +406,15 @@ namespace UI
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
                 .Where(x => x.gameObject.tag != "EditorOnly").ToArray();
 
-            _Drawer.Elements = ((Element[])GameObject
+            var list = new List<Element>();
+            list.AddRange(((Element[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None))
-                .Where(x => x.gameObject.tag != "EditorOnly").ToArray();
+                .Where(x => x.gameObject.tag != "EditorOnly").ToArray());
+            list.AddRange(((Element[])GameObject
+                .FindObjectsByType(typeof(TheIcon), FindObjectsInactive.Include, FindObjectsSortMode.None))
+                .Where(x => x.gameObject.tag != "EditorOnly").ToArray());
+
+            _Drawer.Elements = list.ToArray();
         }
         protected virtual void Reset()
         {

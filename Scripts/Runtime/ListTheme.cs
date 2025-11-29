@@ -27,7 +27,7 @@ namespace UI
                 Element.Data init = null;
                 if (container.Map.TryGetValue(tag, out init))
                 { }
-                else if (Manager.TryGetDrawData(tag, out init))
+                else if (Manager.TryGetDrawerData(tag, out init))
                 { }
 
                 return init;

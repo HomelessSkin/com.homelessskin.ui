@@ -191,6 +191,7 @@ namespace UI
     [Serializable]
     public class Manifest_V2 : Manifest
     {
+        public CustomSprite[] icons;
         public ElementData[] elements;
 
         public Manifest_V2() { }

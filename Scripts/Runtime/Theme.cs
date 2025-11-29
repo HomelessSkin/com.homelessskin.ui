@@ -35,25 +35,38 @@ namespace UI
             LanguageKey = lang;
             FontAsset = font;
 
-            for (int s = 0; s < manifest.elements.Length; s++)
-            {
-                var info = manifest.elements[s];
-                var data = new Drawable.DrawData
+            if (manifest.icons != null)
+                for (int i = 0; i < manifest.icons.Length; i++)
                 {
-                    Base = TryLoadSprite(info.@base, info.@base),
-                    Mask = TryLoadSprite(info.mask, info.@base),
-                    Overlay = TryLoadSprite(info.overlay, info.overlay),
+                    var icon = manifest.icons[i];
+                    var sprite = TryLoadSprite(icon);
+                    if (sprite)
+                        Map[icon.fileName.Replace(".png", "").ToLower()] = new TheIcon.IconData
+                        {
+                            Sprite = sprite
+                        };
+                }
 
-                    _Selectable = info.selectable == null ? null : LoadSelectable(info.selectable, info.@base),
-                    _Text = info.text == null ? null : LoadText(info.text),
-                };
+            if (manifest.elements != null)
+                for (int s = 0; s < manifest.elements.Length; s++)
+                {
+                    var info = manifest.elements[s];
+                    var data = new Drawable.DrawData
+                    {
+                        Base = TryLoadSprite(info.@base),
+                        Mask = TryLoadSprite(info.mask, info.@base),
+                        Overlay = TryLoadSprite(info.overlay),
 
-                Map[info.key] = data;
+                        _Selectable = info.selectable == null ? null : LoadSelectable(info.selectable, info.@base),
+                        _Text = info.text == null ? null : LoadText(info.text),
+                    };
+
+                    Map[info.key] = data;
 
 #if UNITY_EDITOR
-                Preview.Add(data);
+                    Preview.Add(data);
 #endif
-            }
+                }
 
             TMP_FontAsset LoadFont()
             {
@@ -73,10 +86,13 @@ namespace UI
 
                 return result ?? TMP_Settings.defaultFontAsset;
             }
-            Sprite TryLoadSprite(SpriteData sprite, CustomSprite param)
+            Sprite TryLoadSprite(SpriteData sprite, CustomSprite param = null)
             {
                 if (sprite == null)
                     return null;
+
+                if (param == null)
+                    param = sprite as CustomSprite;
 
                 var filePath = path + $"{sprite.fileName}";
                 if (fromResources || File.Exists(filePath))
@@ -90,7 +106,12 @@ namespace UI
                         if (!text)
                             return null;
                     }
-                    else if (!text.LoadImage(File.ReadAllBytes(filePath)))
+                    else if (text.LoadImage(File.ReadAllBytes(filePath)))
+                    {
+                        text.alphaIsTransparency = true;
+                        text.Apply();
+                    }
+                    else
                         return null;
 
                     text.filterMode = (FilterMode)param.filterMode;
@@ -127,11 +148,11 @@ namespace UI
             {
                 Transition = selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
 
-                NormalColor = new Vector4(selectable.normalColor.X, selectable.normalColor.Y, selectable.normalColor.Z, selectable.normalColor.W),
-                HighlightedColor = new Vector4(selectable.highlightedColor.X, selectable.highlightedColor.Y, selectable.highlightedColor.Z, selectable.highlightedColor.W),
-                PressedColor = new Vector4(selectable.pressedColor.X, selectable.pressedColor.Y, selectable.pressedColor.Z, selectable.pressedColor.W),
-                SelectedColor = new Vector4(selectable.selectedColor.X, selectable.selectedColor.Y, selectable.selectedColor.Z, selectable.selectedColor.W),
-                DisabledColor = new Vector4(selectable.disabledColor.X, selectable.disabledColor.Y, selectable.disabledColor.Z, selectable.disabledColor.W),
+                NormalColor = selectable.normalColor == null ? Vector4.one : new Vector4(selectable.normalColor.X, selectable.normalColor.Y, selectable.normalColor.Z, selectable.normalColor.W),
+                HighlightedColor = selectable.highlightedColor == null ? Vector4.one : new Vector4(selectable.highlightedColor.X, selectable.highlightedColor.Y, selectable.highlightedColor.Z, selectable.highlightedColor.W),
+                PressedColor = selectable.pressedColor == null ? Vector4.one : new Vector4(selectable.pressedColor.X, selectable.pressedColor.Y, selectable.pressedColor.Z, selectable.pressedColor.W),
+                SelectedColor = selectable.selectedColor == null ? Vector4.one : new Vector4(selectable.selectedColor.X, selectable.selectedColor.Y, selectable.selectedColor.Z, selectable.selectedColor.W),
+                DisabledColor = selectable.disabledColor == null ? Vector4.one : new Vector4(selectable.disabledColor.X, selectable.disabledColor.Y, selectable.disabledColor.Z, selectable.disabledColor.W),
 
                 HighlightedSprite = TryLoadSprite(selectable.highlightedSprite, @base),
                 PressedSprite = TryLoadSprite(selectable.pressedSprite, @base),

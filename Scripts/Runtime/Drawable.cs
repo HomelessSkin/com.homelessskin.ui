@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace UI
 {
     [RequireComponent(typeof(Image)), DisallowMultipleComponent]
-    public class Drawable : Element
+    public class Drawable : Element, IRedrawable
     {
         [SerializeField] bool NonRedrawable;
         [SerializeField] Image Mask;
@@ -25,13 +25,11 @@ namespace UI
             InitOrigins();
 
             if (!NonRedrawable &&
-                  UIManager.TryGetDrawData(GetKey(), out var data))
+                  UIManager.TryGetDrawerData(GetKey(), out var data))
                 SetData(data);
         }
 
         public override string GetKey() => _Type.ToString();
-        public bool IsNonRedrawable() => NonRedrawable;
-
         public override void SetData(Data data)
         {
             if (data == null)
@@ -128,6 +126,8 @@ namespace UI
                     text.rectTransform.localPosition = Origins[t] + drawData._Text.Offset;
                 }
         }
+
+        public bool IsRedrawable() => !NonRedrawable;
 
         void InitOrigins()
         {

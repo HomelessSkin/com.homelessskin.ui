@@ -1,99 +1,176 @@
 {
-    "v": {
-        "major": 0,
-        "minor": 0,
-        "patch": 1
-    },
-    "name": "Default",
-    "font": {
-        "assetName": "DelaGothicOne-Regular SDF"
-    },
-    "elements": [
-        {
-            "key": "Menu_Button",
-            "base": {
-                "fileName": "button",
-                "pixelPerUnit": 100,
-                "filterMode": 0,
-                "borders": {
-                    "left": 20,
-                    "right": 20,
-                    "top": 20,
-                    "bottom": 20
-                }
-            },
-            "mask": {
-                "fileName": "",
-                "pixelPerUnit": 100,
-                "filterMode": 1,
-                "borders": {
-                    "left": 0,
-                    "right": 0,
-                    "top": 0,
-                    "bottom": 0
-                }
-            },
-            "overlay": {
-                "fileName": "",
-                "pixelPerUnit": 100,
-                "filterMode": 1,
-                "borders": {
-                    "left": 0,
-                    "right": 0,
-                    "top": 0,
-                    "bottom": 0
-                }
-            },
-            "text": {
-                "localizable": 0,
-                "value": "",
-                "fontSize": 0,
-                "xOffset": 0,
-                "yOffset": 0
-            }
+  "icons": [
+    {
+      "pixelPerUnit": 100,
+      "filterMode": 1,
+      "borders": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0
+      },
+      "fileName": "Twitch.png"
+    }
+  ],
+  "elements": [
+    {
+      "key": "Menu_Button",
+      "base": {
+        "pixelPerUnit": 100,
+        "filterMode": 0,
+        "borders": {
+          "left": 20,
+          "right": 20,
+          "top": 20,
+          "bottom": 20
         },
-        {
-            "key": "Big_Panel",
-            "base": {
-                "fileName": "Field_Dark",
-                "pixelPerUnit": 100,
-                "filterMode": 0,
-                "borders": {
-                    "left": 20,
-                    "right": 20,
-                    "top": 20,
-                    "bottom": 20
-                }
-            },
-            "mask": {
-                "fileName": "",
-                "pixelPerUnit": 0,
-                "filterMode": 0,
-                "borders": {
-                    "left": 0,
-                    "right": 0,
-                    "top": 0,
-                    "bottom": 0
-                }
-            },
-            "overlay": {
-                "fileName": "",
-                "pixelPerUnit": 0,
-                "filterMode": 0,
-                "borders": {
-                    "left": 0,
-                    "right": 0,
-                    "top": 0,
-                    "bottom": 0
-                }
-            },
-            "text": {
-                "localizable": 0,
-                "value": "",
-                "fontSize": 0,
-                "xOffset": 0,
-                "yOffset": 0
-            }
-        }
-    ]
+        "fileName": "button"
+      },
+      "mask": {
+        "fileName": ""
+      },
+      "overlay": {
+        "pixelPerUnit": 100,
+        "filterMode": 1,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        },
+        "fileName": ""
+      },
+      "selectable": {
+        "transition": 0,
+        "normalColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "highlightedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "pressedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "selectedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "disabledColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "highlightedSprite": null,
+        "pressedSprite": null,
+        "selectedSprite": null,
+        "disabledSprite": null
+      },
+      "text": {
+        "fontSize": 0,
+        "xOffset": 0,
+        "yOffset": 0
+      }
+    },
+    {
+      "key": "Big_Panel",
+      "base": {
+        "pixelPerUnit": 100,
+        "filterMode": 0,
+        "borders": {
+          "left": 20,
+          "right": 20,
+          "top": 20,
+          "bottom": 20
+        },
+        "fileName": "Field_Dark"
+      },
+      "mask": {
+        "fileName": ""
+      },
+      "overlay": {
+        "pixelPerUnit": 0,
+        "filterMode": 0,
+        "borders": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        },
+        "fileName": ""
+      },
+      "selectable": {
+        "transition": 0,
+        "normalColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "highlightedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "pressedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "selectedColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "disabledColor": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0,
+          "W": 255.0
+        },
+        "highlightedSprite": null,
+        "pressedSprite": null,
+        "selectedSprite": null,
+        "disabledSprite": null
+      },
+      "text": {
+        "fontSize": 0,
+        "xOffset": 0,
+        "yOffset": 0
+      }
+    }
+  ],
+  "name": "Default",
+  "languageKey": "en",
+  "v": {
+    "major": 0,
+    "minor": 0,
+    "patch": 2
+  },
+  "font": {
+    "assetName": "DelaGothicOne-Regular SDF",
+    "color": {
+      "X": 0.0,
+      "Y": 255.0,
+      "Z": 255.0,
+      "W": 255.0
+    },
+    "characterSpacing": 0,
+    "wordSpacing": 0
+  },
+  "V": "0.0.2"
 }
