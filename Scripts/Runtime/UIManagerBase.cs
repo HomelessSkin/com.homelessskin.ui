@@ -26,7 +26,7 @@ namespace UI
         [Serializable]
         protected class Localizator : PersonalizedStorage
         {
-            public override void AddData(string serialized, string path, bool fromResources = false) =>
+            public override void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null) =>
                 AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
             public override void SetData(Data data)
             {
@@ -146,7 +146,7 @@ namespace UI
         [Serializable]
         protected class Drawer : PersonalizedStorage
         {
-            public override void AddData(string serialized, string path, bool fromResources = false)
+            public override void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null)
             {
                 var manifest = Manifest.Cast(serialized);
                 if (fromResources)

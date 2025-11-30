@@ -35,7 +35,7 @@ namespace UI
         public List<Data> AllData = new List<Data>();
 
         public void AddData(Data data) => AllData.Add(data);
-        public abstract void AddData(string serialized, string path, bool fromResources = false);
+        public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
 
         public virtual void Collect()
         {
