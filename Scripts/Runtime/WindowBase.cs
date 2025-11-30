@@ -37,7 +37,7 @@ namespace UI
         public void AddData(Data data) => AllData.Add(data);
         public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
 
-        public virtual void Collect()
+        public virtual void Collect(UIManagerBase manager = null)
         {
             AllData.Clear();
 
@@ -47,7 +47,7 @@ namespace UI
                 for (int m = 0; m < resManifests.Length; m++)
                 {
                     var file = resManifests[m];
-                    AddData(file.text, $"{ResourcesPath}", true);
+                    AddData(file.text, $"{ResourcesPath}", true, manager);
                 }
             }
 
@@ -61,7 +61,7 @@ namespace UI
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];
-                        AddData(File.ReadAllText(path), path);
+                        AddData(File.ReadAllText(path), path, false, manager);
                     }
                 }
             }
