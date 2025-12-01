@@ -24,6 +24,9 @@ namespace UI
     [Serializable]
     public abstract class Storage : WindowBase
     {
+        public UIManagerBase Manager;
+
+        [Space]
         public string DataFile;
 
         [Space]
@@ -37,7 +40,7 @@ namespace UI
         public void AddData(Data data) => AllData.Add(data);
         public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
 
-        public virtual void Collect(UIManagerBase manager = null)
+        public virtual void Collect()
         {
             AllData.Clear();
 
@@ -47,7 +50,7 @@ namespace UI
                 for (int m = 0; m < resManifests.Length; m++)
                 {
                     var file = resManifests[m];
-                    AddData(file.text, $"{ResourcesPath}", true, manager);
+                    AddData(file.text, $"{ResourcesPath}", true, Manager);
                 }
             }
 
@@ -61,7 +64,7 @@ namespace UI
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];
-                        AddData(File.ReadAllText(path), path, false, manager);
+                        AddData(File.ReadAllText(path), path, false, Manager);
                     }
                 }
             }
