@@ -112,11 +112,48 @@ namespace UI
 
             Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
 
-            for (int l = 0; l < AllData.Count; l++)
+            for (int a = 0; a < AllData.Count; a++)
             {
                 var go = GameObject.Instantiate(ItemPrefab, Head.content);
-                var lp = go.GetComponent<T>();
-                lp.Init(l, AllData[l], manager);
+                go.GetComponent<T>().Init(a, AllData[a], manager);
+            }
+
+            SetEnabled(true);
+        }
+        public void OpenWithType<T>(string type, UIManagerBase manager)
+            where T : ScrollItem
+        {
+            if (IsEnabled())
+                return;
+
+            Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
+
+            for (int a = 0; a < AllData.Count; a++)
+            {
+                if (AllData[a].Type != type)
+                    continue;
+
+                var go = GameObject.Instantiate(ItemPrefab, Head.content);
+                go.GetComponent<T>().Init(a, AllData[a], manager);
+            }
+
+            SetEnabled(true);
+        }
+        public void OpenButType<T>(string type, UIManagerBase manager)
+            where T : ScrollItem
+        {
+            if (IsEnabled())
+                return;
+
+            Head.content = GameObject.Instantiate(ContentPrefab, View).transform as RectTransform;
+
+            for (int a = 0; a < AllData.Count; a++)
+            {
+                if (AllData[a].Type == type)
+                    continue;
+
+                var go = GameObject.Instantiate(ItemPrefab, Head.content);
+                go.GetComponent<T>().Init(a, AllData[a], manager);
             }
 
             SetEnabled(true);
