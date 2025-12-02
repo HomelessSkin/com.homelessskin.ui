@@ -108,8 +108,8 @@ namespace UI
                     }
                     else if (text.LoadImage(File.ReadAllBytes(filePath)))
                     {
-                        text.alphaIsTransparency = true;
-                        text.Apply();
+                        //text.alphaIsTransparency = true;
+                        //text.Apply();
                     }
                     else
                         return null;
