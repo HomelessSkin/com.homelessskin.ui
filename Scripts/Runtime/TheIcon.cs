@@ -34,6 +34,7 @@ namespace UI
             if (Image && icon.Sprite)
                 Image.sprite = icon.Sprite;
         }
+        public bool IsRedrawable() => !NonRedrawable;
 
         void InitOrigin()
         {
@@ -54,8 +55,6 @@ namespace UI
         {
             Image = GetComponent<Image>();
         }
-
-        public bool IsRedrawable() => !NonRedrawable;
 #endif
     }
 }
