@@ -40,7 +40,7 @@ namespace UI
         public void AddData(Data data) => AllData.Add(data);
         public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
 
-        public virtual void Collect()
+        public virtual void CollectAllData()
         {
             AllData.Clear();
 

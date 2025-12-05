@@ -182,7 +182,7 @@ namespace UI
         public void RefreshThemes()
         {
             _Drawer.Close();
-            _Drawer.Collect();
+            _Drawer.CollectAllData();
             _Drawer.Open<ListTheme>(this);
 
             RedrawTheme(_Drawer.Current);
@@ -370,10 +370,10 @@ namespace UI
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
 
-            _Drawer.Collect();
+            _Drawer.CollectAllData();
             _Drawer.PickSaved();
 
-            _Localizator.Collect();
+            _Localizator.CollectAllData();
             _Localizator.PickSaved();
         }
         protected virtual void Update()
