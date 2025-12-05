@@ -27,7 +27,7 @@ namespace UI
         public UIManagerBase Manager;
 
         [Space]
-        public string DataFile;
+        public string DataFile = "*.json";
 
         [Space]
         public string ResourcesPath;
