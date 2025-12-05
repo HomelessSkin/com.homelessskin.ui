@@ -69,6 +69,20 @@ namespace UI
                 }
             }
         }
+        public virtual string Collect(string name, string type = null)
+        {
+            var path = $"{Dir}/";
+            if (!string.IsNullOrEmpty(type))
+                path += $"{type}/";
+            path += $"{name}{DataFile.Replace("*", "")}";
+
+            if (File.Exists(path))
+                return File.ReadAllText(path);
+            else
+                Manager.AddMessage($"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
+
+            return null;
+        }
         public virtual void Store(Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
