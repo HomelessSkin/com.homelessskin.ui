@@ -39,7 +39,7 @@ namespace UI
 
             InitOrigins();
 
-            if (TryGetComponent<Image>(out var basege))
+            if (drawData.Base && TryGetComponent<Image>(out var basege))
             {
                 basege.sprite = drawData.Base;
                 if (drawData.Base.border.magnitude > 0.0001f)
