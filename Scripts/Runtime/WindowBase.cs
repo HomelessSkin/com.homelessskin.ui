@@ -60,6 +60,7 @@ namespace UI
                     Directory.CreateDirectory(Dir);
                 else
                 {
+                    Debug.Log(Dir);
                     var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
