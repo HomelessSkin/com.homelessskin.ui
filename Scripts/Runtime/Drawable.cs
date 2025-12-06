@@ -46,14 +46,14 @@ namespace UI
                     basege.type = Image.Type.Sliced;
             }
 
-            if (Mask)
+            if (Mask && drawData.Mask)
             {
                 Mask.sprite = drawData.Mask;
                 if (drawData.Base.border.magnitude > 0.0001f)
                     Mask.type = Image.Type.Sliced;
             }
 
-            if (Overlay)
+            if (Overlay && drawData.Overlay)
             {
                 if (drawData.Overlay)
                 {
