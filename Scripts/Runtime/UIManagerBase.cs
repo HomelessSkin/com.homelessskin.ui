@@ -93,7 +93,7 @@ namespace UI
                 {
                     data = _Localizator.AllData[l];
 
-                    Debug.Log($"Setting Language with {langKey} key");
+                    Log(this.GetType().ToString(), $"Setting Language with {langKey} key");
 
                     break;
                 }
@@ -317,9 +317,11 @@ namespace UI
                 Log(agent, index, level);
             else
             {
+                var log = $"[{agent}] {key}";
+
                 _Messenger.Enqueue(new Message
                 {
-                    Text = key,
+                    Text = log,
                     CallTime = Time.realtimeSinceStartup,
                     Time = _Messenger.Timers[(int)level],
                 });
@@ -327,13 +329,13 @@ namespace UI
                 switch (level)
                 {
                     case LogLevel.Nominal:
-                    Debug.Log(key);
+                    Debug.Log(log);
                     break;
                     case LogLevel.Warning:
-                    Debug.LogWarning(key);
+                    Debug.LogWarning(log);
                     break;
                     case LogLevel.Error:
-                    Debug.LogError(key);
+                    Debug.LogError(log);
                     break;
                 }
             }
@@ -342,7 +344,7 @@ namespace UI
         {
             if (index >= _Messenger.Messages.Length)
             {
-                Debug.Log($"{index} greater then range of Messages array");
+                Log(this.GetType().Name, $"{index} greater then range of Messages array");
 
                 return;
             }
