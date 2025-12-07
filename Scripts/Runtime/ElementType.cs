@@ -14,6 +14,8 @@ namespace UI
         Text = 9,
         Scroll = 10,
         Scroll_Area = 11,
+        Console = 12,
+
 
     }
 }
