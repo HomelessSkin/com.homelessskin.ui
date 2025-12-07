@@ -66,7 +66,7 @@ namespace UI
         {
             if ((_Drawer.Current as Theme).LanguageKey != "default")
             {
-                AddMessage("theme lang override", LogLevel.Warning);
+                Log(this.GetType().ToString(), "theme lang override", LogLevel.Warning);
 
                 return;
             }
@@ -239,7 +239,7 @@ namespace UI
                     SetEnabled(true);
 
                 while (Q.Count > 0)
-                    MessageText.text += $"{Q.Dequeue().Text.Replace(@"\n", " ")}\n";
+                    MessageText.text += $"{Q.Dequeue().Text}\n";
             }
             void UpdateAsPopUp()
             {
@@ -302,7 +302,7 @@ namespace UI
 
         }
 
-        public void AddMessage(string key, LogLevel level = LogLevel.Nominal)
+        public void Log(string agent, string key, LogLevel level = LogLevel.Nominal)
         {
             var index = -1;
             for (int i = 0; i < _Messenger.Messages.Length; i++)
@@ -314,7 +314,7 @@ namespace UI
                 }
 
             if (index >= 0)
-                AddMessage(index, level);
+                Log(agent, index, level);
             else
             {
                 _Messenger.Enqueue(new Message
@@ -338,7 +338,7 @@ namespace UI
                 }
             }
         }
-        public void AddMessage(int index, LogLevel level = LogLevel.Nominal)
+        public void Log(string agent, int index, LogLevel level = LogLevel.Nominal)
         {
             if (index >= _Messenger.Messages.Length)
             {
@@ -349,7 +349,7 @@ namespace UI
 
             _Messenger.Enqueue(new Message
             {
-                Text = GetTranslation(_Messenger.Messages[index]).Text,
+                Text = $"[{agent}] {GetTranslation(_Messenger.Messages[index]).Text}",
                 Time = _Messenger.Timers[(int)level],
             });
         }

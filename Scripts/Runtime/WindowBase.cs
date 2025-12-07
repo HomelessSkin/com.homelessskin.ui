@@ -44,7 +44,7 @@ namespace UI
             if (File.Exists(path))
                 return File.ReadAllText(path);
             else
-                Manager.AddMessage($"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
+                Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
 
             return null;
         }
