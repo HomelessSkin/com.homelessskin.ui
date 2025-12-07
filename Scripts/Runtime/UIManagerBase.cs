@@ -5,7 +5,9 @@ using System.Linq;
 
 using TMPro;
 
+#if UNITY_ENTITIES_INSTALLED
 using Unity.Entities;
+#endif
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -203,17 +205,88 @@ namespace UI
         [SerializeField] protected Messenger _Messenger;
         #region MESSENGER
         [Serializable]
-        protected class Messenger : WindowBase
+        protected class Messenger : Storage
         {
+            [Space]
+            public Type _Type;
             public TMP_Text MessageText;
 
             [Space]
             public string[] Messages;
             public float[] Timers = new float[Enum.GetValues(typeof(LogLevel)).Length];
 
-            public Message Current = new Message();
-            public Queue<Message> Q = new Queue<Message>();
+            Message Current;
+            Queue<Message> Q = new Queue<Message>();
+
+            public void Update()
+            {
+                switch (_Type)
+                {
+                    case Type.Console:
+                    UpdateAsConsole();
+                    break;
+                    case Type.PopUp:
+                    UpdateAsPopUp();
+                    break;
+                }
+            }
+
+            public void Enqueue(Message message) => Q.Enqueue(message);
+
+            void UpdateAsConsole()
+            {
+                if (!IsEnabled())
+                    SetEnabled(true);
+
+                while (Q.Count > 0)
+                    MessageText.text += $"{Q.Dequeue().Text.Replace(@"\n", " ")}\n";
+            }
+            void UpdateAsPopUp()
+            {
+                if (Current != null && Current.Time != 0f)
+                {
+                    if (Current.Time + Current.CallTime < Time.realtimeSinceStartup)
+                    {
+                        Current.Time = 0f;
+                        if (Q.Count > 0)
+                            Current = Q.Dequeue();
+
+                        RefreshCurrent();
+                    }
+                }
+                else if (Q.Count > 0)
+                {
+                    Current = Q.Dequeue();
+
+                    RefreshCurrent();
+                }
+
+                void RefreshCurrent()
+                {
+                    if (Current.Time == 0f)
+                    {
+                        MessageText.text = "";
+
+                        SetEnabled(false);
+                    }
+                    else
+                    {
+                        Current.CallTime = Time.realtimeSinceStartup;
+                        MessageText.text = Current.Text;
+
+                        SetEnabled(true);
+                    }
+                }
+            }
+
+            public enum Type : byte
+            {
+                Console = 0,
+                PopUp = 1,
+
+            }
         }
+
         protected class Message
         {
             public string Text;
@@ -244,7 +317,7 @@ namespace UI
                 AddMessage(index, level);
             else
             {
-                _Messenger.Q.Enqueue(new Message
+                _Messenger.Enqueue(new Message
                 {
                     Text = key,
                     CallTime = Time.realtimeSinceStartup,
@@ -274,27 +347,11 @@ namespace UI
                 return;
             }
 
-            _Messenger.Q.Enqueue(new Message
+            _Messenger.Enqueue(new Message
             {
                 Text = GetTranslation(_Messenger.Messages[index]).Text,
                 Time = _Messenger.Timers[(int)level],
             });
-        }
-
-        void RefreshCurrent()
-        {
-            if (_Messenger.Current.Time == 0f)
-            {
-                _Messenger.MessageText.text = "";
-                _Messenger.SetEnabled(false);
-            }
-            else
-            {
-                _Messenger.Current.CallTime = Time.realtimeSinceStartup;
-
-                _Messenger.MessageText.text = _Messenger.Current.Text;
-                _Messenger.SetEnabled(true);
-            }
         }
         #endregion
 
@@ -378,23 +435,7 @@ namespace UI
         }
         protected virtual void Update()
         {
-            if (_Messenger.Current.Time != 0f)
-            {
-                if (_Messenger.Current.Time + _Messenger.Current.CallTime < Time.realtimeSinceStartup)
-                {
-                    _Messenger.Current.Time = 0f;
-                    if (_Messenger.Q.Count > 0)
-                        _Messenger.Current = _Messenger.Q.Dequeue();
-
-                    RefreshCurrent();
-                }
-            }
-            else if (_Messenger.Q.Count > 0)
-            {
-                _Messenger.Current = _Messenger.Q.Dequeue();
-
-                RefreshCurrent();
-            }
+            _Messenger.Update();
         }
         protected virtual void OnDestroy()
         {
