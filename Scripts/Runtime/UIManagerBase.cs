@@ -398,12 +398,13 @@ namespace UI
         }
         protected virtual void OnDestroy()
         {
-            StopAllCoroutines();
+
         }
 #if UNITY_EDITOR
         public virtual void OnValidate()
         {
-            _Localizator.Manager = _Drawer.Manager = this;
+            _Localizator.Manager =
+            _Drawer.Manager = this;
 
             _Localizator.Elements = ((Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))

@@ -34,41 +34,6 @@ namespace UI
         public string PersistentPath;
         public string Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
-        [Space]
-        public List<Data> AllData = new List<Data>();
-
-        public void AddData(Data data) => AllData.Add(data);
-        public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
-
-        public virtual void CollectAllData()
-        {
-            AllData.Clear();
-
-            if (!string.IsNullOrEmpty(ResourcesPath))
-            {
-                var resManifests = Resources.LoadAll<TextAsset>(ResourcesPath);
-                for (int m = 0; m < resManifests.Length; m++)
-                {
-                    var file = resManifests[m];
-                    AddData(file.text, $"{ResourcesPath}", true, Manager);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(PersistentPath))
-            {
-                if (!Directory.Exists(Dir))
-                    Directory.CreateDirectory(Dir);
-                else
-                {
-                    var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
-                    for (int m = 0; m < buildManifests.Length; m++)
-                    {
-                        var path = buildManifests[m];
-                        AddData(File.ReadAllText(path), path, false, Manager);
-                    }
-                }
-            }
-        }
         public virtual string Collect(string name, string type = null)
         {
             var path = $"{Dir}/";
@@ -109,9 +74,50 @@ namespace UI
     }
     #endregion
 
+    #region DATA STORAGE
+    [Serializable]
+    public abstract class DataStorage : Storage
+    {
+        [Space]
+        public List<Data> AllData = new List<Data>();
+
+        public void AddData(Data data) => AllData.Add(data);
+        public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
+        public virtual void CollectAllData()
+        {
+            AllData.Clear();
+
+            if (!string.IsNullOrEmpty(ResourcesPath))
+            {
+                var resManifests = Resources.LoadAll<TextAsset>(ResourcesPath);
+                for (int m = 0; m < resManifests.Length; m++)
+                {
+                    var file = resManifests[m];
+                    AddData(file.text, $"{ResourcesPath}", true, Manager);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(PersistentPath))
+            {
+                if (!Directory.Exists(Dir))
+                    Directory.CreateDirectory(Dir);
+                else
+                {
+                    var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
+                    for (int m = 0; m < buildManifests.Length; m++)
+                    {
+                        var path = buildManifests[m];
+                        AddData(File.ReadAllText(path), path, false, Manager);
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
     #region SCROLL BASE
     [Serializable]
-    public abstract class ScrollBase : Storage
+    public abstract class ScrollBase : DataStorage
     {
         public ScrollRect Head;
         public Transform View;
