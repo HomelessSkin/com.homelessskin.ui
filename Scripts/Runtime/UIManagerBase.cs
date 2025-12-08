@@ -110,9 +110,6 @@ namespace UI
 
             local.Map[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
 
-            for (int i = 0; i < _Messenger.Messages.Length; i++)
-                local.Map[_Messenger.Messages[i]] = new Localizable.LocalData { Text = _Messenger.Messages[i] };
-
             for (int i = 0; i < _Confirm.Keys.Length; i++)
                 local.Map[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
 
@@ -212,7 +209,6 @@ namespace UI
             public TMP_Text MessageText;
 
             [Space]
-            public string[] Messages;
             public float[] Timers = new float[Enum.GetValues(typeof(LogLevel)).Length];
 
             Message Current;
@@ -223,61 +219,60 @@ namespace UI
                 switch (_Type)
                 {
                     case Type.Console:
-                    UpdateAsConsole();
+                    AsConsole();
                     break;
                     case Type.PopUp:
-                    UpdateAsPopUp();
+                    AsPopUp();
                     break;
                 }
-            }
 
-            public void Enqueue(Message message) => Q.Enqueue(message);
-
-            void UpdateAsConsole()
-            {
-                if (!IsEnabled())
-                    SetEnabled(true);
-
-                while (Q.Count > 0)
-                    MessageText.text += $"{Q.Dequeue().Text}\n";
-            }
-            void UpdateAsPopUp()
-            {
-                if (Current != null && Current.Time != 0f)
+                void AsConsole()
                 {
-                    if (Current.Time + Current.CallTime < Time.realtimeSinceStartup)
+                    if (!IsEnabled())
+                        SetEnabled(true);
+
+                    while (Q.Count > 0)
+                        MessageText.text += $"{Q.Dequeue().Text}\n";
+                }
+                void AsPopUp()
+                {
+                    if (Current != null && Current.Time != 0f)
                     {
-                        Current.Time = 0f;
-                        if (Q.Count > 0)
-                            Current = Q.Dequeue();
+                        if (Current.Time + Current.CallTime < Time.realtimeSinceStartup)
+                        {
+                            Current.Time = 0f;
+                            if (Q.Count > 0)
+                                Current = Q.Dequeue();
+
+                            RefreshCurrent();
+                        }
+                    }
+                    else if (Q.Count > 0)
+                    {
+                        Current = Q.Dequeue();
 
                         RefreshCurrent();
                     }
-                }
-                else if (Q.Count > 0)
-                {
-                    Current = Q.Dequeue();
 
-                    RefreshCurrent();
-                }
-
-                void RefreshCurrent()
-                {
-                    if (Current.Time == 0f)
+                    void RefreshCurrent()
                     {
-                        MessageText.text = "";
+                        if (Current.Time == 0f)
+                        {
+                            MessageText.text = "";
 
-                        SetEnabled(false);
-                    }
-                    else
-                    {
-                        Current.CallTime = Time.realtimeSinceStartup;
-                        MessageText.text = Current.Text;
+                            SetEnabled(false);
+                        }
+                        else
+                        {
+                            Current.CallTime = Time.realtimeSinceStartup;
+                            MessageText.text = Current.Text;
 
-                        SetEnabled(true);
+                            SetEnabled(true);
+                        }
                     }
                 }
             }
+            public void Enqueue(Message message) => Q.Enqueue(message);
 
             public enum Type : byte
             {
@@ -304,56 +299,27 @@ namespace UI
 
         public void Log(string agent, string key, LogLevel level = LogLevel.Nominal)
         {
-            var index = -1;
-            for (int i = 0; i < _Messenger.Messages.Length; i++)
-                if (_Messenger.Messages[i] == key)
-                {
-                    index = i;
-
-                    break;
-                }
-
-            if (index >= 0)
-                Log(agent, index, level);
-            else
-            {
-                var log = $"[{agent}] {key}";
-
-                _Messenger.Enqueue(new Message
-                {
-                    Text = log,
-                    CallTime = Time.realtimeSinceStartup,
-                    Time = _Messenger.Timers[(int)level],
-                });
-
-                switch (level)
-                {
-                    case LogLevel.Nominal:
-                    Debug.Log(log);
-                    break;
-                    case LogLevel.Warning:
-                    Debug.LogWarning(log);
-                    break;
-                    case LogLevel.Error:
-                    Debug.LogError(log);
-                    break;
-                }
-            }
-        }
-        public void Log(string agent, int index, LogLevel level = LogLevel.Nominal)
-        {
-            if (index >= _Messenger.Messages.Length)
-            {
-                Log(this.GetType().Name, $"{index} greater then range of Messages array");
-
-                return;
-            }
+            var log = $"[{agent}] {key}";
 
             _Messenger.Enqueue(new Message
             {
-                Text = $"[{agent}] {GetTranslation(_Messenger.Messages[index]).Text}",
+                Text = log,
+                CallTime = Time.realtimeSinceStartup,
                 Time = _Messenger.Timers[(int)level],
             });
+
+            switch (level)
+            {
+                case LogLevel.Nominal:
+                Debug.Log(log);
+                break;
+                case LogLevel.Warning:
+                Debug.LogWarning(log);
+                break;
+                case LogLevel.Error:
+                Debug.LogError(log);
+                break;
+            }
         }
         #endregion
 
