@@ -417,15 +417,18 @@ namespace UI
 
             _Localizator.Elements = ((Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
-                .Where(x => x.gameObject.tag != "EditorOnly").ToArray();
+                .Where(x => x.gameObject.tag != "EditorOnly")
+                .ToArray();
 
             var list = new List<Element>();
             list.AddRange(((Element[])GameObject
                 .FindObjectsByType(typeof(Drawable), FindObjectsInactive.Include, FindObjectsSortMode.None))
-                .Where(x => x.gameObject.tag != "EditorOnly").ToArray());
+                .Where(x => x.gameObject.tag != "EditorOnly")
+                .ToArray());
             list.AddRange(((Element[])GameObject
                 .FindObjectsByType(typeof(TheIcon), FindObjectsInactive.Include, FindObjectsSortMode.None))
-                .Where(x => x.gameObject.tag != "EditorOnly").ToArray());
+                .Where(x => x.gameObject.tag != "EditorOnly")
+                .ToArray());
 
             _Drawer.Elements = list.ToArray();
         }
