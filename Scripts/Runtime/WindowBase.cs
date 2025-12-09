@@ -36,7 +36,7 @@ namespace UI
 
         public virtual string Collect(string name, string type = null)
         {
-            var path = $"{Dir}/";
+            var path = $"{Dir}";
             if (!string.IsNullOrEmpty(type))
                 path += $"{type}/";
             path += $"{name}{DataFile.Replace("*", "")}";
