@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 using Core.Util;
 
@@ -43,8 +44,22 @@ namespace UI
 
             if (File.Exists(path))
                 return File.ReadAllText(path);
-            else
-                Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
+
+            Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
+
+            return null;
+        }
+        public virtual Task<string> CollectAsync(string name, string type = null)
+        {
+            var path = $"{Dir}";
+            if (!string.IsNullOrEmpty(type))
+                path += $"{type}/";
+            path += $"{name}{DataFile.Replace("*", "")}";
+
+            if (File.Exists(path))
+                return File.ReadAllTextAsync(path);
+
+            Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
 
             return null;
         }
