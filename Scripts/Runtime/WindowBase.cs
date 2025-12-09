@@ -49,7 +49,7 @@ namespace UI
 
             return null;
         }
-        public virtual Task<string> CollectAsync(string name, string type = null)
+        public virtual async Task<string> CollectAsync(string name, string type = null)
         {
             var path = $"{Dir}";
             if (!string.IsNullOrEmpty(type))
@@ -57,11 +57,11 @@ namespace UI
             path += $"{name}{DataFile.Replace("*", "")}";
 
             if (File.Exists(path))
-                return File.ReadAllTextAsync(path);
+                return await File.ReadAllTextAsync(path);
 
             Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
 
-            return null;
+            return "";
         }
         public virtual void Store(Data data)
         {
