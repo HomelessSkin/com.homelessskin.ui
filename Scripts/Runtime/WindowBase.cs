@@ -77,7 +77,7 @@ namespace UI
 
             File.WriteAllText($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
         }
-        public async virtual void StoreAsync(Data data)
+        public async virtual Task StoreAsync(Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
