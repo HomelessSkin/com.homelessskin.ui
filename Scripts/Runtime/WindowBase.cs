@@ -67,7 +67,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Debug.LogError($"No Persistent Path for {this.GetType()} Data storing!\nPlease set this Value inside UIManager's relevant field!");
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
 
                 return;
             }
@@ -76,6 +76,20 @@ namespace UI
                 Directory.CreateDirectory($"{Dir}/{data.Type}");
 
             File.WriteAllText($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
+        }
+        public async virtual void StoreAsync(Data data)
+        {
+            if (string.IsNullOrEmpty(PersistentPath))
+            {
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
+
+                return;
+            }
+
+            if (!Directory.Exists($"{Dir}/{data.Type}"))
+                Directory.CreateDirectory($"{Dir}/{data.Type}");
+
+            await File.WriteAllTextAsync($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
         }
 
         [Serializable]
