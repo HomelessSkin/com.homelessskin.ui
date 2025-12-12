@@ -53,7 +53,7 @@ namespace UI
                     Mask.type = Image.Type.Sliced;
             }
 
-            if (Overlay && drawData.Overlay)
+            if (Overlay)
             {
                 if (drawData.Overlay)
                 {
