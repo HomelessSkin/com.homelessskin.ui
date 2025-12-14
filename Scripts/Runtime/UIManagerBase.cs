@@ -206,11 +206,13 @@ namespace UI
         {
             [Space]
             public Type _Type;
+            public int MaxRowCount = 100;
             public TMP_Text MessageText;
 
             [Space]
             public float[] Timers = new float[Enum.GetValues(typeof(LogLevel)).Length];
 
+            string Console;
             Message Current;
             Queue<Message> Q = new Queue<Message>();
 
@@ -231,8 +233,26 @@ namespace UI
                     if (!IsEnabled())
                         SetEnabled(true);
 
+                    var list = new List<string>();
+                    if (!string.IsNullOrEmpty(Console))
+                    {
+                        list.AddRange(Console.Split("|", StringSplitOptions.RemoveEmptyEntries));
+                        while (list.Count > MaxRowCount)
+                            list.RemoveAt(0);
+                    }
+
                     while (Q.Count > 0)
-                        MessageText.text += $"{Q.Dequeue().Text}\n";
+                    {
+                        list.Add($"{Q.Dequeue().Text}\n");
+                        if (list.Count > MaxRowCount)
+                            list.RemoveAt(0);
+                    }
+
+                    Console = "";
+                    for (int t = 0; t < list.Count; t++)
+                        Console += $"{list[t]}|";
+
+                    MessageText.text = Console.Replace("|", "");
                 }
                 void AsPopUp()
                 {
