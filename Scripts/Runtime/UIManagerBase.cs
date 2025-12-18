@@ -51,7 +51,7 @@ namespace UI
             }
         }
 
-        protected void QueueRender() => _UICamera.RenderFrame |= true;
+        public void QueueRender() => _UICamera.RenderFrame |= true;
         void SetupUI()
         {
             switch (_UICamera.UpdateMode)
@@ -263,14 +263,17 @@ namespace UI
 
             public void Update()
             {
-                switch (_Type)
+                if (Q.Count > 0)
                 {
-                    case Type.Console:
-                    AsConsole();
-                    break;
-                    case Type.PopUp:
-                    AsPopUp();
-                    break;
+                    switch (_Type)
+                    {
+                        case Type.Console:
+                        AsConsole();
+                        break;
+                        case Type.PopUp:
+                        AsPopUp();
+                        break;
+                    }
                 }
 
                 void AsConsole()
@@ -298,6 +301,7 @@ namespace UI
                         Console += $"{list[t]}|";
 
                     MessageText.text = Console.Replace("|", "");
+                    Manager.QueueRender();
                 }
                 void AsPopUp()
                 {
