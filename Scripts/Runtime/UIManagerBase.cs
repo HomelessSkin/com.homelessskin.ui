@@ -510,7 +510,7 @@ namespace UI
         }
         protected virtual void Reset()
         {
-            Core.Util.Tool.CreateTag("UIManager");
+            Core.Tool.CreateTag("UIManager");
             gameObject.tag = "UIManager";
 
             if (!Directory.Exists(Application.dataPath + "/Resources/UI/Localizations/"))
