@@ -51,7 +51,7 @@ namespace UI
             }
         }
 
-        public void QueueRender() => _UICamera.RenderFrame |= true;
+        protected void QueueRender() => _UICamera.RenderFrame |= true;
         void SetupUI()
         {
             switch (_UICamera.UpdateMode)
