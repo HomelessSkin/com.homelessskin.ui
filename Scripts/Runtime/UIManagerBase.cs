@@ -483,11 +483,13 @@ namespace UI
         {
 
         }
+
 #if UNITY_EDITOR
         public virtual void OnValidate()
         {
             _Localizator.Manager =
-            _Drawer.Manager = this;
+            _Drawer.Manager =
+            _Messenger.Manager = this;
 
             _Localizator.Elements = ((Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
