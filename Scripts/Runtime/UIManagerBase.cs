@@ -23,6 +23,51 @@ namespace UI
         protected EntityManager EntityManager;
 
         [Space]
+        [SerializeField] protected Canvas Canvas;
+        [SerializeField] protected UICamera _UICamera;
+        #region UI CAMERA
+        [Serializable]
+        protected class UICamera
+        {
+            public bool RenderFrame;
+            public UpdateType UpdateMode;
+            public Camera Camera;
+
+            public void Render()
+            {
+                RenderFrame = false;
+                if (UpdateMode != UICamera.UpdateType.Manual)
+                    return;
+
+                Camera.Render();
+            }
+
+            public enum UpdateType : byte
+            {
+                Default = 0,
+                Manual = 1,
+
+
+            }
+        }
+
+        protected void QueueRender() => _UICamera.RenderFrame |= true;
+        void SetupUI()
+        {
+            switch (_UICamera.UpdateMode)
+            {
+                case UICamera.UpdateType.Manual:
+                _UICamera.Camera.enabled = false;
+                Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                Canvas.worldCamera = _UICamera.Camera;
+                break;
+            }
+
+            QueueRender();
+        }
+        #endregion
+
+        [Space]
         [SerializeField] protected Localizator _Localizator;
         #region LOCALIZATOR
         [Serializable]
@@ -415,6 +460,8 @@ namespace UI
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
 
+            SetupUI();
+
             _Drawer.CollectAllData();
             _Drawer.PickSaved();
 
@@ -423,6 +470,9 @@ namespace UI
         }
         protected virtual void Update()
         {
+            if (_UICamera.RenderFrame)
+                _UICamera.Render();
+
             _Messenger.Update();
         }
         protected virtual void OnDestroy()
