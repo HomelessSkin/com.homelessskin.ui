@@ -1,3 +1,5 @@
+using Core;
+
 using TMPro;
 
 using UnityEngine;
@@ -10,7 +12,7 @@ namespace UI
 
         protected UIManagerBase Manager;
 
-        public virtual void Init(int index, Storage.Data data, UIManagerBase manager)
+        public virtual void Init(int index, IStorage.Data data, UIManagerBase manager)
         {
             Manager = manager;
 

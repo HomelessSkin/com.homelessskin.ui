@@ -23,82 +23,59 @@ namespace UI
 
     #region STORAGE
     [Serializable]
-    public abstract class Storage : WindowBase
+    public abstract class Storage : WindowBase, IStorage
     {
         public UIManagerBase Manager;
 
-        [Space]
-        public string DataFile = "*.json";
+        public string _DataFile => DataFile;
+        public string _ResourcesPath => ResourcesPath;
+        public string _PersistentPath => PersistentPath;
+        public string _Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
         [Space]
-        public string ResourcesPath;
-        public string PersistentPath;
-        public string Dir => $"{Application.persistentDataPath}/{PersistentPath}";
+        [SerializeField] string DataFile = "*.json";
 
+        [Space]
+        [SerializeField] string ResourcesPath;
+        [SerializeField] string PersistentPath;
+
+        public virtual void Store(IStorage.Data data)
+        {
+            if (string.IsNullOrEmpty(PersistentPath))
+            {
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
+
+                return;
+            }
+
+            ((IStorage)this).Store(data);
+        }
         public virtual string Collect(string name, string type = null)
         {
-            var path = $"{Dir}";
-            if (!string.IsNullOrEmpty(type))
-                path += $"{type}/";
-            path += $"{name}{DataFile.Replace("*", "")}";
+            var serialized = ((IStorage)this).Collect(name, type);
+            if (string.IsNullOrEmpty(serialized))
+                Manager.Log(this.GetType().ToString(), $"Can not find File {name}!", UIManagerBase.LogLevel.Warning);
 
-            if (File.Exists(path))
-                return File.ReadAllText(path);
+            return serialized;
+        }
+        public virtual async Task StoreAsync(IStorage.Data data)
+        {
+            if (string.IsNullOrEmpty(PersistentPath))
+            {
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
 
-            Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
+                return;
+            }
 
-            return null;
+            await ((IStorage)this).StoreAsync(data);
         }
         public virtual async Task<string> CollectAsync(string name, string type = null)
         {
-            var path = $"{Dir}";
-            if (!string.IsNullOrEmpty(type))
-                path += $"{type}/";
-            path += $"{name}{DataFile.Replace("*", "")}";
+            var serialized = await ((IStorage)this).CollectAsync(name, type);
+            if (string.IsNullOrEmpty(serialized))
+                Manager.Log(this.GetType().ToString(), $"Can not find File {name}!", UIManagerBase.LogLevel.Warning);
 
-            if (File.Exists(path))
-                return await File.ReadAllTextAsync(path);
-
-            Manager.Log(this.GetType().ToString(), $"Can not find File at {path}!", UIManagerBase.LogLevel.Warning);
-
-            return "";
-        }
-        public virtual void Store(Data data)
-        {
-            if (string.IsNullOrEmpty(PersistentPath))
-            {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
-
-                return;
-            }
-
-            if (!Directory.Exists($"{Dir}/{data.Type}"))
-                Directory.CreateDirectory($"{Dir}/{data.Type}");
-
-            File.WriteAllText($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
-        }
-        public async virtual Task StoreAsync(Data data)
-        {
-            if (string.IsNullOrEmpty(PersistentPath))
-            {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
-
-                return;
-            }
-
-            if (!Directory.Exists($"{Dir}/{data.Type}"))
-                Directory.CreateDirectory($"{Dir}/{data.Type}");
-
-            await File.WriteAllTextAsync($"{Dir}/{data.Type}/{data.Name}{DataFile.Replace("*", "")}", data.Serialize());
-        }
-
-        [Serializable]
-        public class Data
-        {
-            public string Name;
-            public string Type;
-
-            public virtual string Serialize() => JsonUtility.ToJson(this, true);
+            return serialized;
         }
     }
     #endregion
@@ -108,31 +85,31 @@ namespace UI
     public abstract class DataStorage : Storage
     {
         [Space]
-        public List<Data> AllData = new List<Data>();
+        public List<IStorage.Data> AllData = new List<IStorage.Data>();
 
-        public void AddData(Data data) => AllData.Add(data);
+        public void AddData(IStorage.Data data) => AllData.Add(data);
         public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
         public virtual void CollectAllData()
         {
             AllData.Clear();
 
-            if (!string.IsNullOrEmpty(ResourcesPath))
+            if (!string.IsNullOrEmpty(_ResourcesPath))
             {
-                var resManifests = Resources.LoadAll<TextAsset>(ResourcesPath);
+                var resManifests = Resources.LoadAll<TextAsset>(_ResourcesPath);
                 for (int m = 0; m < resManifests.Length; m++)
                 {
                     var file = resManifests[m];
-                    AddData(file.text, $"{ResourcesPath}", true, Manager);
+                    AddData(file.text, $"{_ResourcesPath}", true, Manager);
                 }
             }
 
-            if (!string.IsNullOrEmpty(PersistentPath))
+            if (!string.IsNullOrEmpty(_PersistentPath))
             {
-                if (!Directory.Exists(Dir))
-                    Directory.CreateDirectory(Dir);
+                if (!Directory.Exists(_Dir))
+                    Directory.CreateDirectory(_Dir);
                 else
                 {
-                    var buildManifests = Directory.GetFiles(Dir, DataFile, SearchOption.AllDirectories);
+                    var buildManifests = Directory.GetFiles(_Dir, _DataFile, SearchOption.AllDirectories);
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];
@@ -226,14 +203,14 @@ namespace UI
         public string _Key => PrefKey;
 
         [Space]
-        public Data Default = new Data();
-        public Data Current = new Data();
+        public IStorage.Data Default = new IStorage.Data();
+        public IStorage.Data Current = new IStorage.Data();
 
         [Space]
         public Element[] Elements;
 
         protected abstract void LoadDefault();
-        public virtual void SetData(Data data)
+        public virtual void SetData(IStorage.Data data)
         {
             Current = data;
 
@@ -306,7 +283,7 @@ namespace UI
         }
 
         [Serializable]
-        public class Container : Data
+        public class Container : IStorage.Data
         {
             public Dictionary<string, Element.Data> Map = new Dictionary<string, Element.Data>();
         }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Core;
+
 using TMPro;
 
 #if UNITY_ENTITIES_INSTALLED
@@ -75,7 +77,7 @@ namespace UI
         {
             public override void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null) =>
                 AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
-            public override void SetData(Data data)
+            public override void SetData(IStorage.Data data)
             {
                 base.SetData(data);
 
@@ -164,7 +166,7 @@ namespace UI
             AssetDatabase.Refresh();
 
             var localizations = Resources
-                .LoadAll<TextAsset>(_Localizator.ResourcesPath)
+                .LoadAll<TextAsset>(_Localizator._ResourcesPath)
                 .Where(x => !x.name.Contains("_default"))
                 .ToArray();
 
@@ -175,7 +177,7 @@ namespace UI
                     if (!data.Map.ContainsKey(kvp.Key))
                         data.Map[kvp.Key] = kvp.Value;
 
-                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator.ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
+                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator._ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
             }
 
             AssetDatabase.SaveAssets();
@@ -200,7 +202,7 @@ namespace UI
 
                 AllData.Add(new Theme(manifest, path, fromResources));
             }
-            public override void SetData(Data data)
+            public override void SetData(IStorage.Data data)
             {
                 base.SetData(data);
 
@@ -235,7 +237,7 @@ namespace UI
 
         public void SelectTheme(int index) => RedrawTheme(_Drawer.AllData[index]);
 
-        protected virtual void RedrawTheme(Storage.Data data)
+        protected virtual void RedrawTheme(IStorage.Data data)
         {
             _Drawer.SetData(data);
 

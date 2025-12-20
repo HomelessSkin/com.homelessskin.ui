@@ -1,3 +1,5 @@
+using Core;
+
 using UnityEngine;
 
 namespace UI
@@ -6,7 +8,7 @@ namespace UI
     {
         [SerializeField] MenuButton SelectButton;
 
-        public override void Init(int index, Storage.Data data, UIManagerBase manager)
+        public override void Init(int index, IStorage.Data data, UIManagerBase manager)
         {
             base.Init(index, data, manager);
 
