@@ -360,14 +360,6 @@ namespace UI
             public float CallTime;
         }
 
-        public enum LogLevel : byte
-        {
-            Nominal = 0,
-            Error = 1,
-            Warning = 2,
-
-        }
-
         public void Log(string agent, string key, LogLevel level = LogLevel.Nominal)
         {
             var log = $"[{agent}] {key}";

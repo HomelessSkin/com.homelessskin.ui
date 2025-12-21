@@ -43,7 +43,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", LogLevel.Error);
 
                 return;
             }
@@ -54,7 +54,7 @@ namespace UI
         {
             var serialized = ((IStorage)this).Collect(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Manager.Log(this.GetType().ToString(), $"Can not find File {name}!", UIManagerBase.LogLevel.Warning);
+                Manager.Log(this.GetType().FullName, $"Can not find File {name}!", LogLevel.Warning);
 
             return serialized;
         }
@@ -62,7 +62,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", UIManagerBase.LogLevel.Error);
+                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", LogLevel.Error);
 
                 return;
             }
@@ -73,7 +73,7 @@ namespace UI
         {
             var serialized = await ((IStorage)this).CollectAsync(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Manager.Log(this.GetType().ToString(), $"Can not find File {name}!", UIManagerBase.LogLevel.Warning);
+                Manager.Log(this.GetType().FullName, $"Can not find File {name}!", LogLevel.Warning);
 
             return serialized;
         }
