@@ -27,12 +27,14 @@ namespace UI
     {
         public UIManagerBase Manager;
 
+        public int _MaxSaveFiles => MaxSaveFiles;
         public string _DataFile => DataFile;
         public string _ResourcesPath => ResourcesPath;
         public string _PersistentPath => PersistentPath;
         public string _Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
         [Space]
+        [SerializeField] int MaxSaveFiles;
         [SerializeField] string DataFile = "*.json";
 
         [Space]
