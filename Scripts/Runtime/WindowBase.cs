@@ -41,7 +41,7 @@ namespace UI
         [SerializeField] string ResourcesPath;
         [SerializeField] string PersistentPath;
 
-        public virtual void Store(IStorage.Data data)
+        public virtual void Save(IStorage.Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
@@ -52,7 +52,7 @@ namespace UI
 
             ((IStorage)this).Store(data);
         }
-        public virtual string Collect(string name, string type = null)
+        public virtual string Load(string name, string type)
         {
             var serialized = ((IStorage)this).Collect(name, type);
             if (string.IsNullOrEmpty(serialized))
@@ -60,7 +60,7 @@ namespace UI
 
             return serialized;
         }
-        public virtual async Task StoreAsync(IStorage.Data data)
+        public virtual async Task SaveAsync(IStorage.Data data)
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
@@ -71,7 +71,7 @@ namespace UI
 
             await ((IStorage)this).StoreAsync(data);
         }
-        public virtual async Task<string> CollectAsync(string name, string type = null)
+        public virtual async Task<string> LoadAsync(string name, string type)
         {
             var serialized = await ((IStorage)this).CollectAsync(name, type);
             if (string.IsNullOrEmpty(serialized))
