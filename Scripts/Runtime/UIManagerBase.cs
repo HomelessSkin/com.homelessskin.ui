@@ -265,17 +265,14 @@ namespace UI
 
             public void Update()
             {
-                if (Q.Count > 0)
+                switch (_Type)
                 {
-                    switch (_Type)
-                    {
-                        case Type.Console:
-                        AsConsole();
-                        break;
-                        case Type.PopUp:
-                        AsPopUp();
-                        break;
-                    }
+                    case Type.Console:
+                    AsConsole();
+                    break;
+                    case Type.PopUp:
+                    AsPopUp();
+                    break;
                 }
 
                 void AsConsole()
