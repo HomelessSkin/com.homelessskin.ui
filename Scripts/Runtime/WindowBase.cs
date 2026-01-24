@@ -31,7 +31,6 @@ namespace UI
         public string _DataFile => DataFile;
         public string _ResourcesPath => ResourcesPath;
         public string _PersistentPath => PersistentPath;
-        public string _Dir => $"{Application.persistentDataPath}/{PersistentPath}";
 
         [Space]
         [SerializeField] int MaxSaveFiles;
@@ -45,7 +44,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", LogLevel.Error);
+                Log.Error(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
                 return;
             }
@@ -56,7 +55,7 @@ namespace UI
         {
             var serialized = ((IStorage)this).Collect(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Manager.Log(this.GetType().FullName, $"Can not find File {name}!", LogLevel.Warning);
+                Log.Warning(this.GetType().FullName, $"Can not find File {name}!");
 
             return serialized;
         }
@@ -64,7 +63,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Manager.Log(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!", LogLevel.Error);
+                Log.Error(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
                 return;
             }
@@ -75,7 +74,7 @@ namespace UI
         {
             var serialized = await ((IStorage)this).CollectAsync(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Manager.Log(this.GetType().FullName, $"Can not find File {name}!", LogLevel.Warning);
+                Log.Warning(this.GetType().FullName, $"Can not find File {name}!");
 
             return serialized;
         }
@@ -107,11 +106,13 @@ namespace UI
 
             if (!string.IsNullOrEmpty(_PersistentPath))
             {
-                if (!Directory.Exists(_Dir))
-                    Directory.CreateDirectory(_Dir);
+                var dir = (this as IStorage)._Dir;
+
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
                 else
                 {
-                    var buildManifests = Directory.GetFiles(_Dir, _DataFile, SearchOption.AllDirectories);
+                    var buildManifests = Directory.GetFiles(dir, _DataFile, SearchOption.AllDirectories);
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];

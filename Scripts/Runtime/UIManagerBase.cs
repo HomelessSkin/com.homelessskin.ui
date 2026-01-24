@@ -113,7 +113,7 @@ namespace UI
         {
             if ((_Drawer.Current as Theme).LanguageKey != "default")
             {
-                Log(this.GetType().ToString(), "theme lang override", LogLevel.Warning);
+                Log.Warning(this.GetType().ToString(), "theme lang override");
 
                 return;
             }
@@ -140,7 +140,7 @@ namespace UI
                 {
                     data = _Localizator.AllData[l];
 
-                    Log(this.GetType().ToString(), $"Setting Language with {langKey} key");
+                    Log.Info(this.GetType().ToString(), $"Setting Language with {langKey} key");
 
                     break;
                 }
@@ -256,12 +256,8 @@ namespace UI
             public int MaxRowCount = 100;
             public TMP_Text MessageText;
 
-            [Space]
-            public float[] Timers = new float[Enum.GetValues(typeof(LogLevel)).Length];
-
             string Console;
-            Message Current;
-            Queue<Message> Q = new Queue<Message>();
+            Log.Message Current;
 
             public void Update()
             {
@@ -288,9 +284,9 @@ namespace UI
                             list.RemoveAt(0);
                     }
 
-                    while (Q.Count > 0)
+                    while (Log.Read(out var message))
                     {
-                        list.Add($"{Q.Dequeue().Text}\n");
+                        list.Add($"{message.Text}\n");
                         if (list.Count > MaxRowCount)
                             list.RemoveAt(0);
                     }
@@ -304,27 +300,24 @@ namespace UI
                 }
                 void AsPopUp()
                 {
-                    if (Current != null && Current.Time != 0f)
+                    if (Current != null &&
+                         Current.Time != 0f)
                     {
                         if (Current.Time + Current.CallTime < Time.realtimeSinceStartup)
                         {
                             Current.Time = 0f;
-                            if (Q.Count > 0)
-                                Current = Q.Dequeue();
 
+                            Log.Read(out Current);
                             RefreshCurrent();
                         }
                     }
-                    else if (Q.Count > 0)
-                    {
-                        Current = Q.Dequeue();
-
+                    else if (Log.Read(out Current))
                         RefreshCurrent();
-                    }
 
                     void RefreshCurrent()
                     {
-                        if (Current.Time == 0f)
+                        if (Current == null ||
+                              Current.Time == 0f)
                         {
                             MessageText.text = "";
 
@@ -340,45 +333,12 @@ namespace UI
                     }
                 }
             }
-            public void Enqueue(Message message) => Q.Enqueue(message);
 
             public enum Type : byte
             {
                 Console = 0,
                 PopUp = 1,
 
-            }
-        }
-
-        protected class Message
-        {
-            public string Text;
-            public float Time;
-            public float CallTime;
-        }
-
-        public void Log(string agent, string key, LogLevel level = LogLevel.Nominal)
-        {
-            var log = $"[{agent}] {key}";
-
-            _Messenger.Enqueue(new Message
-            {
-                Text = log,
-                CallTime = Time.realtimeSinceStartup,
-                Time = _Messenger.Timers[(int)level],
-            });
-
-            switch (level)
-            {
-                case LogLevel.Nominal:
-                Debug.Log(log);
-                break;
-                case LogLevel.Warning:
-                Debug.LogWarning(log);
-                break;
-                case LogLevel.Error:
-                Debug.LogError(log);
-                break;
             }
         }
         #endregion
