@@ -75,7 +75,7 @@ namespace UI
         [Serializable]
         protected class Localizator : PersonalizedStorage
         {
-            public override void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null) =>
+            public override void AddData(string serialized, string path, bool fromResources = false) =>
                 AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
             public override void SetData(IStorage.Data data)
             {
@@ -113,7 +113,7 @@ namespace UI
         {
             if ((_Drawer.Current as Theme).LanguageKey != "default")
             {
-                Log.Warning(this.GetType().ToString(), "theme lang override");
+                Log.Warning(this, "theme lang override");
 
                 return;
             }
@@ -140,7 +140,7 @@ namespace UI
                 {
                     data = _Localizator.AllData[l];
 
-                    Log.Info(this.GetType().ToString(), $"Setting Language with {langKey} key");
+                    Log.Info(this, $"Setting Language with {langKey} key");
 
                     break;
                 }
@@ -192,7 +192,7 @@ namespace UI
         [Serializable]
         protected class Drawer : PersonalizedStorage
         {
-            public override void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null)
+            public override void AddData(string serialized, string path, bool fromResources = false)
             {
                 var manifest = Manifest.Cast(serialized);
                 if (fromResources)
@@ -296,7 +296,7 @@ namespace UI
                         Console += $"{list[t]}|";
 
                     MessageText.text = Console.Replace("|", "");
-                    Manager.QueueRender();
+                    //Manager.QueueRender();
                 }
                 void AsPopUp()
                 {
@@ -438,10 +438,6 @@ namespace UI
 #if UNITY_EDITOR
         public virtual void OnValidate()
         {
-            _Localizator.Manager =
-            _Drawer.Manager =
-            _Messenger.Manager = this;
-
             _Localizator.Elements = ((Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
                 .Where(x => x.gameObject.tag != "EditorOnly")

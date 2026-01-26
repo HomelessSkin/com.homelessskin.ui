@@ -25,8 +25,6 @@ namespace UI
     [Serializable]
     public abstract class Storage : WindowBase, IStorage
     {
-        public UIManagerBase Manager;
-
         public int _MaxSaveFiles => MaxSaveFiles;
         public string _DataFile => DataFile;
         public string _ResourcesPath => ResourcesPath;
@@ -44,18 +42,18 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Log.Error(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
+                Log.Error(this, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
                 return;
             }
 
             ((IStorage)this).Store(data);
         }
-        public virtual string Load(string name, string type)
+        public virtual string Load(string name, string type = null)
         {
             var serialized = ((IStorage)this).Collect(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Log.Warning(this.GetType().FullName, $"Can not find File {name}!");
+                Log.Warning(this, $"Can not find File {name}!");
 
             return serialized;
         }
@@ -63,18 +61,18 @@ namespace UI
         {
             if (string.IsNullOrEmpty(PersistentPath))
             {
-                Log.Error(this.GetType().FullName, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
+                Log.Error(this, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
                 return;
             }
 
             await ((IStorage)this).StoreAsync(data);
         }
-        public virtual async Task<string> LoadAsync(string name, string type)
+        public virtual async Task<string> LoadAsync(string name, string type = null)
         {
             var serialized = await ((IStorage)this).CollectAsync(name, type);
             if (string.IsNullOrEmpty(serialized))
-                Log.Warning(this.GetType().FullName, $"Can not find File {name}!");
+                Log.Warning(this, $"Can not find File {name}!");
 
             return serialized;
         }
@@ -89,7 +87,7 @@ namespace UI
         public List<IStorage.Data> AllData = new List<IStorage.Data>();
 
         public void AddData(IStorage.Data data) => AllData.Add(data);
-        public abstract void AddData(string serialized, string path, bool fromResources = false, UIManagerBase manager = null);
+        public abstract void AddData(string serialized, string path, bool fromResources = false);
         public virtual void CollectAllData()
         {
             AllData.Clear();
@@ -100,7 +98,7 @@ namespace UI
                 for (int m = 0; m < resManifests.Length; m++)
                 {
                     var file = resManifests[m];
-                    AddData(file.text, $"{_ResourcesPath}", true, Manager);
+                    AddData(file.text, $"{_ResourcesPath}", true);
                 }
             }
 
@@ -116,7 +114,7 @@ namespace UI
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];
-                        AddData(File.ReadAllText(path), path, false, Manager);
+                        AddData(File.ReadAllText(path), path, false);
                     }
                 }
             }
