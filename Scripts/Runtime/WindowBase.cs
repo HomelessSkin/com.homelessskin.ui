@@ -25,22 +25,13 @@ namespace UI
     [Serializable]
     public abstract class Storage : WindowBase, IStorage
     {
-        public int _MaxSaveFiles => MaxSaveFiles;
-        public string _DataFile => DataFile;
-        public string _ResourcesPath => ResourcesPath;
-        public string _PersistentPath => PersistentPath;
-
+        public IStorage.Settings _Settings => StorageSettings;
         [Space]
-        [SerializeField] int MaxSaveFiles;
-        [SerializeField] string DataFile = "*.json";
-
-        [Space]
-        [SerializeField] string ResourcesPath;
-        [SerializeField] string PersistentPath;
+        [SerializeField] IStorage.Settings StorageSettings;
 
         public virtual void Save(IStorage.Data data)
         {
-            if (string.IsNullOrEmpty(PersistentPath))
+            if (string.IsNullOrEmpty(_Settings.PersistentPath))
             {
                 Log.Error(this, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
@@ -59,7 +50,7 @@ namespace UI
         }
         public virtual async Task SaveAsync(IStorage.Data data)
         {
-            if (string.IsNullOrEmpty(PersistentPath))
+            if (string.IsNullOrEmpty(_Settings.PersistentPath))
             {
                 Log.Error(this, $"No Persistent Path! Please set this Value inside UIManager's relevant field!");
 
@@ -92,25 +83,25 @@ namespace UI
         {
             AllData.Clear();
 
-            if (!string.IsNullOrEmpty(_ResourcesPath))
+            if (!string.IsNullOrEmpty(_Settings.ResourcesPath))
             {
-                var resManifests = Resources.LoadAll<TextAsset>(_ResourcesPath);
+                var resManifests = Resources.LoadAll<TextAsset>(_Settings.ResourcesPath);
                 for (int m = 0; m < resManifests.Length; m++)
                 {
                     var file = resManifests[m];
-                    AddData(file.text, $"{_ResourcesPath}", true);
+                    AddData(file.text, $"{_Settings.ResourcesPath}", true);
                 }
             }
 
-            if (!string.IsNullOrEmpty(_PersistentPath))
+            if (!string.IsNullOrEmpty(_Settings.PersistentPath))
             {
-                var dir = (this as IStorage)._Dir;
+                var dir = (this as IStorage)._Settings.Dir;
 
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
                 else
                 {
-                    var buildManifests = Directory.GetFiles(dir, _DataFile, SearchOption.AllDirectories);
+                    var buildManifests = Directory.GetFiles(dir, _Settings.DataFile, SearchOption.AllDirectories);
                     for (int m = 0; m < buildManifests.Length; m++)
                     {
                         var path = buildManifests[m];

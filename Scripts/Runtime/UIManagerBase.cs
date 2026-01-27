@@ -166,7 +166,7 @@ namespace UI
             AssetDatabase.Refresh();
 
             var localizations = Resources
-                .LoadAll<TextAsset>(_Localizator._ResourcesPath)
+                .LoadAll<TextAsset>(_Localizator._Settings.ResourcesPath)
                 .Where(x => !x.name.Contains("_default"))
                 .ToArray();
 
@@ -177,7 +177,7 @@ namespace UI
                     if (!data.Map.ContainsKey(kvp.Key))
                         data.Map[kvp.Key] = kvp.Value;
 
-                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator._ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
+                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator._Settings.ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
             }
 
             AssetDatabase.SaveAssets();
