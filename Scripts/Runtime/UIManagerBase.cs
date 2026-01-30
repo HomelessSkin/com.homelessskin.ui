@@ -25,47 +25,66 @@ namespace UI
         protected EntityManager EntityManager;
 
         [Space]
-        [SerializeField] protected Canvas Canvas;
-        [SerializeField] protected UICamera _UICamera;
-        #region UI CAMERA
+        [SerializeField] protected Canvasser _Canvasser;
+        #region CANVASSER
         [Serializable]
-        protected class UICamera
+        protected class Canvasser
         {
-            public bool RenderFrame;
-            public UpdateType UpdateMode;
-            public Camera Camera;
+            public Reference[] Refs;
+            #region REFERENCE
+            [Serializable]
+            public class Reference
+            {
+                [HideInInspector] public string Name;
+                public UpdateType UpdateMode;
+                public bool RenderFrame;
+                public Canvas Canvas;
+                public Camera Camera;
 
+                public void Setup()
+                {
+                    switch (UpdateMode)
+                    {
+                        case UpdateType.Manual:
+                        Camera.enabled = false;
+                        Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                        Canvas.worldCamera = Camera;
+                        break;
+                    }
+
+                    QueueRender();
+                }
+                public void Render()
+                {
+                    RenderFrame = false;
+                    if (UpdateMode != UpdateType.Manual)
+                        return;
+
+                    Camera.Render();
+                }
+                public void QueueRender() => RenderFrame = true;
+
+                public enum UpdateType : byte
+                {
+                    Default = 0,
+                    Manual = 1,
+
+
+                }
+            }
+            #endregion
+
+            public void Setup()
+            {
+                for (int r = 0; r < Refs.Length; r++)
+                    Refs[r].Setup();
+            }
+            public void QueueRender(int index = 0) => Refs[index].QueueRender();
             public void Render()
             {
-                RenderFrame = false;
-                if (UpdateMode != UICamera.UpdateType.Manual)
-                    return;
-
-                Camera.Render();
+                for (int r = 0; r < Refs.Length; r++)
+                    Refs[r].Render();
             }
-
-            public enum UpdateType : byte
-            {
-                Default = 0,
-                Manual = 1,
-
-
-            }
-        }
-
-        protected void QueueRender() => _UICamera.RenderFrame |= true;
-        void SetupUI()
-        {
-            switch (_UICamera.UpdateMode)
-            {
-                case UICamera.UpdateType.Manual:
-                _UICamera.Camera.enabled = false;
-                Canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                Canvas.worldCamera = _UICamera.Camera;
-                break;
-            }
-
-            QueueRender();
         }
         #endregion
 
@@ -151,6 +170,8 @@ namespace UI
 #if UNITY_EDITOR
         public void Reload()
         {
+            OnValidate();
+
             var local = new Localization("en");
             for (int i = 0; i < _Localizator.Elements.Length; i++)
                 local.Map[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
@@ -415,7 +436,7 @@ namespace UI
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
 
-            SetupUI();
+            _Canvasser.Setup();
 
             _Drawer.CollectAllData();
             _Drawer.PickSaved();
@@ -425,10 +446,8 @@ namespace UI
         }
         protected virtual void Update()
         {
-            if (_UICamera.RenderFrame)
-                _UICamera.Render();
-
             _Messenger.Update();
+            _Canvasser.Render();
         }
         protected virtual void OnDestroy()
         {
@@ -436,8 +455,13 @@ namespace UI
         }
 
 #if UNITY_EDITOR
-        public virtual void OnValidate()
+        protected virtual void OnValidate()
         {
+            if (_Canvasser.Refs != null)
+                for (int r = 0; r < _Canvasser.Refs.Length; r++)
+                    if (_Canvasser.Refs[r].Canvas)
+                        _Canvasser.Refs[r].Name = _Canvasser.Refs[r].Canvas.name;
+
             _Localizator.Elements = ((Element[])GameObject
                 .FindObjectsByType(typeof(Localizable), FindObjectsInactive.Include, FindObjectsSortMode.None))
                 .Where(x => x.gameObject.tag != "EditorOnly")

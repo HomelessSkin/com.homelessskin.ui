@@ -16,10 +16,7 @@ namespace UI
 
 
             if (GUILayout.Button("Reload"))
-            {
-                manager.OnValidate();
                 manager.Reload();
-            }
 
             base.OnInspectorGUI();
         }
