@@ -43,12 +43,16 @@ namespace UI
 
                 public void Setup()
                 {
+                    Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                    Canvas.worldCamera = Camera;
+
                     switch (UpdateMode)
                     {
+                        case UpdateType.Default:
+                        Camera.enabled = true;
+                        break;
                         case UpdateType.Manual:
                         Camera.enabled = false;
-                        Canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                        Canvas.worldCamera = Camera;
                         break;
                     }
 
@@ -57,7 +61,7 @@ namespace UI
                 public void Render()
                 {
                     RenderFrame = false;
-                    if (UpdateMode != UpdateType.Manual)
+                    if (UpdateMode == UpdateType.Default)
                         return;
 
                     Camera.Render();
@@ -80,6 +84,20 @@ namespace UI
                     Refs[r].Setup();
             }
             public void QueueRender(int index = 0) => Refs[index].QueueRender();
+            public void QueueRender(string name)
+            {
+                if (string.IsNullOrEmpty(name))
+                    return;
+
+                for (int r = 0; r < Refs.Length; r++)
+                    if (Refs[r].Name == name)
+                        Refs[r].QueueRender();
+            }
+            public void QueueAll()
+            {
+                for (int r = 0; r < Refs.Length; r++)
+                    Refs[r].QueueRender();
+            }
             public void Render()
             {
                 for (int r = 0; r < Refs.Length; r++)
@@ -317,7 +335,6 @@ namespace UI
                         Console += $"{list[t]}|";
 
                     MessageText.text = Console.Replace("|", "");
-                    //Manager.QueueRender();
                 }
                 void AsPopUp()
                 {
@@ -329,6 +346,7 @@ namespace UI
                             Current.Time = 0f;
 
                             Log.Read(out Current);
+
                             RefreshCurrent();
                         }
                     }
@@ -447,6 +465,9 @@ namespace UI
         protected virtual void Update()
         {
             _Messenger.Update();
+        }
+        protected virtual void LateUpdate()
+        {
             _Canvasser.Render();
         }
         protected virtual void OnDestroy()
