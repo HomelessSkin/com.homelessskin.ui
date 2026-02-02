@@ -285,17 +285,20 @@ namespace UI
         #endregion
 
         [Space]
-        [SerializeField] protected Messenger _Messenger;
-        #region MESSENGER
+        [SerializeField] protected Logger _Logger;
+        #region LOGGER
         [Serializable]
-        protected class Messenger : Storage
+        protected class Logger : WindowBase
         {
             [Space]
             public Type _Type;
+            public TMP_Text LogText;
+
+            [Space]
             public int MaxRowCount = 100;
-            public TMP_Text MessageText;
 
             string Console;
+
             Log.Message Current;
 
             public void Update()
@@ -334,7 +337,7 @@ namespace UI
                     for (int t = 0; t < list.Count; t++)
                         Console += $"{list[t]}|";
 
-                    MessageText.text = Console.Replace("|", "");
+                    LogText.text = Console.Replace("|", "");
                 }
                 void AsPopUp()
                 {
@@ -358,14 +361,14 @@ namespace UI
                         if (Current == null ||
                               Current.Time == 0f)
                         {
-                            MessageText.text = "";
+                            LogText.text = "";
 
                             SetEnabled(false);
                         }
                         else
                         {
                             Current.CallTime = Time.realtimeSinceStartup;
-                            MessageText.text = Current.Text;
+                            LogText.text = Current.Text;
 
                             SetEnabled(true);
                         }
@@ -464,7 +467,7 @@ namespace UI
         }
         protected virtual void Update()
         {
-            _Messenger.Update();
+            _Logger.Update();
         }
         protected virtual void LateUpdate()
         {
