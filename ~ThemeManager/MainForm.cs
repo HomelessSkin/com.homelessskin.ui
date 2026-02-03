@@ -28,7 +28,7 @@ namespace ThemeManager
         TextBox FilePathBox;
         TextBox ThemeNameBox;
         TextBox FontNameBox;
-        TextBox LanguageKeyBox; // Сохраняем в поле
+        TextBox LanguageKeyBox;
 
         NumericUpDown Major;
         NumericUpDown Minor;
@@ -52,7 +52,7 @@ namespace ThemeManager
             CreateNewManifest();
         }
 
-        private void InitializeMainForm()
+        void InitializeMainForm()
         {
             Text = "Theme Manifest Editor";
             Size = new Size(1200, 800);
@@ -61,8 +61,7 @@ namespace ThemeManager
 
             CreateMainLayout();
         }
-
-        private void CreateMainLayout()
+        void CreateMainLayout()
         {
             var mainLayout = new TableLayoutPanel
             {
@@ -84,8 +83,7 @@ namespace ThemeManager
 
             Controls.Add(mainLayout);
         }
-
-        private TabControl CreateTabControl()
+        TabControl CreateTabControl()
         {
             var tabControl = new TabControl
             {
@@ -103,8 +101,7 @@ namespace ThemeManager
 
             return tabControl;
         }
-
-        private TabPage CreateThemeTab()
+        TabPage CreateThemeTab()
         {
             var tab = new TabPage("Theme Settings")
             {
@@ -124,8 +121,7 @@ namespace ThemeManager
             tab.Controls.Add(scrollPanel);
             return tab;
         }
-
-        private TabPage CreateElementsTab()
+        TabPage CreateElementsTab()
         {
             var tab = new TabPage("Elements")
             {
@@ -195,8 +191,7 @@ namespace ThemeManager
             tab.Controls.Add(elementsLayout);
             return tab;
         }
-
-        private TabPage CreateIconsTab()
+        TabPage CreateIconsTab()
         {
             var tab = new TabPage("Icons")
             {
@@ -266,8 +261,7 @@ namespace ThemeManager
             tab.Controls.Add(iconsLayout);
             return tab;
         }
-
-        private Panel CreateThemeContent()
+        Panel CreateThemeContent()
         {
             var panel = new Panel
             {
@@ -617,8 +611,7 @@ namespace ThemeManager
                 }
             }
         }
-
-        private Panel CreateJsonSection()
+        Panel CreateJsonSection()
         {
             var panel = new Panel
             {
@@ -697,7 +690,6 @@ namespace ThemeManager
 
             return panel;
         }
-
         void CreateNewManifest()
         {
             _Manifest = Manifest.CreateNew();
@@ -725,7 +717,6 @@ namespace ThemeManager
             RefreshElementsView();
             RefreshIconsView();
         }
-
         void LoadJsonFromFile()
         {
             var filePath = ShowOpenFileDialog("JSON files|*.json");
@@ -831,7 +822,6 @@ namespace ThemeManager
                 }
             }
         }
-
         void SaveJson()
         {
             if (string.IsNullOrEmpty(FilePath))
@@ -873,7 +863,6 @@ namespace ThemeManager
                 MessageBox.Show($"Error saving JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         void SaveJsonAs()
         {
             var filePath = ShowSaveFileDialog("JSON files|*.json");
@@ -884,7 +873,6 @@ namespace ThemeManager
                 SaveJson();
             }
         }
-
         void UpdateFontSpacing()
         {
             if (_Manifest != null && _Manifest.font != null)
@@ -893,7 +881,6 @@ namespace ThemeManager
                 _Manifest.font.wordSpacing = (int)WordSpacing.Value;
             }
         }
-
         void AddElement()
         {
             Elements.Add(new ElementData
@@ -921,7 +908,6 @@ namespace ThemeManager
 
             RefreshElementsView();
         }
-
         void RemoveLastElement()
         {
             if (Elements.Count > 0)
@@ -930,7 +916,6 @@ namespace ThemeManager
                 RefreshElementsView();
             }
         }
-
         void ClearAllElements()
         {
             if (MessageBox.Show("Are you sure you want to remove all elements?", "Clear All Elements",
@@ -940,13 +925,11 @@ namespace ThemeManager
                 RefreshElementsView();
             }
         }
-
         void AddIcon()
         {
             Icons.Add(CreateDefaultSprite());
             RefreshIconsView();
         }
-
         void RemoveLastIcon()
         {
             if (Icons.Count > 0)
@@ -955,7 +938,6 @@ namespace ThemeManager
                 RefreshIconsView();
             }
         }
-
         void ClearAllIcons()
         {
             if (MessageBox.Show("Are you sure you want to remove all icons?", "Clear All Icons",
@@ -965,7 +947,6 @@ namespace ThemeManager
                 RefreshIconsView();
             }
         }
-
         void RefreshElementsView()
         {
             if (ElementsPanel == null)
@@ -978,7 +959,6 @@ namespace ThemeManager
 
             RefreshElementsWidth();
         }
-
         void RefreshIconsView()
         {
             if (IconsPanel == null)
@@ -991,7 +971,6 @@ namespace ThemeManager
 
             RefreshIconsWidth();
         }
-
         Panel CreateElementPanel(int index, ElementData element)
         {
             var panel = new Panel
@@ -1126,7 +1105,6 @@ namespace ThemeManager
                     mainLayout.SetColumnSpan(contentPanel, 3);
                 }
             }
-
             void RemoveElement()
             {
                 if (MessageBox.Show($"Are you sure you want to remove element {Elements[index].key}?",
@@ -1137,7 +1115,6 @@ namespace ThemeManager
                 }
             }
         }
-
         Panel CreateIconPanel(int index, CustomSprite icon)
         {
             var panel = new Panel
@@ -1260,7 +1237,6 @@ namespace ThemeManager
                 }
             }
         }
-
         Panel CreateGeneralPanel(ElementData element, int index)
         {
             var panel = new Panel
@@ -1328,7 +1304,6 @@ namespace ThemeManager
 
             return panel;
         }
-
         Panel CreateTextPanel(TextData textData)
         {
             if (textData == null)
@@ -1418,7 +1393,6 @@ namespace ThemeManager
 
             return panel;
         }
-
         Panel CreateSelectablePanel(SelectableData selectable)
         {
             if (selectable == null)
@@ -1602,7 +1576,6 @@ namespace ThemeManager
 
             return panel;
         }
-
         Panel CreateColorControlWithPicker(Vector4Data initialColor, Action<Vector4> onColorChanged)
         {
             var colorPanel = new Panel
@@ -1708,7 +1681,6 @@ namespace ThemeManager
             colorPanel.Controls.Add(layout);
             return colorPanel;
         }
-
         Panel CreateSpriteControl(SpriteData sprite, Action<SpriteData> onSpriteChanged)
         {
             var spritePanel = new Panel
@@ -1775,7 +1747,6 @@ namespace ThemeManager
             spritePanel.Controls.Add(layout);
             return spritePanel;
         }
-
         Panel CreateSpritePanel(CustomSprite sprite, string spriteType, SpriteData maskSprite = null)
         {
             var panel = new Panel
@@ -1996,7 +1967,6 @@ namespace ThemeManager
 
             return panel;
         }
-
         void ShowBordersDialog(string title, CustomSprite sprite)
         {
             if (sprite == null)
@@ -2090,14 +2060,12 @@ namespace ThemeManager
             form.AcceptButton = okButton;
             form.ShowDialog();
         }
-
         CustomSprite CreateDefaultSprite() => new CustomSprite
         {
             pixelPerUnit = 100,
             filterMode = 1,
             borders = new Borders()
         };
-
         void UpdateFontColor()
         {
             UpdateFontColorPreview();
@@ -2112,7 +2080,6 @@ namespace ThemeManager
                 );
             }
         }
-
         void UpdateFontColorPreview()
         {
             FontColorPanel.BackColor = Color.FromArgb((int)FontColorA.Value,
@@ -2120,7 +2087,6 @@ namespace ThemeManager
                 (int)FontColorG.Value,
                 (int)FontColorB.Value);
         }
-
         void RefreshElementsWidth()
         {
             if (ElementsPanel != null)
@@ -2128,7 +2094,6 @@ namespace ThemeManager
                     if (control is Panel panel)
                         panel.Width = ElementsPanel.ClientSize.Width - 10;
         }
-
         void RefreshIconsWidth()
         {
             if (IconsPanel != null)
@@ -2136,7 +2101,6 @@ namespace ThemeManager
                     if (control is Panel panel)
                         panel.Width = IconsPanel.ClientSize.Width - 10;
         }
-
         string ShowOpenFileDialog(string filter, string title = "Open File")
         {
             using (var dialog = new OpenFileDialog())
@@ -2146,7 +2110,6 @@ namespace ThemeManager
                 return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
             }
         }
-
         string ShowSaveFileDialog(string filter, string title = "Save File")
         {
             using (var dialog = new SaveFileDialog())

@@ -16,6 +16,7 @@ namespace UI
         Scroll_Area = 11,
         Console = 12,
         Background = 13,
+        Main_Chat_Message = 14,
 
     }
 }
