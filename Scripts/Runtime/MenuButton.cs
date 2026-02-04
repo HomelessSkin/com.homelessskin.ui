@@ -9,9 +9,16 @@ namespace UI
 {
     public class MenuButton : Selectable
     {
+        [Space]
         [SerializeField] TMP_Text Label;
+
+        [Space]
         [SerializeField] UnityEvent OnClick;
+
+        [Space]
         [SerializeField] UnityEvent OnEnabledTargets;
+
+        [Space]
         [SerializeField] GameObject[] Targets;
 
         public override void OnPointerDown(PointerEventData eventData)
