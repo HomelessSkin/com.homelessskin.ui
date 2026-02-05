@@ -17,7 +17,13 @@ namespace UI
 
             SetData(UIManager.GetTranslation(GetKey()));
         }
-        public override void SetData(Data data) => Value.text = (data as LocalData).Text;
+        public override void SetData(Data data)
+        {
+            if (data == null)
+                return;
+
+            Value.text = (data as LocalData).Text;
+        }
 
 #if UNITY_EDITOR
         public string GetValue() => Value.text;

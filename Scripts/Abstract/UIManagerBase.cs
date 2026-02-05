@@ -25,6 +25,65 @@ namespace UI
         protected EntityManager EntityManager;
 
         [Space]
+        [SerializeField] FPS _FPS;
+        #region FPS
+        [Serializable]
+        class FPS : WindowBase
+        {
+            [Space]
+            [Range(1, 60)] public int FramesCount = 5;
+            public TMP_Text FPSGUI;
+
+            int Frame;
+            float StoredDelta;
+
+            public void UpdateCounter()
+            {
+                if (!FPSGUI)
+                    return;
+
+                if (Frame < FramesCount)
+                {
+                    Frame++;
+
+                    StoredDelta += Time.deltaTime;
+                }
+                else if (Frame >= FramesCount && StoredDelta > 0f)
+                {
+                    Frame = 0;
+
+                    FPSGUI.text = (1f / (StoredDelta / FramesCount)).ToString("0.0");
+
+                    StoredDelta = 0f;
+                }
+            }
+        }
+
+        public void EnableFPSGUI(bool value) => _FPS.SetEnabled(value);
+        public virtual void LockFPS(int type)
+        {
+            switch (type)
+            {
+                case 0:
+                Application.targetFrameRate = -1;
+                break;
+                case 1:
+                Application.targetFrameRate = 30;
+                break;
+                case 2:
+                Application.targetFrameRate = 60;
+                break;
+                case 3:
+                Application.targetFrameRate = 120;
+                break;
+                case 4:
+                Application.targetFrameRate = 150;
+                break;
+            }
+        }
+        #endregion
+
+        [Space]
         [SerializeField] protected Canvasser _Canvasser;
         #region CANVASSER
         [Serializable]
@@ -471,6 +530,7 @@ namespace UI
         }
         protected virtual void LateUpdate()
         {
+            _FPS.UpdateCounter();
             _Canvasser.Render();
         }
         protected virtual void OnDestroy()

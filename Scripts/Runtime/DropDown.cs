@@ -52,9 +52,14 @@ namespace UI
                 return;
             }
 
+            var st = Selection.transform as RectTransform;
+
             Items = Instantiate(ContentPrefab, Selection.transform).transform;
+            (Items.transform as RectTransform)
+                .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, st.rect.width);
+
             for (int v = 0; v < Values.Length; v++)
-                CreateItem(v);
+                CreateItem(v, st);
 
             IsOpenned = true;
         }
@@ -64,10 +69,17 @@ namespace UI
 
             Destroy(Items.gameObject);
         }
-        void CreateItem(int index) =>
-            Instantiate(ItemPrefab, Items)
-            .GetComponent<MenuButton>()
-            .InitAsDropItem(InvChanged, index, Values[index]);
+        void CreateItem(int index, RectTransform st)
+        {
+            var item = Instantiate(ItemPrefab, Items);
+
+            item
+                .GetComponent<MenuButton>()
+                .InitAsDropItem(InvChanged, index, Values[index]);
+
+            (item.transform as RectTransform)
+                .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, st.rect.height);
+        }
         void InvChanged(int index)
         {
             Close();
