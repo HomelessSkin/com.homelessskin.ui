@@ -24,10 +24,10 @@ namespace UI
              TMP_Settings.defaultFontAsset :
              LoadFont();
 
-            var color = new Color(manifest.font.color.X / 255f,
-                manifest.font.color.Y / 255f,
-                manifest.font.color.Z / 255f,
-                manifest.font.color.W / 255f);
+            var color = new Color(manifest.font.color.x / 255f,
+                manifest.font.color.y / 255f,
+                manifest.font.color.z / 255f,
+                manifest.font.color.w / 255f);
 
             var lang = manifest.languageKey == null || string.IsNullOrEmpty(manifest.languageKey) ? "default" : manifest.languageKey;
 
@@ -148,11 +148,11 @@ namespace UI
             {
                 Transition = selectable.transition == 0 ? UnityEngine.UI.Selectable.Transition.ColorTint : UnityEngine.UI.Selectable.Transition.SpriteSwap,
 
-                NormalColor = selectable.normalColor == null ? Vector4.one : new Vector4(selectable.normalColor.X, selectable.normalColor.Y, selectable.normalColor.Z, selectable.normalColor.W),
-                HighlightedColor = selectable.highlightedColor == null ? Vector4.one : new Vector4(selectable.highlightedColor.X, selectable.highlightedColor.Y, selectable.highlightedColor.Z, selectable.highlightedColor.W),
-                PressedColor = selectable.pressedColor == null ? Vector4.one : new Vector4(selectable.pressedColor.X, selectable.pressedColor.Y, selectable.pressedColor.Z, selectable.pressedColor.W),
-                SelectedColor = selectable.selectedColor == null ? Vector4.one : new Vector4(selectable.selectedColor.X, selectable.selectedColor.Y, selectable.selectedColor.Z, selectable.selectedColor.W),
-                DisabledColor = selectable.disabledColor == null ? Vector4.one : new Vector4(selectable.disabledColor.X, selectable.disabledColor.Y, selectable.disabledColor.Z, selectable.disabledColor.W),
+                NormalColor = selectable.normalColor.ToColor(),
+                HighlightedColor = selectable.highlightedColor.ToColor(),
+                PressedColor = selectable.pressedColor.ToColor(),
+                SelectedColor = selectable.selectedColor.ToColor(),
+                DisabledColor = selectable.disabledColor.ToColor(),
 
                 HighlightedSprite = TryLoadSprite(selectable.highlightedSprite, @base),
                 PressedSprite = TryLoadSprite(selectable.pressedSprite, @base),

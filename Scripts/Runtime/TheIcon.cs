@@ -22,6 +22,9 @@ namespace UI
                   UIManager.TryGetDrawerData(GetKey(), out var data))
                 SetData(data);
         }
+
+        public bool IsRedrawable() => !NonRedrawable;
+
         public override void SetData(Data data)
         {
             if (data == null)
@@ -34,7 +37,6 @@ namespace UI
             if (Image && icon.Sprite)
                 Image.sprite = icon.Sprite;
         }
-        public bool IsRedrawable() => !NonRedrawable;
 
         void InitOrigin()
         {
@@ -44,17 +46,19 @@ namespace UI
             Origin = Image.rectTransform.localPosition;
         }
 
-        [Serializable]
-        public class IconData : Data
-        {
-            public Sprite Sprite;
-        }
-
 #if UNITY_EDITOR
         void OnValidate()
         {
             Image = GetComponent<Image>();
         }
 #endif
+
+        #region ICON DATA
+        [Serializable]
+        public class IconData : Data
+        {
+            public Sprite Sprite;
+        }
+        #endregion
     }
 }

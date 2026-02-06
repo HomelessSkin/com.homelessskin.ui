@@ -23,7 +23,12 @@ namespace UI
 
         public abstract void SetData(Data data);
 
+        #region DATA
         [Serializable]
-        public abstract class Data { }
+        public abstract class Data
+        {
+
+        }
+        #endregion
     }
 }

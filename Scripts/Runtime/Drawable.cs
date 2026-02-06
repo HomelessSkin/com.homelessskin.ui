@@ -25,11 +25,13 @@ namespace UI
             InitOrigins();
 
             if (!NonRedrawable &&
+                  UIManager &&
                   UIManager.TryGetDrawerData(GetKey(), out var data))
                 SetData(data);
         }
 
-        public override string GetKey() => _Type.ToString();
+        public bool IsRedrawable() => !NonRedrawable;
+
         public override void SetData(Data data)
         {
             if (data == null)
@@ -79,16 +81,11 @@ namespace UI
                     case Selectable.Transition.ColorTint:
                     var colors = Selectable.colors;
 
-                    if (drawData._Selectable.NormalColor.magnitude >= 0.00001f)
-                        colors.normalColor = drawData._Selectable.NormalColor.ToColor();
-                    if (drawData._Selectable.HighlightedColor.magnitude >= 0.00001f)
-                        colors.highlightedColor = drawData._Selectable.HighlightedColor.ToColor();
-                    if (drawData._Selectable.PressedColor.magnitude >= 0.00001f)
-                        colors.pressedColor = drawData._Selectable.PressedColor.ToColor();
-                    if (drawData._Selectable.SelectedColor.magnitude >= 0.00001f)
-                        colors.selectedColor = drawData._Selectable.SelectedColor.ToColor();
-                    if (drawData._Selectable.DisabledColor.magnitude >= 0.00001f)
-                        colors.disabledColor = drawData._Selectable.DisabledColor.ToColor();
+                    colors.normalColor = drawData._Selectable.NormalColor;
+                    colors.highlightedColor = drawData._Selectable.HighlightedColor;
+                    colors.pressedColor = drawData._Selectable.PressedColor;
+                    colors.selectedColor = drawData._Selectable.SelectedColor;
+                    colors.disabledColor = drawData._Selectable.DisabledColor;
 
                     Selectable.colors = colors;
                     break;
@@ -126,8 +123,7 @@ namespace UI
                     text.rectTransform.localPosition = Origins[t] + drawData._Text.Offset;
                 }
         }
-
-        public bool IsRedrawable() => !NonRedrawable;
+        public override string GetKey() => _Type.ToString();
 
         void InitOrigins()
         {
@@ -156,11 +152,11 @@ namespace UI
             {
                 public UnityEngine.UI.Selectable.Transition Transition;
 
-                public Vector4 NormalColor;
-                public Vector4 HighlightedColor;
-                public Vector4 PressedColor;
-                public Vector4 SelectedColor;
-                public Vector4 DisabledColor;
+                public Color NormalColor;
+                public Color HighlightedColor;
+                public Color PressedColor;
+                public Color SelectedColor;
+                public Color DisabledColor;
 
                 public Sprite HighlightedSprite;
                 public Sprite PressedSprite;
@@ -173,9 +169,9 @@ namespace UI
             {
                 public string LanguageKey;
 
-                public int FontSize;
-                public int CharacterSpacing;
-                public int WordSpacing;
+                public float FontSize;
+                public float CharacterSpacing;
+                public float WordSpacing;
                 public TMP_FontAsset Font;
 
                 public Color Color;

@@ -28,15 +28,42 @@ namespace UI
         [SerializeField] FPS _FPS;
         #region FPS
         [Serializable]
-        class FPS : WindowBase
+        class FPS : WindowBase, IPrefKey
         {
+            public string _Key => PrefKey;
+            public string PrefKey;
+
             [Space]
             [Range(1, 60)] public int FramesCount = 5;
             public TMP_Text FPSGUI;
+            public DropDown DropDown;
 
             int Frame;
             float StoredDelta;
 
+            public void LockFPS(int type)
+            {
+                switch (type)
+                {
+                    case 0:
+                    Application.targetFrameRate = -1;
+                    break;
+                    case 1:
+                    Application.targetFrameRate = 30;
+                    break;
+                    case 2:
+                    Application.targetFrameRate = 60;
+                    break;
+                    case 3:
+                    Application.targetFrameRate = 120;
+                    break;
+                    case 4:
+                    Application.targetFrameRate = 150;
+                    break;
+                }
+
+                this.SavePrefInt(type);
+            }
             public void UpdateCounter()
             {
                 if (!FPSGUI)
@@ -57,30 +84,11 @@ namespace UI
                     StoredDelta = 0f;
                 }
             }
+            public void LoadSettings() => DropDown?.SetValue(this.LoadPrefInt());
         }
 
         public void EnableFPSGUI(bool value) => _FPS.SetEnabled(value);
-        public virtual void LockFPS(int type)
-        {
-            switch (type)
-            {
-                case 0:
-                Application.targetFrameRate = -1;
-                break;
-                case 1:
-                Application.targetFrameRate = 30;
-                break;
-                case 2:
-                Application.targetFrameRate = 60;
-                break;
-                case 3:
-                Application.targetFrameRate = 120;
-                break;
-                case 4:
-                Application.targetFrameRate = 150;
-                break;
-            }
-        }
+        public void LockFPS(int type) => _FPS.LockFPS(type);
         #endregion
 
         [Space]
@@ -515,6 +523,8 @@ namespace UI
 #if UNITY_ENTITIES_INSTALLED
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
+
+            _FPS.LoadSettings();
 
             _Canvasser.Setup();
 

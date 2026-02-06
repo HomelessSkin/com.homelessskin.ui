@@ -66,26 +66,10 @@ namespace UI
     [Serializable]
     public class Vector4Data
     {
-        public float X;
-        public float Y;
-        public float Z;
-        public float W;
-
-        public Vector4Data() { }
-        public Vector4Data(float x, float y, float z, float w)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-            W = w;
-        }
-        public Vector4Data(System.Numerics.Vector4 color)
-        {
-            X = color.X;
-            Y = color.Y;
-            Z = color.Z;
-            W = color.W;
-        }
+        public float x;
+        public float y;
+        public float z;
+        public float w;
     }
 
     [Serializable]
@@ -108,9 +92,9 @@ namespace UI
     public class FontData
     {
         public string assetName;
-        public Vector4Data color;
-        public int characterSpacing;
-        public int wordSpacing;
+        public Vector4 color;
+        public float characterSpacing;
+        public float wordSpacing;
     }
 
     [Serializable]
@@ -141,11 +125,11 @@ namespace UI
     {
         public byte transition;
 
-        public Vector4Data normalColor;
-        public Vector4Data highlightedColor;
-        public Vector4Data pressedColor;
-        public Vector4Data selectedColor;
-        public Vector4Data disabledColor;
+        public Vector4 normalColor;
+        public Vector4 highlightedColor;
+        public Vector4 pressedColor;
+        public Vector4 selectedColor;
+        public Vector4 disabledColor;
 
         public SpriteData highlightedSprite;
         public SpriteData pressedSprite;
@@ -169,7 +153,8 @@ namespace UI
     [Serializable]
     public class TextData
     {
-        public int fontSize;
+        public float fontSize;
+        public Vector4 color;
 
         public int xOffset;
         public int yOffset;

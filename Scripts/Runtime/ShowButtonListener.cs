@@ -20,13 +20,6 @@ namespace UI
             else
                 Disable();
         }
-        public void SwitchEnableWithDependency()
-        {
-            if (!gameObject.activeInHierarchy)
-                EnableWithDependency();
-            else
-                DisableWithDependency();
-        }
         public void EnableWithDependency()
         {
             if (DependsOn != null && DependsOn.Length > 0)
@@ -53,26 +46,21 @@ namespace UI
 
             gameObject.SetActive(false);
         }
-
-        void SetEnabled(bool value)
+        public void SwitchEnableWithDependency()
         {
-            if (SkipSetEnabled)
-                return;
-
-            if (!value)
-            {
-                State = gameObject.activeInHierarchy;
-                gameObject.SetActive(false);
-            }
+            if (!gameObject.activeInHierarchy)
+                EnableWithDependency();
             else
-                gameObject.SetActive(State);
+                DisableWithDependency();
         }
 
+        #region DEPENDENCY
         [Serializable]
-        public struct Dependency
+        public class Dependency
         {
             public GameObject Object;
             public bool MustBe;
         }
+        #endregion
     }
 }

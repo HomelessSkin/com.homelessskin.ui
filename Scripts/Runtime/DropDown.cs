@@ -24,9 +24,9 @@ namespace UI
 
         void Start()
         {
-            Selection.SetLabel(Values[0]);
             Selection.AddListener(Open);
         }
+
 #if UNITY_EDITOR
         void OnValidate()
         {
@@ -41,7 +41,7 @@ namespace UI
 #endif
 
         public int GetValue() => Value;
-        public void SetValue(int value) => Value = value;
+        public void SetValue(int value) => InvChanged(value);
 
         void Open()
         {
@@ -67,7 +67,8 @@ namespace UI
         {
             IsOpenned = false;
 
-            Destroy(Items.gameObject);
+            if (Items)
+                Destroy(Items.gameObject);
         }
         void CreateItem(int index, RectTransform st)
         {
@@ -83,8 +84,8 @@ namespace UI
         void InvChanged(int index)
         {
             Close();
-            SetValue(index);
 
+            Value = index;
             Selection.SetLabel(Values[index]);
             OnValueChanged.Invoke(index);
         }
