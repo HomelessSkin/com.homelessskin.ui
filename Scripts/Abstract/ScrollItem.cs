@@ -10,12 +10,8 @@ namespace UI
     {
         [SerializeField] protected TMP_Text Name;
 
-        protected UIManagerBase Manager;
-
-        public virtual void Init(int index, IStorage.Data data, UIManagerBase manager)
+        public virtual void Init(int index, IStorage.Data data)
         {
-            Manager = manager;
-
             Name.text = data.Name;
         }
     }

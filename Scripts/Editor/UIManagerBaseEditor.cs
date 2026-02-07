@@ -14,9 +14,8 @@ namespace UI
             if (target == null)
                 return;
 
-
-            if (GUILayout.Button("Reload"))
-                manager.Reload();
+            //if (GUILayout.Button("Reload"))
+            //    manager.Reload();
 
             base.OnInspectorGUI();
         }
