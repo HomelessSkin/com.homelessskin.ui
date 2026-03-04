@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Core;
 
@@ -173,124 +172,124 @@ namespace UI
         }
         #endregion
 
-//        [Space]
-//        [SerializeField] protected Localizator _Localizator;
-//        #region LOCALIZATOR
-//        [Serializable]
-//        protected class Localizator : PersonalizedStorage
-//        {
-//            public override void AddData(string serialized, string path, bool fromResources = false) =>
-//                AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
-//            public override void SetData(IStorage.Data data)
-//            {
-//                base.SetData(data);
+        //        [Space]
+        //        [SerializeField] protected Localizator _Localizator;
+        //        #region LOCALIZATOR
+        //        [Serializable]
+        //        protected class Localizator : PersonalizedStorage
+        //        {
+        //            public override void AddData(string serialized, string path, bool fromResources = false) =>
+        //                AllData.Add(new Localization(JsonUtility.FromJson<Localization.Data>(serialized)));
+        //            public override void SetData(IStorage.Data data)
+        //            {
+        //                base.SetData(data);
 
-//                for (int d = 0; d < Elements.Length; d++)
-//                {
-//                    var localizable = Elements[d] as Localizable;
-//                    if (TryGetValue(localizable.GetKey(), out var elData))
-//                        localizable.SetData(elData);
-//                }
-//            }
+        //                for (int d = 0; d < Elements.Length; d++)
+        //                {
+        //                    var localizable = Elements[d] as Localizable;
+        //                    if (TryGetValue(localizable.GetKey(), out var elData))
+        //                        localizable.SetData(elData);
+        //                }
+        //            }
 
-//            protected override void LoadDefault() =>
-//                Default = new Localization(Deserialize(Resources.Load<TextAsset>(DefaultPath).text));
+        //            protected override void LoadDefault() =>
+        //                Default = new Localization(Deserialize(Resources.Load<TextAsset>(DefaultPath).text));
 
-//            public string Serialize(Localization localization)
-//            {
-//                var data = new Localization.Data { name = localization.Name, dictionary = new Localization.Data.KVP[localization.Map.Count] };
-//                var c = 0;
-//                foreach (var kvp in localization.Map)
-//                {
-//                    data.dictionary[c] = new Localization.Data.KVP { key = kvp.Key, value = (kvp.Value as Localizable.LocalData).Text };
+        //            public string Serialize(Localization localization)
+        //            {
+        //                var data = new Localization.Data { name = localization.Name, dictionary = new Localization.Data.KVP[localization.Map.Count] };
+        //                var c = 0;
+        //                foreach (var kvp in localization.Map)
+        //                {
+        //                    data.dictionary[c] = new Localization.Data.KVP { key = kvp.Key, value = (kvp.Value as Localizable.LocalData).Text };
 
-//                    c++;
-//                }
+        //                    c++;
+        //                }
 
-//                return JsonUtility.ToJson(data, true);
-//            }
-//            public Localization.Data Deserialize(string text) =>
-//                JsonUtility.FromJson<Localization.Data>(text);
-//        }
+        //                return JsonUtility.ToJson(data, true);
+        //            }
+        //            public Localization.Data Deserialize(string text) =>
+        //                JsonUtility.FromJson<Localization.Data>(text);
+        //        }
 
-//        public void OpenLocalizations()
-//        {
-//            //if ((_Drawer.Current as Theme).LanguageKey != "default")
-//            //{
-//            //    Log.Warning(this, "theme lang override");
+        //        public void OpenLocalizations()
+        //        {
+        //            //if ((_Drawer.Current as Theme).LanguageKey != "default")
+        //            //{
+        //            //    Log.Warning(this, "theme lang override");
 
-//            //    return;
-//            //}
+        //            //    return;
+        //            //}
 
-//            _Localizator.Open<ListLocalization>();
-//        }
-//        public void CloseLocalizations() => _Localizator.Close();
-//        public Localizable.LocalData GetTranslation(string key)
-//        {
-//            if (_Localizator.TryGetValue<Localizable.LocalData>(key, out var data))
-//                return data;
+        //            _Localizator.Open<ListLocalization>();
+        //        }
+        //        public void CloseLocalizations() => _Localizator.Close();
+        //        public Localizable.LocalData GetTranslation(string key)
+        //        {
+        //            if (_Localizator.TryGetValue<Localizable.LocalData>(key, out var data))
+        //                return data;
 
-//            return null;
-//        }
+        //            return null;
+        //        }
 
-//        public void SelectLanguage(string langKey)
-//        {
-//            if (string.IsNullOrEmpty(langKey))
-//                return;
+        //        public void SelectLanguage(string langKey)
+        //        {
+        //            if (string.IsNullOrEmpty(langKey))
+        //                return;
 
-//            var data = _Localizator.Default;
-//            for (int l = 0; l < _Localizator.AllData.Count; l++)
-//                if (_Localizator.AllData[l].Name == langKey)
-//                {
-//                    data = _Localizator.AllData[l];
+        //            var data = _Localizator.Default;
+        //            for (int l = 0; l < _Localizator.AllData.Count; l++)
+        //                if (_Localizator.AllData[l].Name == langKey)
+        //                {
+        //                    data = _Localizator.AllData[l];
 
-//                    Log.Info(this, $"Setting Language with {langKey} key");
+        //                    Log.Info(this, $"Setting Language with {langKey} key");
 
-//                    break;
-//                }
+        //                    break;
+        //                }
 
-//            _Localizator.SetData(data);
-//        }
+        //            _Localizator.SetData(data);
+        //        }
 
-//#if UNITY_EDITOR
-//        public void Reload()
-//        {
-//            OnValidate();
+        //#if UNITY_EDITOR
+        //        public void Reload()
+        //        {
+        //            OnValidate();
 
-//            var local = new Localization("en");
-//            for (int i = 0; i < _Localizator.Elements.Length; i++)
-//                local.Map[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
+        //            var local = new Localization("en");
+        //            for (int i = 0; i < _Localizator.Elements.Length; i++)
+        //                local.Map[_Localizator.Elements[i].GetKey()] = new Localizable.LocalData { Text = (_Localizator.Elements[i] as Localizable).GetValue() };
 
-//            local.Map[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
+        //            local.Map[_Tutorial.Key] = new Localizable.LocalData { Text = _Tutorial.Value };
 
-//            for (int i = 0; i < _Confirm.Keys.Length; i++)
-//                local.Map[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
+        //            for (int i = 0; i < _Confirm.Keys.Length; i++)
+        //                local.Map[_Confirm.Keys[i]] = new Localizable.LocalData { Text = _Confirm.Keys[i] };
 
-//            File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator.DefaultPath}.json", _Localizator.Serialize(local));
+        //            File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator.DefaultPath}.json", _Localizator.Serialize(local));
 
-//            AssetDatabase.SaveAssets();
-//            AssetDatabase.Refresh();
+        //            AssetDatabase.SaveAssets();
+        //            AssetDatabase.Refresh();
 
-//            var localizations = Resources
-//                .LoadAll<TextAsset>(_Localizator._Settings.ResourcesPath)
-//                .Where(x => !x.name.Contains("_default"))
-//                .ToArray();
+        //            var localizations = Resources
+        //                .LoadAll<TextAsset>(_Localizator._Settings.ResourcesPath)
+        //                .Where(x => !x.name.Contains("_default"))
+        //                .ToArray();
 
-//            for (int i = 0; i < localizations.Length; i++)
-//            {
-//                var data = new Localization(_Localizator.Deserialize(localizations[i].text));
-//                foreach (var kvp in local.Map)
-//                    if (!data.Map.ContainsKey(kvp.Key))
-//                        data.Map[kvp.Key] = kvp.Value;
+        //            for (int i = 0; i < localizations.Length; i++)
+        //            {
+        //                var data = new Localization(_Localizator.Deserialize(localizations[i].text));
+        //                foreach (var kvp in local.Map)
+        //                    if (!data.Map.ContainsKey(kvp.Key))
+        //                        data.Map[kvp.Key] = kvp.Value;
 
-//                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator._Settings.ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
-//            }
+        //                File.WriteAllText($"{Application.dataPath}/Resources/{_Localizator._Settings.ResourcesPath}{localizations[i].name}.json", _Localizator.Serialize(data));
+        //            }
 
-//            AssetDatabase.SaveAssets();
-//            AssetDatabase.Refresh();
-//        }
-//#endif
-//        #endregion
+        //            AssetDatabase.SaveAssets();
+        //            AssetDatabase.Refresh();
+        //        }
+        //#endif
+        //        #endregion
 
         [Space]
         [SerializeField] protected Logger _Logger;
@@ -311,6 +310,9 @@ namespace UI
 
             public void Update()
             {
+                if (!LogText)
+                    return;
+
                 switch (_Type)
                 {
                     case Type.Console:
@@ -489,7 +491,7 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            if (_Canvasser.Refs != null)
+            if (_Canvasser != null && _Canvasser.Refs != null)
                 for (int r = 0; r < _Canvasser.Refs.Length; r++)
                     if (_Canvasser.Refs[r].Canvas)
                         _Canvasser.Refs[r].Name = _Canvasser.Refs[r].Canvas.name;
