@@ -1,4 +1,10 @@
+using Core;
+
+using Input;
+
 using TMPro;
+
+using Unity.Entities;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -41,6 +47,8 @@ namespace UI
                 if (invoke)
                     OnEnabledTargets.Invoke();
             }
+
+            Sys.Add(new SetPointerStateRequest { State = MouseState.UI }, World.DefaultGameObjectInjectionWorld.EntityManager);
         }
         protected override void OnDestroy()
         {
