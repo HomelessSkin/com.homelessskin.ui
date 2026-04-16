@@ -172,6 +172,7 @@ namespace UI
         }
         #endregion
 
+        #region TRASH
         //        [Space]
         //        [SerializeField] protected Localizator _Localizator;
         //        #region LOCALIZATOR
@@ -290,6 +291,7 @@ namespace UI
         //        }
         //#endif
         //        #endregion
+        #endregion
 
         [Space]
         [SerializeField] protected Logger _Logger;

@@ -23,6 +23,7 @@ namespace UI
             Panel.gameObject.SetActive(value);
         }
         public bool IsEnabled() => Panel && Panel.gameObject.activeSelf;
+        public int GetSiblingIndex() => Panel.GetSiblingIndex();
     }
     #endregion
 
