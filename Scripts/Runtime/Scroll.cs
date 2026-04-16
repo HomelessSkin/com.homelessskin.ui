@@ -11,37 +11,37 @@ namespace UI
         [SerializeField] float Spacing = 0f;
         [SerializeField] Vector2 PoolPosition;
 
-        int MinY;
-        int MaxY;
-
-        Vector2 ContentShift;
-        Vector2Int ContentCurrent;
-        Vector2Int ContentTarget;
+        bool IsResetRequired = false;
 
         List<RectTransform> View = new List<RectTransform>();
         Queue<RectTransform> Pool = new Queue<RectTransform>();
+        Dictionary<int, Vector2> Targets = new Dictionary<int, Vector2>();
 
         RectTransform Content => transform as RectTransform;
 
-        void Start()
-        {
-            MinY = (int)Content.anchoredPosition.y - 40;
-
-            ContentShift = Content.anchoredPosition;
-            ContentTarget = ContentCurrent = Vector2Int.RoundToInt(ContentShift) + 40 * Vector2Int.down;
-        }
         void Update()
         {
-            var dt = Time.deltaTime;
-            var pos = Vector2.zero;
-            for (int v = View.Count - 1; v >= 0; v--)
+            if (IsResetRequired)
             {
-                var rect = View[v].anchoredPosition;
-                var delta = pos - rect;
+                IsResetRequired = false;
 
-                View[v].anchoredPosition += ScrollSpeed * dt * delta;
+                ResetTargets();
+            }
 
-                pos.y += View[v].rect.height + Spacing;
+            if (Targets.Count > 0)
+            {
+                var dt = Time.deltaTime;
+                for (int v = 0; v < View.Count; v++)
+                    if (Targets.TryGetValue(v, out var pos))
+                    {
+                        var rect = View[v].anchoredPosition;
+                        var delta = pos - rect;
+
+                        if (delta.sqrMagnitude > 0.001f)
+                            View[v].anchoredPosition += ScrollSpeed * dt * delta;
+                        else
+                            Targets.Remove(v);
+                    }
             }
         }
 
@@ -58,30 +58,41 @@ namespace UI
         }
         public void ToView(RectTransform transform)
         {
+            transform.gameObject.SetActive(true);
+
             View.Add(transform);
             if (View.Count >= MaxView)
                 ToPool(0);
+
+            IsResetRequired = true;
         }
         public void ToPool(int index)
         {
-            var t = View[index];
-            t.gameObject.SetActive(false);
-            t.anchoredPosition = PoolPosition;
+            var transform = View[index];
+            transform.gameObject.SetActive(false);
+            transform.anchoredPosition = PoolPosition;
 
-            Pool.Enqueue(t);
+            Pool.Enqueue(transform);
             View.RemoveAt(index);
-        }
-        public bool TryGetFromPool(out RectTransform transform)
-        {
-            if (Pool.TryDequeue(out transform))
-            {
-                transform.gameObject.SetActive(true);
 
-                return true;
-            }
-
-            return false;
+            IsResetRequired = true;
         }
+        public bool TryGetFromPool(out RectTransform transform) => Pool.TryDequeue(out transform);
         public List<RectTransform> GetView() => View;
+
+        void ResetTargets()
+        {
+            Targets.Clear();
+
+            Canvas.ForceUpdateCanvases();
+
+            var pos = Vector2.zero;
+            for (int v = View.Count - 1; v >= 0; v--)
+            {
+                Targets[v] = pos;
+
+                pos.y += View[v].rect.height + Spacing;
+            }
+        }
     }
 }
