@@ -4,44 +4,29 @@ using UnityEngine;
 
 namespace UI
 {
-    public class Scroll : MonoBehaviour
+    public class Scroll : Juggler
     {
+        [Space]
         [SerializeField] int MaxView = 10;
-        [SerializeField] float ScrollSpeed = 10f;
         [SerializeField] float Spacing = 0f;
         [SerializeField] Vector2 PoolPosition;
 
-        bool IsResetRequired = false;
-
-        List<RectTransform> View = new List<RectTransform>();
         Queue<RectTransform> Pool = new Queue<RectTransform>();
-        Dictionary<int, Vector2> Targets = new Dictionary<int, Vector2>();
 
         RectTransform Content => transform as RectTransform;
 
-        void Update()
+        protected override void ResetPositions()
         {
-            if (IsResetRequired)
+            Positions.Clear();
+
+            Canvas.ForceUpdateCanvases();
+
+            var pos = Vector2.zero;
+            for (int i = Items.Count - 1; i >= 0; i--)
             {
-                IsResetRequired = false;
+                Positions[i] = pos;
 
-                ResetTargets();
-            }
-
-            if (Targets.Count > 0)
-            {
-                var dt = Time.deltaTime;
-                for (int v = 0; v < View.Count; v++)
-                    if (Targets.TryGetValue(v, out var pos))
-                    {
-                        var rect = View[v].anchoredPosition;
-                        var delta = pos - rect;
-
-                        if (delta.sqrMagnitude > 0.001f)
-                            View[v].anchoredPosition += ScrollSpeed * dt * delta;
-                        else
-                            Targets.Remove(v);
-                    }
+                pos.y += Items[i].rect.height + Spacing;
             }
         }
 
@@ -60,39 +45,24 @@ namespace UI
         {
             transform.gameObject.SetActive(true);
 
-            View.Add(transform);
-            if (View.Count >= MaxView)
+            Items.Add(transform);
+            if (Items.Count >= MaxView)
                 ToPool(0);
 
-            IsResetRequired = true;
+            Juggle();
         }
         public void ToPool(int index)
         {
-            var transform = View[index];
+            var transform = Items[index];
             transform.gameObject.SetActive(false);
             transform.anchoredPosition = PoolPosition;
 
             Pool.Enqueue(transform);
-            View.RemoveAt(index);
+            Items.RemoveAt(index);
 
-            IsResetRequired = true;
+            Juggle();
         }
         public bool TryGetFromPool(out RectTransform transform) => Pool.TryDequeue(out transform);
-        public List<RectTransform> GetView() => View;
-
-        void ResetTargets()
-        {
-            Targets.Clear();
-
-            Canvas.ForceUpdateCanvases();
-
-            var pos = Vector2.zero;
-            for (int v = View.Count - 1; v >= 0; v--)
-            {
-                Targets[v] = pos;
-
-                pos.y += View[v].rect.height + Spacing;
-            }
-        }
+        public List<RectTransform> GetView() => Items;
     }
 }
