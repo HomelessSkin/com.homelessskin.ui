@@ -6,7 +6,8 @@ namespace UI
 {
     public abstract class Juggler : MonoBehaviour
     {
-        [SerializeField] float ScrollSpeed = 10f;
+        [SerializeField] protected float ScrollSpeed = 10f;
+        [SerializeField] protected float ScrollEnd = 0.001f;
 
         [Space]
         [SerializeField] protected List<RectTransform> Items = new List<RectTransform>();
