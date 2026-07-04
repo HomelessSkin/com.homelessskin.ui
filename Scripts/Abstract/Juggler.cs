@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -12,19 +13,10 @@ namespace UI
         [Space]
         [SerializeField] protected List<RectTransform> Items = new List<RectTransform>();
 
-        bool IsResetRequired = false;
-
         protected Dictionary<int, Vector2> Positions = new Dictionary<int, Vector2>();
 
         protected virtual void Update()
         {
-            if (IsResetRequired)
-            {
-                IsResetRequired = false;
-
-                ResetPositions();
-            }
-
             if (Positions.Count > 0)
             {
                 var dt = Time.deltaTime;
@@ -45,7 +37,5 @@ namespace UI
             else
                 Positions.Remove(index);
         }
-
-        protected void Juggle() => IsResetRequired = true;
     }
 }

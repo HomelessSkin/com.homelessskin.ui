@@ -49,7 +49,7 @@ namespace UI
             if (Items.Count >= MaxView)
                 ToPool(0);
 
-            Juggle();
+            ResetPositions();
         }
         public void ToPool(int index)
         {
@@ -60,7 +60,7 @@ namespace UI
             Pool.Enqueue(transform);
             Items.RemoveAt(index);
 
-            Juggle();
+            ResetPositions();
         }
         public bool TryGetFromPool(out RectTransform transform) => Pool.TryDequeue(out transform);
         public List<RectTransform> GetView() => Items;
