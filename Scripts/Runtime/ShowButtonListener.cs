@@ -11,6 +11,20 @@ namespace UI
 
         bool State;
 
+        public void EnableIF(bool value)
+        {
+            if (value)
+                gameObject.SetActive(true);
+            else
+                gameObject.SetActive(false);
+        }
+        public void EnableIFNot(bool value)
+        {
+            if (!value)
+                gameObject.SetActive(true);
+            else
+                gameObject.SetActive(false);
+        }
         public void Enable() => gameObject.SetActive(true);
         public void Disable() => gameObject.SetActive(false);
         public void SwitchEnable()
