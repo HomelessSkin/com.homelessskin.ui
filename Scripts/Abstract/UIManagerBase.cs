@@ -27,15 +27,11 @@ namespace UI
         [SerializeField] FPS _FPS;
         #region FPS
         [Serializable]
-        class FPS : WindowBase, IPrefKey
+        class FPS : WindowBase
         {
-            public string _Key => PrefKey;
-            public string PrefKey;
-
             [Space]
             [Range(1, 60)] public int FramesCount = 5;
             public TMP_Text FPSGUI;
-            public DropDown DropDown;
 
             int Frame;
             float StoredDelta;
@@ -60,8 +56,6 @@ namespace UI
                     Application.targetFrameRate = 150;
                     break;
                 }
-
-                this.SavePrefInt(type);
             }
             public void UpdateCounter()
             {
@@ -83,93 +77,10 @@ namespace UI
                     StoredDelta = 0f;
                 }
             }
-            public void LoadSettings() => DropDown?.SetValue(this.LoadPrefInt());
         }
 
         public void EnableFPSGUI(bool value) => _FPS.SetEnabled(value);
         public void LockFPS(int type) => _FPS.LockFPS(type);
-        #endregion
-
-        [Space]
-        [SerializeField] protected Canvasser _Canvasser;
-        #region CANVASSER
-        [Serializable]
-        protected class Canvasser
-        {
-            public Reference[] Refs;
-            #region REFERENCE
-            [Serializable]
-            public class Reference
-            {
-                [HideInInspector] public string Name;
-                public UpdateType UpdateMode;
-                public bool RenderFrame;
-                public Canvas Canvas;
-                public Camera Camera;
-
-                public void Setup()
-                {
-                    Canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                    Canvas.worldCamera = Camera;
-
-                    switch (UpdateMode)
-                    {
-                        case UpdateType.Default:
-                        Camera.enabled = true;
-                        break;
-                        case UpdateType.Manual:
-                        Camera.enabled = false;
-                        break;
-                    }
-
-                    QueueRender();
-                }
-                public void Render()
-                {
-                    RenderFrame = false;
-                    if (UpdateMode == UpdateType.Default)
-                        return;
-
-                    Camera.Render();
-                }
-                public void QueueRender() => RenderFrame = true;
-
-                public enum UpdateType : byte
-                {
-                    Default = 0,
-                    Manual = 1,
-
-
-                }
-            }
-            #endregion
-
-            public void Setup()
-            {
-                for (int r = 0; r < Refs.Length; r++)
-                    Refs[r].Setup();
-            }
-            public void QueueRender(int index = 0) => Refs[index].QueueRender();
-            public void QueueRender(string name)
-            {
-                if (string.IsNullOrEmpty(name))
-                    return;
-
-                for (int r = 0; r < Refs.Length; r++)
-                    if (Refs[r].Name == name)
-                        Refs[r].QueueRender();
-            }
-            public void QueueAll()
-            {
-                for (int r = 0; r < Refs.Length; r++)
-                    Refs[r].QueueRender();
-            }
-            public void Render()
-            {
-                for (int r = 0; r < Refs.Length; r++)
-                    Refs[r].Render();
-            }
-        }
         #endregion
 
         #region TRASH
@@ -468,13 +379,6 @@ namespace UI
 #if UNITY_ENTITIES_INSTALLED
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 #endif
-
-            _FPS.LoadSettings();
-
-            _Canvasser.Setup();
-
-            //_Localizator.CollectAllData();
-            //_Localizator.PickSaved();
         }
         protected virtual void Update()
         {
@@ -483,7 +387,6 @@ namespace UI
         protected virtual void LateUpdate()
         {
             _FPS.UpdateCounter();
-            _Canvasser.Render();
         }
         protected virtual void OnDestroy()
         {
@@ -493,10 +396,7 @@ namespace UI
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            if (_Canvasser != null && _Canvasser.Refs != null)
-                for (int r = 0; r < _Canvasser.Refs.Length; r++)
-                    if (_Canvasser.Refs[r].Canvas)
-                        _Canvasser.Refs[r].Name = _Canvasser.Refs[r].Canvas.name;
+
         }
         protected virtual void Reset()
         {

@@ -10,6 +10,7 @@ namespace UI
 
         [Space]
         [SerializeField] UnityEvent<bool> OnLoadBool;
+        [SerializeField] UnityEvent<int> OnLoadInt;
         [SerializeField] UnityEvent<float> OnLoadFloat;
 
         public void Load()
@@ -21,6 +22,15 @@ namespace UI
                     OnLoadBool.Invoke(result == 1);
                 else
                     OnLoadBool.Invoke(PlayerPrefs.GetInt(PrefName) == 1);
+            }
+
+            if (OnLoadInt != null &&
+                 OnLoadInt.GetPersistentEventCount() > 0)
+            {
+                if (!PlayerPrefs.HasKey(PrefName) && int.TryParse(DefaultValue, out var result))
+                    OnLoadInt.Invoke(result);
+                else
+                    OnLoadInt.Invoke(PlayerPrefs.GetInt(PrefName));
             }
 
             if (OnLoadFloat != null &&
@@ -44,6 +54,7 @@ namespace UI
 
             PlayerPrefs.SetInt(PrefName, value ? 0 : 1);
         }
+        public void SaveInt(int value) => PlayerPrefs.SetInt(PrefName, value);
         public void SaveFloat(float value) => PlayerPrefs.SetFloat(PrefName, value);
     }
 }
