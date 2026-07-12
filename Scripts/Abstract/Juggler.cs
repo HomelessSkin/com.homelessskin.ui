@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace UI
 
         protected virtual void Update()
         {
-            if (Positions.Count > 0)
+            if (IsJuggling())
             {
                 var dt = Time.deltaTime;
                 for (int v = 0; v < Items.Count; v++)
@@ -26,13 +25,13 @@ namespace UI
             }
         }
 
-        protected abstract void ResetPositions();
+        public virtual bool IsJuggling() => Positions.Count > 0;
 
         protected virtual void MoveToTarget(int index, float dt)
         {
             var delta = Positions[index] - Items[index].anchoredPosition;
 
-            if (delta.sqrMagnitude > 0.001f)
+            if (delta.magnitude > ScrollEnd)
                 Items[index].anchoredPosition += ScrollSpeed * dt * delta;
             else
                 Positions.Remove(index);
