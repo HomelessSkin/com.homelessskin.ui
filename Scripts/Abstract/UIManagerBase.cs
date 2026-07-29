@@ -183,6 +183,32 @@ namespace UI
         #endregion
 
         [Space]
+        [SerializeField] protected ConsoleCommand[] Commands;
+        #region CONSOLE
+        [Serializable]
+        protected class ConsoleCommand
+        {
+            public string Key;
+
+            [Space]
+            public UnityEvent<string[]> Event;
+        }
+
+        public void EnterCommand(string value)
+        {
+            Log.Info(this, value);
+
+            if (string.IsNullOrEmpty(value))
+                return;
+
+            var words = value.Split();
+            for (int c = 0; c < Commands.Length; c++)
+                if (Commands[c].Key == words[0].ToLower())
+                    Commands[c].Event?.Invoke(words);
+        }
+        #endregion
+
+        [Space]
         [SerializeField] protected Confirm _Confirm;
         #region CONFIRMATION
         [Serializable]
