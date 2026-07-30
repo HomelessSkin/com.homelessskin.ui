@@ -4,6 +4,8 @@ using System.IO;
 
 using Core;
 
+using Input;
+
 using TMPro;
 
 #if UNITY_ENTITIES_INSTALLED
@@ -182,18 +184,7 @@ namespace UI
         }
         #endregion
 
-        [Space]
-        [SerializeField] protected ConsoleCommand[] Commands;
         #region CONSOLE
-        [Serializable]
-        protected class ConsoleCommand
-        {
-            public string Key;
-
-            [Space]
-            public UnityEvent<string[]> Event;
-        }
-
         public void EnterCommand(string value)
         {
             Log.Info(this, value);
@@ -201,10 +192,51 @@ namespace UI
             if (string.IsNullOrEmpty(value))
                 return;
 
-            var words = value.Split();
-            for (int c = 0; c < Commands.Length; c++)
-                if (Commands[c].Key == words[0].ToLower())
-                    Commands[c].Event?.Invoke(words);
+            var command = value.Split();
+            var outer = new OuterInput(command[0].Replace("_", " "));
+
+            if (command.Length > 1)
+            {
+                for (int c = 1; c < command.Length; c++)
+                {
+                    var parameter = command[c].Trim().Split("=");
+
+                    switch (parameter[0].ToLower())
+                    {
+                        case "platform":
+                        break;
+
+                        case "title":
+                        outer.Title = parameter[1].Replace("_", " ");
+                        break;
+
+                        case "id":
+                        break;
+
+                        case "user_id":
+                        break;
+
+                        case "nick":
+                        outer.Nick = parameter[1];
+                        break;
+
+                        case "user_input":
+                        outer.UserInput = new List<OuterInput.Part>
+                        {
+                            new OuterInput.Part
+                            {
+                                Message = new OuterInput.Part.Text
+                                {
+                                    Content = parameter[1].Replace("_", " ")
+                                }
+                            }
+                        };
+                        break;
+                    }
+                }
+            }
+
+            Sys.Add_M(outer, World.DefaultGameObjectInjectionWorld.EntityManager);
         }
         #endregion
 
