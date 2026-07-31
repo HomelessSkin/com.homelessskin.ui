@@ -201,38 +201,19 @@ namespace UI
                 {
                     var parameter = command[c].Trim().Split("=");
 
-                    switch (parameter[0].ToLower())
-                    {
-                        case "platform":
-                        break;
-
-                        case "title":
-                        outer.Title = parameter[1].Replace("_", " ");
-                        break;
-
-                        case "id":
-                        break;
-
-                        case "user_id":
-                        break;
-
-                        case "nick":
-                        outer.Nick = parameter[1];
-                        break;
-
-                        case "user_input":
-                        outer.UserInput = new List<OuterInput.Part>
+                    if (parameter.Length == 2)
+                        switch (parameter[0].ToLower())
                         {
-                            new OuterInput.Part
-                            {
-                                Message = new OuterInput.Part.Text
-                                {
-                                    Content = parameter[1].Replace("_", " ")
-                                }
-                            }
-                        };
-                        break;
-                    }
+                            case "title":
+                            outer.Title = parameter[1].Replace("_", " ");
+                            break;
+
+                            case "nick":
+                            outer.Agent = parameter[1];
+                            break;
+                        }
+                    else
+                        outer.Message = parameter[0].Replace("_", " ");
                 }
             }
 
