@@ -197,6 +197,7 @@ namespace UI
 
             if (command.Length > 1)
             {
+                outer.Message = "";
                 for (int c = 1; c < command.Length; c++)
                 {
                     var parameter = command[c].Trim().Split("=");
@@ -213,7 +214,7 @@ namespace UI
                             break;
                         }
                     else
-                        outer.Message = parameter[0].Replace("_", " ");
+                        outer.Message += $"{parameter[0]} ";
                 }
             }
 
