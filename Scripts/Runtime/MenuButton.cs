@@ -16,6 +16,7 @@ namespace UI
     public class MenuButton : Selectable
     {
         [Space]
+        [SerializeField] Image Image;
         [SerializeField] TMP_Text Label;
 
         [Space]
@@ -31,7 +32,7 @@ namespace UI
         {
             base.OnPointerDown(eventData);
 
-            OnClick.Invoke();
+            OnClick?.Invoke();
 
             if (Targets != null && Targets.Length > 0)
             {
@@ -53,8 +54,14 @@ namespace UI
         protected override void OnDestroy()
         {
             OnClick?.RemoveAllListeners();
+            OnEnabledTargets?.RemoveAllListeners();
         }
 
+        public void SetImage(Texture2D texture)
+        {
+            if (Image)
+                Image.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+        }
         public void SetLabel(string name)
         {
             if (Label)

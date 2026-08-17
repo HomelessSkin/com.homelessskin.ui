@@ -29,6 +29,7 @@ namespace UI
         public void ToView(RectTransform transform)
         {
             transform.gameObject.SetActive(true);
+            transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Content.rect.width);
 
             Items.Add(transform);
             if (Items.Count >= MaxView)
