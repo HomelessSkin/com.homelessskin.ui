@@ -16,7 +16,7 @@ namespace UI
 #if UNITY_EDITOR
         void OnValidate()
         {
-            Savables = GameObject.FindObjectsByType<Savable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            Savables = GameObject.FindObjectsByType<Savable>(FindObjectsInactive.Include);
         }
 #endif
     }

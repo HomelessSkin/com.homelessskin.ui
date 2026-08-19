@@ -112,7 +112,7 @@ namespace UI
 #if UNITY_EDITOR
         void OnValidate()
         {
-            Translatables = GameObject.FindObjectsByType<Translatable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            Translatables = GameObject.FindObjectsByType<Translatable>(FindObjectsInactive.Include);
         }
 
         [ContextMenu("Test")]
