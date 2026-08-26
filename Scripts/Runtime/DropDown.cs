@@ -24,7 +24,7 @@ namespace UI
 
         void Start()
         {
-            Selection.AddListener(Open);
+            //Selection.AddListener(Open);
         }
 
 #if UNITY_EDITOR

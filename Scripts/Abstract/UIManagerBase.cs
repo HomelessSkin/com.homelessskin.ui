@@ -228,9 +228,7 @@ namespace UI
         [Serializable]
         protected class Confirm : WindowBase
         {
-            public UnityAction CurrentAction;
-
-            public TMP_Text Text;
+            //public TMP_Text Text;
             public MenuButton ConfirmButton;
             public MenuButton DeclineButton;
 
@@ -241,21 +239,19 @@ namespace UI
         void InitConfirmation(int key, UnityAction action)
         {
             //_Confirm.Text.text = GetTranslation(_Confirm.Keys[key]).Text;
-            _Confirm.CurrentAction = action;
 
-            _Confirm.ConfirmButton.AddListener(action);
-            _Confirm.ConfirmButton.AddListener(ClearConfirmation);
-            _Confirm.DeclineButton.AddListener(ClearConfirmation);
+            //_Confirm.ConfirmButton.AddListener(action);
+            //_Confirm.ConfirmButton.AddListener(ClearConfirmation);
+            //_Confirm.DeclineButton.AddListener(ClearConfirmation);
 
             _Confirm.SetEnabled(true);
         }
         void ClearConfirmation()
         {
-            _Confirm.Text.text = "";
-            _Confirm.CurrentAction = null;
+            //_Confirm.Text.text = "";
 
-            _Confirm.ConfirmButton.RemoveAllListeners();
-            _Confirm.DeclineButton.RemoveAllListeners();
+            //_Confirm.ConfirmButton.RemoveAllListeners();
+            //_Confirm.DeclineButton.RemoveAllListeners();
             _Confirm.SetEnabled(false);
         }
         #endregion
