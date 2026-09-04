@@ -19,45 +19,23 @@ namespace UI
     public class MenuButton : Selectable
     {
         [Space]
-        [SerializeField] Image Image;
-        [SerializeField] TMP_Text Label;
+        [SerializeField] protected Image Image;
+        [SerializeField] protected TMP_Text Label;
 
         [Space]
         [Header("OnClick Event is obsolete! Use Outer Inputs instead!")]
-        [SerializeField] UnityEvent OnClick;
+        [SerializeField] protected UnityEvent OnClick;
 
         [Space]
-        [SerializeField] UnityEvent OnEnabledTargets;
+        [SerializeField] protected UnityEvent OnEnabledTargets;
 
         [Space]
-        [SerializeField] GameObject[] Targets;
+        [SerializeField] protected GameObject[] Targets;
 
         [Space]
-        [SerializeField] List<OuterInput> Inputs;
+        [SerializeField] protected List<OuterInput> Inputs;
 
-        public override void OnPointerDown(PointerEventData eventData)
-        {
-            base.OnPointerDown(eventData);
-
-            Press();
-        }
-        protected override void OnDestroy()
-        {
-            OnClick?.RemoveAllListeners();
-            OnEnabledTargets?.RemoveAllListeners();
-        }
-
-        public void SetImage(Texture2D texture)
-        {
-            if (Image)
-                Image.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
-        }
-        public void SetLabel(string name)
-        {
-            if (Label)
-                Label.text = name;
-        }
-        public void Press()
+        public virtual void Press()
         {
             if (OnClick != null && OnClick.GetPersistentEventCount() > 0)
                 Log.Warning(this, "OnClick Event is obsolete! Use Outer Inputs instead!");
@@ -86,6 +64,30 @@ namespace UI
                     if (Inputs[i] != null && !string.IsNullOrEmpty(Inputs[i].Title))
                         Sys.Add_M(Inputs[i], World.DefaultGameObjectInjectionWorld.EntityManager);
         }
+
+        public override void OnPointerDown(PointerEventData eventData)
+        {
+            base.OnPointerDown(eventData);
+
+            Press();
+        }
+        protected override void OnDestroy()
+        {
+            OnClick?.RemoveAllListeners();
+            OnEnabledTargets?.RemoveAllListeners();
+        }
+
+        public void SetImage(Texture2D texture)
+        {
+            if (Image)
+                Image.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.zero);
+        }
+        public void SetLabel(string name)
+        {
+            if (Label)
+                Label.text = name;
+        }
+        public void SetSibling(int index) => transform.SetSiblingIndex(index);
         public void AddInput(OuterInput input)
         {
             if (Inputs == null)
