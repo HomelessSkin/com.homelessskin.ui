@@ -25,6 +25,8 @@ namespace UI
     {
         protected EntityManager EntityManager;
 
+        [SerializeField] protected Commander Commander;
+
         [Space]
         [SerializeField] FPS _FPS;
         #region FPS
