@@ -8,6 +8,7 @@ using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -53,14 +54,15 @@ namespace UI
             [Serializable]
             public struct Data
             {
-                public Vector2 Rest;
-                public Vector2 Previous;
                 public Vector2 Position;
-                public Vector2 Forward;
-                public float Scale;
 
-                public FixedList128Bytes<int> Siblings;
-                public FixedList128Bytes<float> Distances;
+                [HideInInspector] public Vector2 Rest;
+                [HideInInspector] public Vector2 Previous;
+                [HideInInspector] public Vector2 Forward;
+                [HideInInspector] public float Scale;
+
+                [HideInInspector] public FixedList128Bytes<int> Siblings;
+                [HideInInspector] public FixedList128Bytes<float> Distances;
             }
         }
         #endregion
@@ -194,19 +196,15 @@ namespace UI
             var scale = 1080f / Screen.height;
             for (int b = 0; b < BoneData.Count; b++)
             {
-                var transform = BoneData[b].Transform;
                 var bone = Bones[b];
+                var t = BoneData[b].Transform;
 
-                var pos = transform.position;
-
-                pos.x = bone.Position.x * Screen.width;
-                pos.y = bone.Position.y * Screen.height;
-
-                transform.position = pos;
-                transform.rotation = Quaternion.LookRotation(Settings.Up, bone.Forward);
-                transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, scale * bone.Scale);
+                t.position = ConvertToScreen(bone.Position);
+                t.rotation = Quaternion.LookRotation(Settings.Up, bone.Forward);
+                t.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, scale * bone.Scale);
             }
         }
+        Vector2 ConvertToScreen(Vector2 scaled) => new Vector2(Screen.width * scaled.x, Screen.height * scaled.y);
 
         [BurstCompile]
         struct MoveBonesJob : IJobParallelFor
@@ -239,6 +237,7 @@ namespace UI
 #if UNITY_EDITOR
         [Space]
         [SerializeField] bool Recalculation;
+        [SerializeField] RectTransform Root;
         [SerializeField] RectTransform[] Rig;
 
         [Space]
@@ -250,20 +249,24 @@ namespace UI
 
         void OnValidate()
         {
-            if (!Recalculation)
+            if (!Recalculation || !Root)
                 return;
 
             Recalculation = false;
 
-            if (Rig != null)
+            Rig = Root
+                .GetComponentsInChildren<RectTransform>()
+                .Where(t => !t.TryGetComponent<Image>(out var image)).ToArray();
+
+            if (Rig != null && Rig.Length > 0)
             {
                 BoneData = new List<Bone>();
-                var root = Rig[0];
                 for (int r = 0; r < Rig.Length; r++)
                 {
                     var rect = Rig[r];
                     var children = rect
                         .GetComponentsInChildren<RectTransform>()
+                        .Where(t => !t.TryGetComponent<Image>(out var image))
                         .Where(t => !t.Equals(rect))
                         .ToList();
 
@@ -301,6 +304,7 @@ namespace UI
                 for (int b = 0; b < BoneData.Count; b++)
                 {
                     var bone = BoneData[b];
+                    bone.Transform.name = $"Segment {b}";
                     if (bone == null)
                         continue;
 
@@ -348,7 +352,7 @@ namespace UI
                     {
                         var bone = BoneData[b].Value;
                         for (int s = 0; s < bone.Siblings.Length; s++)
-                            Gizmos.DrawLine(bone.Position, BoneData[bone.Siblings[s]].Value.Position);
+                            Gizmos.DrawLine(ConvertToScreen(bone.Position), ConvertToScreen(BoneData[bone.Siblings[s]].Value.Position));
                     }
             }
 
