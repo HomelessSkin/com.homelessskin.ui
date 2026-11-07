@@ -82,6 +82,8 @@ namespace UI
 
         void Start()
         {
+            Settings.Delta = Time.fixedDeltaTime;
+
             Build();
         }
         void FixedUpdate()
@@ -115,7 +117,6 @@ namespace UI
         }
         void SimulateStep()
         {
-            Settings.Delta = Time.deltaTime;
             Settings.DeltaSQ = Settings.Delta * Settings.Delta;
 
             new MoveBonesJob
