@@ -5,9 +5,13 @@ namespace UI
 {
     public class BonePoints : MonoBehaviour
     {
+        [SerializeField] bool IsVisible = true;
+
+        public void SetVisibility(bool value) => IsVisible = value;
+
         void OnDrawGizmos()
         {
-            if (TryGetComponent<RectTransform>(out var rT))
+            if (IsVisible && TryGetComponent<RectTransform>(out var rT))
             {
                 Gizmos.color = Color.ghostWhite;
                 Gizmos.DrawWireSphere(rT.position, 15f);

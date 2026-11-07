@@ -247,6 +247,21 @@ namespace UI
         [SerializeField] bool DrawRuntimeData;
         [SerializeField] Color RuntimeColor;
 
+        [ContextMenu("Show Points")]
+        void ShowPoints()
+        {
+            var children = GetComponentsInChildren<BonePoints>();
+            for (int c = 0; c < children.Length; c++)
+                children[c].SetVisibility(true);
+        }
+        [ContextMenu("Hide Points")]
+        void HidePoints()
+        {
+            var children = GetComponentsInChildren<BonePoints>();
+            for (int c = 0; c < children.Length; c++)
+                children[c].SetVisibility(false);
+        }
+
         void OnValidate()
         {
             if (!Recalculation || !Root)
