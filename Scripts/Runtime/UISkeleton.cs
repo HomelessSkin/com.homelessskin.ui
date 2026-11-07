@@ -8,7 +8,6 @@ using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
@@ -272,7 +271,7 @@ namespace UI
 
             Rig = Root
                 .GetComponentsInChildren<RectTransform>()
-                .Where(t => !t.TryGetComponent<Image>(out var image)).ToArray();
+                .Where(t => t.TryGetComponent<BonePoints>(out var bone)).ToArray();
 
             if (Rig != null && Rig.Length > 0)
             {
@@ -282,7 +281,7 @@ namespace UI
                     var rect = Rig[r];
                     var children = rect
                         .GetComponentsInChildren<RectTransform>()
-                        .Where(t => !t.TryGetComponent<Image>(out var image))
+                        .Where(t => t.TryGetComponent<BonePoints>(out var bone))
                         .Where(t => !t.Equals(rect))
                         .ToList();
 
