@@ -59,6 +59,8 @@ namespace UI
                 [HideInInspector] public Vector2 Previous;
                 [HideInInspector] public Vector2 Forward;
                 [HideInInspector] public float Scale;
+                [HideInInspector] public float DefaultWidth;
+                [HideInInspector] public float DefaultHeight;
 
                 [HideInInspector] public FixedList128Bytes<int> Siblings;
                 [HideInInspector] public FixedList128Bytes<float> Distances;
@@ -82,6 +84,7 @@ namespace UI
         void Start()
         {
             Settings.Delta = Time.fixedDeltaTime;
+            Settings.DeltaSQ = Settings.Delta * Settings.Delta;
 
             Build();
         }
@@ -102,10 +105,10 @@ namespace UI
         public void AddImpulse(Vector2 pos)
         {
             var target = new Vector2(pos.x / Screen.width, pos.y / Screen.height);
-            var impulse = target.x - transform.position.x / Screen.width + target.y - transform.position.y / Screen.height;
+            var impulse = Mathf.Sqrt(Mathf.Pow(target.x - transform.position.x / Screen.width, 2f) + Mathf.Pow(target.y - transform.position.y / Screen.height, 2f));
 
             for (int t = 0; t < ImpulseTargets.Length; t++)
-                ImpulseToTarget(ImpulseTargets[t].Index, ImpulseTargets[t].Multiplier * impulse, target);
+                ImpulseToTarget(ImpulseTargets[t].Index, ImpulseTargets[t].Multiplier * -impulse, target);
         }
 
         void Build()
@@ -116,8 +119,6 @@ namespace UI
         }
         void SimulateStep()
         {
-            Settings.DeltaSQ = Settings.Delta * Settings.Delta;
-
             new MoveBonesJob
             {
                 Settings = Settings,
@@ -144,12 +145,13 @@ namespace UI
                         var diff = (dist - bone.Distances[s]) / dist;
                         var correction = 0.5f * diff * d;
 
+                        var impulse = Settings.Delta * Settings.CorrectionPower * correction;
                         if (b == 0)
-                            sibling.Position -= 2f * Settings.Delta * Settings.CorrectionPower * correction;
+                            sibling.Position -= 2f * impulse;
                         else
                         {
-                            bone.Position += Settings.Delta * Settings.CorrectionPower * correction;
-                            sibling.Position -= Settings.Delta * Settings.CorrectionPower * correction;
+                            bone.Position += impulse;
+                            sibling.Position -= impulse;
                         }
 
                         Bones[bone.Siblings[s]] = sibling;
@@ -161,25 +163,19 @@ namespace UI
             for (int b = 0; b < Bones.Length - 1; b++)
             {
                 var bone = Bones[b];
+
+                var bPos = ConvertToScreen(bone.Position);
                 for (int s = 0; s < bone.Siblings.Length; s++)
                 {
-                    var index = bone.Siblings[s];
-                    var sibling = Bones[index];
+                    var sibling = Bones[bone.Siblings[s]];
 
-                    var bPos = bone.Position;
-                    bPos.x *= Screen.width;
-                    bPos.y *= Screen.height;
-
-                    var sPos = sibling.Position;
-                    sPos.x *= Screen.width;
-                    sPos.y *= Screen.height;
-
+                    var sPos = ConvertToScreen(sibling.Position);
                     var dir = bPos - sPos;
 
                     sibling.Forward = dir.normalized;
                     sibling.Scale = dir.magnitude;
 
-                    Bones[index] = sibling;
+                    Bones[bone.Siblings[s]] = sibling;
                 }
             }
         }
@@ -187,7 +183,7 @@ namespace UI
         {
             var bone = Bones[nodeIndex];
 
-            bone.Previous += Settings.ImpulsePower * Time.deltaTime * power * (target - Bones[nodeIndex].Previous).normalized;
+            bone.Previous += Settings.ImpulsePower * Time.deltaTime * power * (target - Bones[nodeIndex].Previous);
 
             Bones[nodeIndex] = bone;
         }
@@ -201,6 +197,8 @@ namespace UI
 
                 t.position = ConvertToScreen(bone.Position);
                 t.rotation = Quaternion.LookRotation(Settings.Up, bone.Forward);
+
+                t.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, bone.DefaultWidth * scale * bone.Scale / bone.DefaultHeight);
                 t.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, scale * bone.Scale);
             }
         }
@@ -324,6 +322,8 @@ namespace UI
                         continue;
 
                     bone.Value = new Bone.Data();
+                    bone.Value.DefaultWidth = bone.Transform.rect.width;
+                    bone.Value.DefaultHeight = bone.Transform.rect.height;
 
                     var pos = new Vector3(bone.Transform.position.x / 1920f, bone.Transform.position.y / 1080f, 0f);
                     bone.Value.Rest =
