@@ -118,6 +118,9 @@ namespace UI
 
                 void AsConsole()
                 {
+                    if (Log.IsEmpty())
+                        return;
+
                     var list = new List<string>();
                     if (!string.IsNullOrEmpty(Console))
                     {
